@@ -3,7 +3,7 @@
   "private": false,
   "packageManager": "npm@11.13.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "turbo dev",
