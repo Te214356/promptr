@@ -1,4 +1,5 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import path from 'path'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -20,7 +21,7 @@ export default defineConfig({
       options: {
         providers: [
           {
-            resolve: "./src/modules/moyasar",
+            resolve: path.join(__dirname, "src/modules/moyasar"),
             id: "moyasar",
             options: {
               publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
