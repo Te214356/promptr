@@ -1,5 +1,4 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
-import path from 'path'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -15,21 +14,4 @@ export default defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   },
-  modules: [
-    {
-      resolve: "@medusajs/medusa/payment",
-      options: {
-        providers: [
-          {
-            resolve: path.join(__dirname, "src/modules/moyasar"),
-            id: "moyasar",
-            options: {
-              publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
-              secretKey: process.env.MOYASAR_SECRET_KEY,
-            },
-          },
-        ],
-      },
-    },
-  ],
 })
