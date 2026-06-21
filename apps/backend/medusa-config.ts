@@ -15,4 +15,21 @@ export default defineConfig({
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     }
   },
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/moyasar",
+            id: "moyasar",
+            options: {
+              publishableKey: process.env.MOYASAR_PUBLISHABLE_KEY,
+              secretKey: process.env.MOYASAR_SECRET_KEY,
+            },
+          },
+        ],
+      },
+    },
+  ],
 })
