@@ -34,6 +34,13 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        promptr: {
+          bg: "#080810",
+          purple: "#6C2BFF",
+          cyan: "#00CFFF",
+          card: "#0d0d1f",
+          border: "#1a1a30",
+        },
       },
       borderRadius: {
         none: "0px",

@@ -2,6 +2,20 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+:root {
+  --promptr-bg: #080810;
+  --promptr-purple: #6C2BFF;
+  --promptr-cyan: #00CFFF;
+  --promptr-card: #0d0d1f;
+  --promptr-border: #1a1a30;
+}
+
+html,
+body {
+  background-color: var(--promptr-bg);
+  color: #ffffff;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
