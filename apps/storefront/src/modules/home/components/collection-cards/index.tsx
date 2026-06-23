@@ -1,4 +1,6 @@
+'use client'
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useLanguage } from "@lib/context/language-context"
 
 const COLLECTIONS = [
   {
@@ -53,13 +55,18 @@ const COLLECTIONS = [
 ]
 
 export default function CollectionCards() {
+  const { lang } = useLanguage()
+  const isRTL = lang === "ar"
+
   return (
     <section className="py-20 px-6 bg-[#080810]">
       <div className="content-container">
         {/* Section label */}
         <div className="flex items-center gap-3 mb-12">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#6C2BFF]/30" />
-          <span className="text-white/40 text-xs uppercase tracking-[0.2em] font-medium">Collections</span>
+          <span className="text-white/40 text-xs uppercase tracking-[0.2em] font-medium">
+            {lang === "ar" ? "المجموعات" : "Collections"}
+          </span>
           <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#6C2BFF]/30" />
         </div>
 
@@ -73,52 +80,36 @@ export default function CollectionCards() {
               {/* Hover glow */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
-                style={{
-                  background: `radial-gradient(ellipse at 20% 50%, ${col.accent}08 0%, transparent 70%)`,
-                }}
+                style={{ background: `radial-gradient(ellipse at 20% 50%, ${col.accent}08 0%, transparent 70%)` }}
               />
 
               {/* Top row: icon + arrow */}
               <div className="flex items-start justify-between relative z-10">
-                <div
-                  className="p-2.5 rounded-xl"
-                  style={{
-                    background: `${col.accent}15`,
-                    color: col.accent,
-                  }}
-                >
+                <div className="p-2.5 rounded-xl" style={{ background: `${col.accent}15`, color: col.accent }}>
                   {col.icon}
                 </div>
                 <svg
                   className="w-5 h-5 text-white/20 group-hover:text-white/60 -rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </div>
 
               {/* Text */}
-              <div className="relative z-10 mt-6">
+              <div className="relative z-10 mt-6" dir={isRTL ? "rtl" : "ltr"}>
                 <p
-                  className="text-xl font-bold text-white mb-1 leading-snug"
-                  dir="rtl"
-                  lang="ar"
+                  className="text-xl font-bold text-white leading-snug"
                   style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
                 >
-                  {col.titleAr}
+                  {lang === "ar" ? col.titleAr : col.titleEn}
                 </p>
-                <p className="text-white/40 text-sm">{col.titleEn}</p>
               </div>
 
               {/* Bottom accent line */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  background: `linear-gradient(90deg, transparent, ${col.accent}, transparent)`,
-                }}
+                style={{ background: `linear-gradient(90deg, transparent, ${col.accent}, transparent)` }}
               />
             </LocalizedClientLink>
           ))}

@@ -10,13 +10,14 @@ import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
 import { HttpTypes } from "@medusajs/types"
 import { Locale } from "@lib/data/locales"
+import { useLanguage } from "@lib/context/language-context"
 
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Account: "/account",
-  Cart: "/cart",
-}
+const MENU_ITEMS = [
+  { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
+  { labelAr: "المتجر",   labelEn: "Store",   href: "/store" },
+  { labelAr: "الحساب",  labelEn: "Account", href: "/account" },
+  { labelAr: "السلة",   labelEn: "Cart",    href: "/cart" },
+]
 
 type SideMenuProps = {
   regions: HttpTypes.StoreRegion[] | null
@@ -25,6 +26,7 @@ type SideMenuProps = {
 }
 
 const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
+  const { lang } = useLanguage()
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
 
@@ -37,9 +39,9 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
               <div className="relative flex h-full">
                 <Popover.Button
                   data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base"
+                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base text-white/60 hover:text-white text-sm"
                 >
-                  Menu
+                  {lang === "ar" ? "القائمة" : "Menu"}
                 </Popover.Button>
               </div>
 
@@ -72,20 +74,18 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                       </button>
                     </div>
                     <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        )
-                      })}
+                      {MENU_ITEMS.map((item) => (
+                        <li key={item.href}>
+                          <LocalizedClientLink
+                            href={item.href}
+                            className="text-3xl leading-10 hover:text-ui-fg-disabled text-white"
+                            onClick={close}
+                            data-testid={`${item.labelEn.toLowerCase()}-link`}
+                          >
+                            {lang === "ar" ? item.labelAr : item.labelEn}
+                          </LocalizedClientLink>
+                        </li>
+                      ))}
                     </ul>
                     <div className="flex flex-col gap-y-6">
                       {!!locales?.length && (
@@ -126,7 +126,8 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                         />
                       </div>
                       <Text className="flex justify-between txt-compact-small text-white/40">
-                        © {new Date().getFullYear()} Promptr. All rights reserved.
+                        © {new Date().getFullYear()} Promptr.{" "}
+                        {lang === "ar" ? "جميع الحقوق محفوظة." : "All rights reserved."}
                       </Text>
                     </div>
                   </div>

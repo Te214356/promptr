@@ -8,6 +8,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import LanguageToggle from "@modules/layout/components/language-toggle"
+import NavAccountLink from "@modules/layout/components/nav-account-link"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
@@ -39,22 +40,18 @@ export default async function Nav() {
           <div className="flex items-center gap-x-4 h-full flex-1 basis-0 justify-end">
             <LanguageToggle />
             <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
-                className="text-white/60 hover:text-white text-sm transition-colors duration-200"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
+              <NavAccountLink />
             </div>
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="text-white/60 hover:text-white text-sm flex gap-2 transition-colors duration-200"
+                  className="text-white/60 hover:text-white transition-colors duration-200"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
-                  Cart (0)
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" />
+                  </svg>
                 </LocalizedClientLink>
               }
             >

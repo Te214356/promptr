@@ -1,6 +1,29 @@
+'use client'
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useLanguage } from "@lib/context/language-context"
+
+const CONTENT = {
+  ar: {
+    headline: "متجرك الرقمي المتكامل",
+    subheadline: "منصة متكاملة للمنتجات الرقمية في السعودية",
+    body: "منتجات رقمية مختارة للعالم العربي الحديث — بطاقات شحن، قوالب، كتب، وأدوات AI",
+    cta: "استكشف المتجر",
+    ctaSecondary: "جميع المنتجات",
+  },
+  en: {
+    headline: "Your Complete Digital Marketplace",
+    subheadline: "The premium platform for digital products in Saudi Arabia",
+    body: "Curated digital products for the modern Arab world — recharge cards, templates, books, and AI tools",
+    cta: "Explore Store",
+    ctaSecondary: "All Products",
+  },
+}
 
 const Hero = () => {
+  const { lang } = useLanguage()
+  const t = CONTENT[lang]
+  const isRTL = lang === "ar"
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-[#080810]">
       {/* Purple glow blob */}
@@ -20,40 +43,34 @@ const Hero = () => {
       {/* Horizontal rule accent */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#6C2BFF]/50 to-transparent" />
 
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        {/* Arabic headline */}
+      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto" dir={isRTL ? "rtl" : "ltr"}>
         <h1
           className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight"
-          dir="rtl"
-          lang="ar"
           style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
         >
-          متجرك الرقمي المتكامل
+          {t.headline}
         </h1>
 
-        {/* English headline — gradient */}
         <h2 className="text-2xl sm:text-3xl font-light mb-6 bg-gradient-to-r from-[#6C2BFF] to-[#00CFFF] bg-clip-text text-transparent">
-          Your Complete Digital Marketplace
+          {t.subheadline}
         </h2>
 
-        {/* Bilingual subline */}
         <p className="text-white/40 text-base sm:text-lg mb-12 max-w-2xl mx-auto leading-relaxed">
-          منتجات رقمية مختارة للعالم العربي الحديث &nbsp;·&nbsp; Curated digital products for the modern Arab world
+          {t.body}
         </p>
 
-        {/* CTAs */}
         <div className="flex gap-4 justify-center flex-wrap">
           <LocalizedClientLink
             href="/store"
             className="px-8 py-3 bg-[#6C2BFF] hover:bg-[#5a22dd] text-white rounded-full font-medium text-sm transition-all duration-200 hover:shadow-[0_0_40px_rgba(108,43,255,0.5)]"
           >
-            استكشف المتجر
+            {t.cta}
           </LocalizedClientLink>
           <LocalizedClientLink
             href="/store"
             className="px-8 py-3 border border-white/15 hover:border-[#6C2BFF]/70 text-white/80 hover:text-white rounded-full font-medium text-sm transition-all duration-200"
           >
-            Browse Store
+            {t.ctaSecondary}
           </LocalizedClientLink>
         </div>
       </div>
