@@ -7,6 +7,7 @@ import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import LanguageToggle from "@modules/layout/components/language-toggle"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
@@ -35,7 +36,8 @@ export default async function Nav() {
             </LocalizedClientLink>
           </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
+          <div className="flex items-center gap-x-4 h-full flex-1 basis-0 justify-end">
+            <LanguageToggle />
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
                 className="text-white/60 hover:text-white text-sm transition-colors duration-200"
