@@ -2,7 +2,7 @@ import { Suspense } from "react"
 
 import { listRegions } from "@lib/data/regions"
 import { listLocales } from "@lib/data/locales"
-import { getLocale } from "@lib/data/locale-actions"
+import { getLocale } from "@lib/data/locale-cookie"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
