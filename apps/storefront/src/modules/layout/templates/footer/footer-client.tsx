@@ -11,7 +11,7 @@ const WA_DISPLAY = "+966 55 185 9849"
 const CONTENT = {
   ar: {
     tagline: 'متجرك الرقمي المتكامل',
-    taglineSub: 'Your digital marketplace',
+    description: 'Promptr متجر رقمي سعودي متخصص في المنتجات الرقمية وأدوات الذكاء الاصطناعي. نقدم قوالب وأدوات ومحتوى رقمي مختار للسوق العربي.',
     saudiBadge: 'متجر سعودي موثوق 🇸🇦',
     madeBadge: 'صنع في السعودية 🇸🇦❤️',
     freelanceBadge: 'شهادة العمل الحر · مستقل',
@@ -35,7 +35,7 @@ const CONTENT = {
   },
   en: {
     tagline: 'Your digital marketplace',
-    taglineSub: 'متجرك الرقمي المتكامل',
+    description: 'Promptr is a Saudi digital store specializing in digital products and AI tools. We offer curated templates, tools, and digital content for the Arab market.',
     saudiBadge: 'Trusted Saudi Store 🇸🇦',
     madeBadge: 'Made in Saudi Arabia 🇸🇦❤️',
     freelanceBadge: 'Mostaql Verified Freelancer',
@@ -59,6 +59,7 @@ const CONTENT = {
   },
 }
 
+
 interface FooterClientProps {
   collections: HttpTypes.StoreCollection[]
   categories: HttpTypes.StoreProductCategory[]
@@ -79,7 +80,7 @@ export default function FooterClient({ collections, categories }: FooterClientPr
         <div className="flex flex-col gap-y-10 xsmall:flex-row items-start justify-between mb-14">
 
           {/* Brand column */}
-          <div className="flex flex-col gap-y-3 min-w-[180px]">
+          <div className="flex flex-col gap-y-3 min-w-[180px] max-w-[260px]">
             <LocalizedClientLink
               href="/"
               className="font-bold text-2xl tracking-widest text-white hover:text-[#00CFFF] transition-colors duration-200 uppercase"
@@ -88,10 +89,14 @@ export default function FooterClient({ collections, categories }: FooterClientPr
             </LocalizedClientLink>
 
             <p className="text-white/40 text-xs leading-relaxed">{t.tagline}</p>
-            <p className="text-white/20 text-[11px]">{t.taglineSub}</p>
+
+            {/* Store description */}
+            <p className="text-white/60 text-[13px] leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
+              {t.description}
+            </p>
 
             {/* Badges */}
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="flex flex-col gap-2 mt-1">
               {/* Saudi trusted badge */}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
                 style={{ background: 'rgba(0,177,64,0.07)', borderColor: 'rgba(0,177,64,0.22)', color: 'rgba(255,255,255,0.55)' }}>
@@ -107,7 +112,6 @@ export default function FooterClient({ collections, categories }: FooterClientPr
               {/* Freelance badge (مستقل) */}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
                 style={{ background: 'rgba(0,207,255,0.06)', borderColor: 'rgba(0,207,255,0.18)', color: 'rgba(255,255,255,0.45)' }}>
-                {/* مستقل icon - M letter styled */}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00CFFF" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
@@ -202,6 +206,22 @@ export default function FooterClient({ collections, categories }: FooterClientPr
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* ── Freelance Certificate ─────────────────────────────── */}
+        <div className="py-5 border-t border-white/5">
+          <div className="flex flex-col items-start gap-1.5 w-fit">
+            <div className="rounded-lg overflow-hidden border border-white/10" style={{ padding: '6px', background: 'rgba(255,255,255,0.04)' }}>
+              <img
+                src="/images/IMG_7737.JPG"
+                width={90}
+                height={60}
+                alt="وثيقة العمل الحر"
+                style={{ borderRadius: '6px', display: 'block', objectFit: 'contain' }}
+              />
+            </div>
+            <span className="text-white/25 text-[10px] tracking-widest font-mono">FL-390003756</span>
           </div>
         </div>
 

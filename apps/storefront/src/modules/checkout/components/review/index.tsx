@@ -4,9 +4,12 @@ import { Heading, Text, clx } from "@medusajs/ui"
 
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
+import { useLanguage } from "@lib/context/language-context"
 
 const Review = ({ cart }: { cart: any }) => {
   const searchParams = useSearchParams()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const isOpen = searchParams.get("step") === "review"
 
@@ -30,7 +33,7 @@ const Review = ({ cart }: { cart: any }) => {
             }
           )}
         >
-          Review
+          {isAR ? "المراجعة" : "Review"}
         </Heading>
       </div>
       {isOpen && previousStepsCompleted && (
@@ -38,10 +41,9 @@ const Review = ({ cart }: { cart: any }) => {
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                By clicking the Place Order button, you confirm that you have
-                read, understand and accept our Terms of Use, Terms of Sale and
-                Returns Policy and acknowledge that you have read Medusa
-                Store&apos;s Privacy Policy.
+                {isAR
+                  ? "بالضغط على زر تأكيد الطلب، فإنك توافق على شروط الاستخدام وسياسة الخصوصية وسياسة الاسترجاع الخاصة بنا."
+                  : "By clicking the Place Order button, you confirm that you have read, understand and accept our Terms of Use, Terms of Sale and Returns Policy and acknowledge that you have read Promptr's Privacy Policy."}
               </Text>
             </div>
           </div>

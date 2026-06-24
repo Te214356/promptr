@@ -7,6 +7,7 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { signup } from "@lib/data/customer"
+import { useLanguage } from "@lib/context/language-context"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -14,37 +15,41 @@ type Props = {
 
 const Register = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(signup, null)
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   return (
     <div
       className="max-w-sm flex flex-col items-center"
       data-testid="register-page"
+      dir={isAR ? "rtl" : "ltr"}
     >
       <h1 className="text-large-semi uppercase mb-6">
-        Become a Promptr Member
+        {isAR ? "أنشئ حسابك في Promptr" : "Become a Promptr Member"}
       </h1>
       <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Promptr Member profile, and get access to an enhanced
-        shopping experience.
+        {isAR
+          ? "أنشئ ملفك الشخصي واستمتع بتجربة تسوق متميزة."
+          : "Create your Promptr Member profile, and get access to an enhanced shopping experience."}
       </p>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="First name"
+            label={isAR ? "الاسم الأول" : "First name"}
             name="first_name"
             required
             autoComplete="given-name"
             data-testid="first-name-input"
           />
           <Input
-            label="Last name"
+            label={isAR ? "اسم العائلة" : "Last name"}
             name="last_name"
             required
             autoComplete="family-name"
             data-testid="last-name-input"
           />
           <Input
-            label="Email"
+            label={isAR ? "البريد الإلكتروني" : "Email"}
             name="email"
             required
             type="email"
@@ -52,14 +57,14 @@ const Register = ({ setCurrentView }: Props) => {
             data-testid="email-input"
           />
           <Input
-            label="Phone"
+            label={isAR ? "رقم الجوال" : "Phone"}
             name="phone"
             type="tel"
             autoComplete="tel"
             data-testid="phone-input"
           />
           <Input
-            label="Password"
+            label={isAR ? "كلمة المرور" : "Password"}
             name="password"
             required
             type="password"
@@ -69,35 +74,45 @@ const Register = ({ setCurrentView }: Props) => {
         </div>
         <ErrorMessage error={message} data-testid="register-error" />
         <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Promptr&apos;s{" "}
-          <LocalizedClientLink
-            href="/content/privacy-policy"
-            className="underline"
-          >
-            Privacy Policy
-          </LocalizedClientLink>{" "}
-          and{" "}
-          <LocalizedClientLink
-            href="/content/terms-of-use"
-            className="underline"
-          >
-            Terms of Use
-          </LocalizedClientLink>
-          .
+          {isAR ? (
+            <>
+              بإنشاء حساب، أنت توافق على{" "}
+              <LocalizedClientLink href="/privacy-policy" className="underline">
+                سياسة الخصوصية
+              </LocalizedClientLink>{" "}
+              و{" "}
+              <LocalizedClientLink href="/terms" className="underline">
+                شروط الاستخدام
+              </LocalizedClientLink>
+              .
+            </>
+          ) : (
+            <>
+              By creating an account, you agree to Promptr&apos;s{" "}
+              <LocalizedClientLink href="/privacy-policy" className="underline">
+                Privacy Policy
+              </LocalizedClientLink>{" "}
+              and{" "}
+              <LocalizedClientLink href="/terms" className="underline">
+                Terms of Use
+              </LocalizedClientLink>
+              .
+            </>
+          )}
         </span>
         <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+          {isAR ? "إنشاء حساب" : "Join"}
         </SubmitButton>
       </form>
       <span className="text-center text-ui-fg-base text-small-regular mt-6">
-        Already a member?{" "}
+        {isAR ? "لديك حساب بالفعل؟" : "Already a member?"}{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
           className="underline"
         >
-          Sign in
+          {isAR ? "تسجيل الدخول" : "Sign in"}
         </button>
-        .
+        {!isAR && "."}
       </span>
     </div>
   )

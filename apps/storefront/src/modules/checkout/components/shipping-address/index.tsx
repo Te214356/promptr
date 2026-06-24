@@ -1,3 +1,5 @@
+"use client"
+
 import { HttpTypes } from "@medusajs/types"
 import { Container } from "@medusajs/ui"
 import Checkbox from "@modules/common/components/checkbox"
@@ -6,6 +8,7 @@ import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
 import AddressSelect from "../address-select"
 import CountrySelect from "../country-select"
+import { useLanguage } from "@lib/context/language-context"
 
 const ShippingAddress = ({
   customer,
@@ -18,6 +21,9 @@ const ShippingAddress = ({
   checked: boolean
   onChange: () => void
 }) => {
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
   const [formData, setFormData] = useState<Record<string, any>>({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
     "shipping_address.last_name": cart?.shipping_address?.last_name || "",
@@ -36,7 +42,6 @@ const ShippingAddress = ({
     [cart?.region]
   )
 
-  // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
     () =>
       customer?.addresses.filter(
@@ -71,7 +76,6 @@ const ShippingAddress = ({
   }
 
   useEffect(() => {
-    // Ensure cart is not null and has a shipping_address before setting form data
     if (cart && cart.shipping_address) {
       setFormAddress(cart?.shipping_address, cart?.email)
     }
@@ -79,7 +83,7 @@ const ShippingAddress = ({
     if (cart && !cart.email && customer?.email) {
       setFormAddress(undefined, customer.email)
     }
-  }, [cart]) // Add cart as a dependency
+  }, [cart])
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -97,7 +101,9 @@ const ShippingAddress = ({
       {customer && (addressesInRegion?.length || 0) > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
           <p className="text-small-regular">
-            {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
+            {isAR
+              ? `مرحباً ${customer.first_name}، هل تريد استخدام أحد عناوينك المحفوظة؟`
+              : `Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
           </p>
           <AddressSelect
             addresses={customer.addresses}
@@ -112,7 +118,7 @@ const ShippingAddress = ({
       )}
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="First name"
+          label={isAR ? "الاسم الأول" : "First name"}
           name="shipping_address.first_name"
           autoComplete="given-name"
           value={formData["shipping_address.first_name"]}
@@ -121,7 +127,7 @@ const ShippingAddress = ({
           data-testid="shipping-first-name-input"
         />
         <Input
-          label="Last name"
+          label={isAR ? "اسم العائلة" : "Last name"}
           name="shipping_address.last_name"
           autoComplete="family-name"
           value={formData["shipping_address.last_name"]}
@@ -130,7 +136,7 @@ const ShippingAddress = ({
           data-testid="shipping-last-name-input"
         />
         <Input
-          label="Address"
+          label={isAR ? "العنوان" : "Address"}
           name="shipping_address.address_1"
           autoComplete="address-line1"
           value={formData["shipping_address.address_1"]}
@@ -139,7 +145,7 @@ const ShippingAddress = ({
           data-testid="shipping-address-input"
         />
         <Input
-          label="Company"
+          label={isAR ? "الشركة" : "Company"}
           name="shipping_address.company"
           value={formData["shipping_address.company"]}
           onChange={handleChange}
@@ -147,7 +153,7 @@ const ShippingAddress = ({
           data-testid="shipping-company-input"
         />
         <Input
-          label="Postal code"
+          label={isAR ? "الرمز البريدي" : "Postal code"}
           name="shipping_address.postal_code"
           autoComplete="postal-code"
           value={formData["shipping_address.postal_code"]}
@@ -156,7 +162,7 @@ const ShippingAddress = ({
           data-testid="shipping-postal-code-input"
         />
         <Input
-          label="City"
+          label={isAR ? "المدينة" : "City"}
           name="shipping_address.city"
           autoComplete="address-level2"
           value={formData["shipping_address.city"]}
@@ -174,7 +180,7 @@ const ShippingAddress = ({
           data-testid="shipping-country-select"
         />
         <Input
-          label="State / Province"
+          label={isAR ? "المنطقة / المحافظة" : "State / Province"}
           name="shipping_address.province"
           autoComplete="address-level1"
           value={formData["shipping_address.province"]}
@@ -184,7 +190,7 @@ const ShippingAddress = ({
       </div>
       <div className="my-8">
         <Checkbox
-          label="Billing address same as shipping address"
+          label={isAR ? "عنوان الفاتورة مطابق لعنوان الشحن" : "Billing address same as shipping address"}
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
@@ -193,10 +199,10 @@ const ShippingAddress = ({
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <Input
-          label="Email"
+          label={isAR ? "البريد الإلكتروني" : "Email"}
           name="email"
           type="email"
-          title="Enter a valid email address."
+          title={isAR ? "أدخل بريداً إلكترونياً صحيحاً." : "Enter a valid email address."}
           autoComplete="email"
           value={formData.email}
           onChange={handleChange}
@@ -204,7 +210,7 @@ const ShippingAddress = ({
           data-testid="shipping-email-input"
         />
         <Input
-          label="Phone"
+          label={isAR ? "رقم الجوال" : "Phone"}
           name="shipping_address.phone"
           autoComplete="tel"
           value={formData["shipping_address.phone"]}

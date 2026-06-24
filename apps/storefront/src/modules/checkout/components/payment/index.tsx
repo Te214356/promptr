@@ -12,6 +12,7 @@ import PaymentContainer, {
 import Divider from "@modules/common/components/divider"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { useLanguage } from "@lib/context/language-context"
 
 const Payment = ({
   cart,
@@ -35,6 +36,8 @@ const Payment = ({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const isOpen = searchParams.get("step") === "payment"
 
@@ -117,7 +120,7 @@ const Payment = ({
             }
           )}
         >
-          Payment
+          {isAR ? "الدفع" : "Payment"}
           {!isOpen && paymentReady && <CheckCircleSolid />}
         </Heading>
         {!isOpen && paymentReady && (
@@ -127,7 +130,7 @@ const Payment = ({
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="edit-payment-button"
             >
-              Edit
+              {isAR ? "تعديل" : "Edit"}
             </button>
           </Text>
         )}
@@ -167,13 +170,13 @@ const Payment = ({
           {paidByGiftcard && (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                {isAR ? "طريقة الدفع" : "Payment method"}
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                {isAR ? "بطاقة هدية" : "Gift card"}
               </Text>
             </div>
           )}
@@ -195,8 +198,8 @@ const Payment = ({
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? " Enter card details"
-              : "Continue to review"}
+              ? (isAR ? "أدخل بيانات البطاقة" : "Enter card details")
+              : (isAR ? "المتابعة للمراجعة" : "Continue to review")}
           </Button>
         </div>
 
@@ -205,7 +208,7 @@ const Payment = ({
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment method
+                  {isAR ? "طريقة الدفع" : "Payment method"}
                 </Text>
                 <Text
                   className="txt-medium text-ui-fg-subtle"
@@ -217,7 +220,7 @@ const Payment = ({
               </div>
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment details
+                  {isAR ? "تفاصيل الدفع" : "Payment details"}
                 </Text>
                 <div
                   className="flex gap-2 txt-medium text-ui-fg-subtle items-center"
@@ -231,7 +234,7 @@ const Payment = ({
                   <Text>
                     {isStripeLike(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : "Another step will appear"}
+                      : (isAR ? "ستظهر خطوة إضافية" : "Another step will appear")}
                   </Text>
                 </div>
               </div>
@@ -239,13 +242,13 @@ const Payment = ({
           ) : paidByGiftcard ? (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                {isAR ? "طريقة الدفع" : "Payment method"}
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                {isAR ? "بطاقة هدية" : "Gift card"}
               </Text>
             </div>
           ) : null}

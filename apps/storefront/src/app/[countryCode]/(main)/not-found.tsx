@@ -1,20 +1,38 @@
-import { Metadata } from "next"
+"use client"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
-
-export const metadata: Metadata = {
-  title: "404",
-  description: "Something went wrong",
-}
+import Link from "next/link"
+import { useLanguage } from "@lib/context/language-context"
 
 export default function NotFound() {
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
   return (
-    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
-      <h1 className="text-2xl-semi text-ui-fg-base">Page not found</h1>
-      <p className="text-small-regular text-ui-fg-base">
-        The page you tried to access does not exist.
+    <div
+      className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]"
+      style={{ backgroundColor: "#080810" }}
+    >
+      <h1 style={{ color: "#ffffff", fontSize: "1.5rem", fontWeight: 600 }}>
+        {isAR ? "الصفحة غير موجودة" : "Page not found"}
+      </h1>
+      <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.875rem" }}>
+        {isAR
+          ? "الصفحة التي تحاول الوصول إليها غير موجودة."
+          : "The page you tried to access does not exist."}
       </p>
-      <InteractiveLink href="/">Go to frontpage</InteractiveLink>
+      <Link
+        href="/"
+        style={{
+          color: "#00CFFF",
+          fontSize: "0.875rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          textDecoration: "underline",
+        }}
+      >
+        {isAR ? "العودة للرئيسية" : "Go to frontpage"}
+      </Link>
     </div>
   )
 }

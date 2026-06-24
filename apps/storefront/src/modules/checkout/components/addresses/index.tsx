@@ -13,6 +13,7 @@ import BillingAddress from "../billing_address"
 import ErrorMessage from "../error-message"
 import ShippingAddress from "../shipping-address"
 import { SubmitButton } from "../submit-button"
+import { useLanguage } from "@lib/context/language-context"
 
 const Addresses = ({
   cart,
@@ -24,6 +25,8 @@ const Addresses = ({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const isOpen = searchParams.get("step") === "address"
 
@@ -46,7 +49,7 @@ const Addresses = ({
           level="h2"
           className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
         >
-          Shipping Address
+          {isAR ? "عنوان الشحن" : "Shipping Address"}
           {!isOpen && <CheckCircleSolid />}
         </Heading>
         {!isOpen && cart?.shipping_address && (
@@ -56,7 +59,7 @@ const Addresses = ({
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="edit-address-button"
             >
-              Edit
+              {isAR ? "تعديل" : "Edit"}
             </button>
           </Text>
         )}
@@ -77,14 +80,14 @@ const Addresses = ({
                   level="h2"
                   className="text-3xl-regular gap-x-4 pb-6 pt-8"
                 >
-                  Billing address
+                  {isAR ? "عنوان الفاتورة" : "Billing address"}
                 </Heading>
 
                 <BillingAddress cart={cart} />
               </div>
             )}
             <SubmitButton className="mt-6" data-testid="submit-address-button">
-              Continue to delivery
+              {isAR ? "المتابعة للتوصيل" : "Continue to delivery"}
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
@@ -100,7 +103,7 @@ const Addresses = ({
                     data-testid="shipping-address-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Shipping Address
+                      {isAR ? "عنوان الشحن" : "Shipping Address"}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
                       {cart.shipping_address.first_name}{" "}
@@ -124,7 +127,7 @@ const Addresses = ({
                     data-testid="shipping-contact-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Contact
+                      {isAR ? "بيانات التواصل" : "Contact"}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
                       {cart.shipping_address.phone}
@@ -139,12 +142,14 @@ const Addresses = ({
                     data-testid="billing-address-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                      Billing Address
+                      {isAR ? "عنوان الفاتورة" : "Billing Address"}
                     </Text>
 
                     {sameAsBilling ? (
                       <Text className="txt-medium text-ui-fg-subtle">
-                        Billing and delivery address are the same.
+                        {isAR
+                          ? "عنوان الشحن والفاتورة متطابقان."
+                          : "Billing and delivery address are the same."}
                       </Text>
                     ) : (
                       <>

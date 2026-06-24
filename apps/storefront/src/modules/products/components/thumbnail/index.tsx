@@ -61,8 +61,13 @@ const ImageOrPlaceholder = ({
       fill
     />
   ) : (
-    <div className="w-full h-full absolute inset-0 flex items-center justify-center">
-      <PlaceholderImage size={size === "small" ? 16 : 24} />
+    <div className="w-full h-full absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#6C2BFF]/30 to-[#080810] gap-3">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="20" fill="#6C2BFF" fillOpacity="0.25" />
+        <path d="M12 28V18l8 6 8-6v10" stroke="#6C2BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="20" cy="14" r="4" stroke="#00CFFF" strokeWidth="1.5" />
+      </svg>
+      <span className="text-white/50 text-xs font-semibold tracking-widest uppercase">Promptr</span>
     </div>
   )
 }

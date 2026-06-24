@@ -10,6 +10,7 @@ import { getProductPrice } from "@lib/util/get-product-price"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isSimpleProduct } from "@lib/util/product"
+import { useLanguage } from "@lib/context/language-context"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
@@ -35,6 +36,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   optionsDisabled,
 }) => {
   const { state, open, close } = useToggleState()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const price = getProductPrice({
     product: product,
@@ -111,7 +114,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <span>
                     {variant
                       ? Object.values(options).join(" / ")
-                      : "Select Options"}
+                      : (isAR ? "اختر الخيارات" : "Select Options")}
                   </span>
                   <ChevronDown />
                 </div>
@@ -124,10 +127,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 data-testid="mobile-cart-button"
               >
                 {!variant
-                  ? "Select variant"
+                  ? (isAR ? "اختر النوع" : "Select variant")
                   : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
+                  ? (isAR ? "غير متوفر" : "Out of stock")
+                  : (isAR ? "أضف للسلة" : "Add to cart")}
               </Button>
             </div>
           </div>

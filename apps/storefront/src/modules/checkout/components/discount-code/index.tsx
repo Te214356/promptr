@@ -9,6 +9,7 @@ import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
+import { useLanguage } from "@lib/context/language-context"
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
@@ -19,6 +20,8 @@ type DiscountCodeProps = {
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState("")
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const { promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
@@ -66,12 +69,8 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
               className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="add-discount-button"
             >
-              Add Promotion Code(s)
+              {isAR ? "إضافة كود خصم" : "Add Promotion Code(s)"}
             </button>
-
-            {/* <Tooltip content="You can add multiple promotion codes">
-              <InformationCircleSolid color="var(--fg-muted)" />
-            </Tooltip> */}
           </Label>
 
           {isOpen && (
@@ -89,7 +88,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                   variant="secondary"
                   data-testid="discount-apply-button"
                 >
-                  Apply
+                  {isAR ? "تطبيق" : "Apply"}
                 </SubmitButton>
               </div>
 
@@ -105,7 +104,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
           <div className="w-full flex items-center">
             <div className="flex flex-col w-full">
               <Heading className="txt-medium mb-2">
-                Promotion(s) applied:
+                {isAR ? "الكودات المطبقة:" : "Promotion(s) applied:"}
               </Heading>
 
               {promotions.map((promotion) => {
@@ -140,11 +139,6 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                             </>
                           )}
                         )
-                        {/* {promotion.is_automatic && (
-                          <Tooltip content="This promotion is automatically applied">
-                            <InformationCircleSolid className="inline text-zinc-400" />
-                          </Tooltip>
-                        )} */}
                       </span>
                     </Text>
                     {!promotion.is_automatic && (
@@ -161,7 +155,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                       >
                         <Trash size={14} />
                         <span className="sr-only">
-                          Remove discount code from order
+                          {isAR ? "إزالة كود الخصم" : "Remove discount code from order"}
                         </span>
                       </button>
                     )}

@@ -6,6 +6,9 @@ import CollectionCards from "@modules/home/components/collection-cards"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
+// Collections change rarely but must be fresh — disable fetch cache for this page
+export const fetchCache = "force-no-store"
+
 export const metadata: Metadata = {
   title: "Promptr — متجرك الرقمي المتكامل",
   description:
@@ -34,7 +37,7 @@ export default async function Home(props: {
       {collections && collections.length > 0 && (
         <div className="py-8 border-t border-white/5">
           <ul className="flex flex-col gap-x-6">
-            <FeaturedProducts collections={collections} region={region} />
+            <FeaturedProducts collections={collections} region={region} countryCode={countryCode} />
           </ul>
         </div>
       )}

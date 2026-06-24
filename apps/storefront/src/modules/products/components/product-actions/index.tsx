@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@lib/context/language-context"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -35,6 +36,8 @@ export default function ProductActions({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
@@ -177,10 +180,10 @@ export default function ProductActions({
           data-testid="add-product-button"
         >
           {!selectedVariant && !options
-            ? "Select variant"
+            ? (isAR ? "اختر النوع" : "Select variant")
             : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+            ? (isAR ? "غير متوفر" : "Out of stock")
+            : (isAR ? "أضف للسلة" : "Add to cart")}
         </Button>
         <MobileActions
           product={product}

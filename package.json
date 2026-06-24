@@ -1,6 +1,5 @@
 {
   "name": "promptr",
-  "private": false,
   "packageManager": "npm@11.13.0",
   "engines": {
     "node": ">=22"

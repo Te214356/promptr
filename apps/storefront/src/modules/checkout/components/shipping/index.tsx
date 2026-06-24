@@ -12,6 +12,7 @@ import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useLanguage } from "@lib/context/language-context"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -67,15 +68,19 @@ const Shipping: React.FC<ShippingProps> = ({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
 
   const isOpen = searchParams.get("step") === "delivery"
 
   const _shippingMethods = availableShippingMethods?.filter(
-    (sm) => sm.service_zone?.fulfillment_set?.type !== "pickup"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (sm) => (sm as any).service_zone?.fulfillment_set?.type !== "pickup"
   )
 
   const _pickupMethods = availableShippingMethods?.filter(
-    (sm) => sm.service_zone?.fulfillment_set?.type === "pickup"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (sm) => (sm as any).service_zone?.fulfillment_set?.type === "pickup"
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
@@ -161,7 +166,7 @@ const Shipping: React.FC<ShippingProps> = ({
             }
           )}
         >
-          Delivery
+          {isAR ? "التوصيل" : "Delivery"}
           {!isOpen && (cart.shipping_methods?.length ?? 0) > 0 && (
             <CheckCircleSolid />
           )}
@@ -176,7 +181,7 @@ const Shipping: React.FC<ShippingProps> = ({
                 className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
                 data-testid="edit-delivery-button"
               >
-                Edit
+                {isAR ? "تعديل" : "Edit"}
               </button>
             </Text>
           )}
@@ -186,10 +191,10 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="grid">
             <div className="flex flex-col">
               <span className="font-medium txt-medium text-ui-fg-base">
-                Shipping method
+                {isAR ? "طريقة الشحن" : "Shipping method"}
               </span>
               <span className="mb-4 text-ui-fg-muted txt-medium">
-                How would you like you order delivered
+                {isAR ? "كيف تريد استلام طلبك؟" : "How would you like your order delivered"}
               </span>
             </div>
             <div data-testid="delivery-options-container">
@@ -223,7 +228,7 @@ const Shipping: React.FC<ShippingProps> = ({
                           checked={showPickupOptions === PICKUP_OPTION_ON}
                         />
                         <span className="text-base-regular">
-                          Pick up your order
+                          {isAR ? "استلام من الفرع" : "Pick up your order"}
                         </span>
                       </div>
                       <span className="justify-self-end text-ui-fg-base">
@@ -299,10 +304,10 @@ const Shipping: React.FC<ShippingProps> = ({
             <div className="grid">
               <div className="flex flex-col">
                 <span className="font-medium txt-medium text-ui-fg-base">
-                  Store
+                  {isAR ? "الفرع" : "Store"}
                 </span>
                 <span className="mb-4 text-ui-fg-muted txt-medium">
-                  Choose a store near you
+                  {isAR ? "اختر فرعاً قريباً منك" : "Choose a store near you"}
                 </span>
               </div>
               <div data-testid="delivery-options-container">
@@ -342,7 +347,8 @@ const Shipping: React.FC<ShippingProps> = ({
                               </span>
                               <span className="text-base-regular text-ui-fg-muted">
                                 {formatAddress(
-                                  option.service_zone?.fulfillment_set?.location
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                  (option as any).service_zone?.fulfillment_set?.location
                                     ?.address
                                 )}
                               </span>
@@ -376,7 +382,7 @@ const Shipping: React.FC<ShippingProps> = ({
               disabled={!cart.shipping_methods?.[0]}
               data-testid="submit-delivery-option-button"
             >
-              Continue to payment
+              {isAR ? "المتابعة للدفع" : "Continue to payment"}
             </Button>
           </div>
         </>
@@ -386,7 +392,7 @@ const Shipping: React.FC<ShippingProps> = ({
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Method
+                  {isAR ? "الطريقة" : "Method"}
                 </Text>
                 <Text className="txt-medium text-ui-fg-subtle">
                   {cart.shipping_methods!.at(-1)!.name}{" "}

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@medusajs/ui"
 import { useMemo } from "react"
 
@@ -5,12 +7,16 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
+import { useLanguage } from "@lib/context/language-context"
 
 type OrderCardProps = {
   order: HttpTypes.StoreOrder
 }
 
 const OrderCard = ({ order }: OrderCardProps) => {
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
   const numberOfLines = useMemo(() => {
     return (
       order.items?.reduce((acc, item) => {
@@ -39,7 +45,9 @@ const OrderCard = ({ order }: OrderCardProps) => {
           })}
         </span>
         <span className="pl-2">{`${numberOfLines} ${
-          numberOfLines > 1 ? "items" : "item"
+          isAR
+            ? numberOfLines === 1 ? "منتج" : "منتجات"
+            : numberOfLines > 1 ? "items" : "item"
         }`}</span>
       </div>
       <div className="grid grid-cols-2 small:grid-cols-4 gap-4 my-4">
@@ -69,14 +77,16 @@ const OrderCard = ({ order }: OrderCardProps) => {
             <span className="text-small-regular text-ui-fg-base">
               + {numberOfLines - 4}
             </span>
-            <span className="text-small-regular text-ui-fg-base">more</span>
+            <span className="text-small-regular text-ui-fg-base">
+              {isAR ? "المزيد" : "more"}
+            </span>
           </div>
         )}
       </div>
       <div className="flex justify-end">
         <LocalizedClientLink href={`/account/orders/details/${order.id}`}>
           <Button data-testid="order-details-link" variant="secondary">
-            See details
+            {isAR ? "عرض التفاصيل" : "See details"}
           </Button>
         </LocalizedClientLink>
       </div>
