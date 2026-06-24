@@ -80,7 +80,7 @@ const StripePaymentButton = ({
     (s) => s.status === "pending"
   )
 
-  const disabled = !stripe || !elements ? true : false
+  const disabled = !stripe || !elements
 
   const handlePayment = async () => {
     setSubmitting(true)
@@ -90,8 +90,15 @@ const StripePaymentButton = ({
       return
     }
 
+    const clientSecret = session?.data?.client_secret
+    if (!clientSecret) {
+      setErrorMessage(isAR ? "خطأ في جلسة الدفع" : "Payment session error")
+      setSubmitting(false)
+      return
+    }
+
     await stripe
-      .confirmCardPayment(session?.data.client_secret as string, {
+      .confirmCardPayment(clientSecret as string, {
         payment_method: {
           card: card,
           billing_details: {

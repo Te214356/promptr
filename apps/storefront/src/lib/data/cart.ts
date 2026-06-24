@@ -339,7 +339,7 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     if (!formData) {
       throw new Error("No form data found when setting addresses")
     }
-    const cartId = getCartId()
+    const cartId = await getCartId()
     if (!cartId) {
       throw new Error("No existing cart found when setting addresses")
     }
@@ -381,9 +381,11 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     return e.message
   }
 
-  redirect(
-    `/${formData.get("shipping_address.country_code")}/checkout?step=delivery`
-  )
+  const rawCountryCode = formData.get("shipping_address.country_code")
+  if (typeof rawCountryCode !== "string" || !/^[a-z]{2}$/.test(rawCountryCode)) {
+    return "Invalid country code"
+  }
+  redirect(`/${rawCountryCode}/checkout?step=delivery`)
 }
 
 /**
@@ -418,8 +420,8 @@ export async function placeOrder(cartId?: string) {
     const orderCacheTag = await getCacheTag("orders")
     revalidateTag(orderCacheTag)
 
-    removeCartId()
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
+    await removeCartId()
+    redirect(`/${countryCode ?? "sa"}/order/${cartRes.order.id}/confirmed`)
   }
 
   return cartRes.cart

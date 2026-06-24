@@ -53,7 +53,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
               />
             }
           >
-            <ProductActionsWrapper id={product.id} region={region} />
+            <ProductActionsWrapper product={product} region={region} />
           </Suspense>
         </div>
       </div>

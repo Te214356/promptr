@@ -1,3 +1,4 @@
+import { retrieveCustomer } from "@lib/data/customer"
 import { retrieveOrder } from "@lib/data/orders"
 import OrderDetailsTemplate from "@modules/order/templates/order-details-template"
 import { Metadata } from "next"
@@ -23,11 +24,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function OrderDetailPage(props: Props) {
   const params = await props.params
-  const order = await retrieveOrder(params.id).catch(() => null)
 
-  if (!order) {
-    notFound()
-  }
+  const [order, customer] = await Promise.all([
+    retrieveOrder(params.id).catch(() => null),
+    retrieveCustomer(),
+  ])
+
+  if (!order) notFound()
+  if (!customer || (order as any).customer_id !== customer.id) notFound()
 
   return <OrderDetailsTemplate order={order} />
 }

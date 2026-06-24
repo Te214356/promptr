@@ -3,8 +3,10 @@ import { listCollections } from "@lib/data/collections"
 import FooterClient from "./footer-client"
 
 export default async function Footer() {
-  const { collections } = await listCollections({ fields: "*products" })
-  const productCategories = await listCategories()
+  const [{ collections }, productCategories] = await Promise.all([
+    listCollections({ fields: "id,title,handle" }),
+    listCategories(),
+  ])
 
   return (
     <FooterClient
