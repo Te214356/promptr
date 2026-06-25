@@ -12,8 +12,6 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-  output: 'standalone',
-  generateBuildId: async () => 'build',
   reactStrictMode: true,
   logging: {
     fetches: {
