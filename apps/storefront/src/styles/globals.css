@@ -16,6 +16,9 @@ body {
   color: #ffffff;
 }
 
+input { color: black !important; }
+select { color: black !important; }
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
