@@ -21,7 +21,7 @@ const MadaBadge = () => (
 )
 
 const VisaBadge = () => (
-  <div className="flex items-center px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+  <div className="flex items-center px-3 py-1.5 rounded-lg bg-white border border-white/20">
     <svg width="38" height="13" viewBox="0 0 76 26" fill="none">
       <text x="0" y="22" fill="#1A1F71" fontSize="26" fontWeight="900" fontFamily="Arial, sans-serif" letterSpacing="-1">VISA</text>
     </svg>
