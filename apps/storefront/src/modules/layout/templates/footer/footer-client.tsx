@@ -11,7 +11,7 @@ const WA_DISPLAY = "+966 55 185 9849"
 const CONTENT = {
   ar: {
     tagline: 'متجرك الرقمي المتكامل',
-    description: 'Promptr متجر رقمي سعودي متخصص في المنتجات الرقمية وأدوات الذكاء الاصطناعي. نقدم قوالب وأدوات ومحتوى رقمي مختار للسوق العربي.',
+    description: 'متجر رقمي سعودي متخصص في المنتجات الرقمية وأدوات الذكاء الاصطناعي. نقدم قوالب وأدوات ومحتوى رقمي مختار للسوق العربي.',
     saudiBadge: 'متجر سعودي موثوق 🇸🇦',
     madeBadge: 'صنع في السعودية 🇸🇦❤️',
     freelanceBadge: 'شهادة العمل الحر · مستقل',
@@ -35,7 +35,7 @@ const CONTENT = {
   },
   en: {
     tagline: 'Your digital marketplace',
-    description: 'Promptr is a Saudi digital store specializing in digital products and AI tools. We offer curated templates, tools, and digital content for the Arab market.',
+    description: 'A Saudi digital store specializing in digital products and AI tools. We offer curated templates, tools, and digital content for the Arab market.',
     saudiBadge: 'Trusted Saudi Store 🇸🇦',
     madeBadge: 'Made in Saudi Arabia 🇸🇦❤️',
     freelanceBadge: 'Mostaql Verified Freelancer',
@@ -91,7 +91,7 @@ export default function FooterClient({ collections, categories }: FooterClientPr
             <p className="text-white/40 text-xs leading-relaxed">{t.tagline}</p>
 
             {/* Store description */}
-            <p className="text-white/60 text-[13px] leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
+            <p className="text-white/60 text-sm leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
               {t.description}
             </p>
 
@@ -103,11 +103,6 @@ export default function FooterClient({ collections, categories }: FooterClientPr
                 {t.saudiBadge}
               </span>
 
-              {/* Made in Saudi badge */}
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
-                style={{ background: 'rgba(108,43,255,0.07)', borderColor: 'rgba(108,43,255,0.22)', color: 'rgba(255,255,255,0.5)' }}>
-                {t.madeBadge}
-              </span>
 
               {/* Freelance badge (مستقل) */}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
@@ -261,6 +256,14 @@ export default function FooterClient({ collections, categories }: FooterClientPr
             <span className="text-white/15 text-xs">{t.bottomRight}</span>
             <span className="text-white/10 text-xs">promptrsa.com</span>
           </div>
+        </div>
+
+        {/* ── Made in Saudi ────────────────────────────────────────── */}
+        <div className="flex justify-center pt-5">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium"
+            style={{ background: 'rgba(108,43,255,0.07)', borderColor: 'rgba(108,43,255,0.22)', color: 'rgba(255,255,255,0.5)' }}>
+            {t.madeBadge}
+          </span>
         </div>
       </div>
     </footer>
