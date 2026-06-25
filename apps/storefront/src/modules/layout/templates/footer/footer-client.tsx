@@ -103,15 +103,6 @@ export default function FooterClient({ collections, categories }: FooterClientPr
                 {t.saudiBadge}
               </span>
 
-
-              {/* Freelance badge (مستقل) */}
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
-                style={{ background: 'rgba(0,207,255,0.06)', borderColor: 'rgba(0,207,255,0.18)', color: 'rgba(255,255,255,0.45)' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00CFFF" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-                {t.freelanceBadge}
-              </span>
             </div>
 
             {/* Location */}
