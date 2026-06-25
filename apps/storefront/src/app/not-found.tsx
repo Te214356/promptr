@@ -1,11 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useLanguage } from "@lib/context/language-context"
+import { useState, useEffect } from "react"
 
 export default function NotFound() {
-  const { lang } = useLanguage()
-  const isAR = lang === "ar"
+  const [isAR, setIsAR] = useState(true)
+
+  useEffect(() => {
+    setIsAR(document.documentElement.lang === "ar")
+  }, [])
 
   return (
     <div

@@ -1,32 +1,40 @@
 "use client"
 
-import { ArrowUpRightMini } from "@medusajs/icons"
-import { Text } from "@medusajs/ui"
 import Link from "next/link"
-import { useLanguage } from "@lib/context/language-context"
+import { useState, useEffect } from "react"
 
 export default function NotFound() {
-  const { lang } = useLanguage()
-  const isAR = lang === "ar"
+  const [isAR, setIsAR] = useState(true)
+
+  useEffect(() => {
+    setIsAR(document.documentElement.lang === "ar")
+  }, [])
 
   return (
-    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
-      <h1 className="text-2xl-semi text-ui-fg-base">
+    <div
+      className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]"
+      style={{ backgroundColor: "#080810" }}
+    >
+      <h1 style={{ color: "#ffffff", fontSize: "1.5rem", fontWeight: 600 }}>
         {isAR ? "الصفحة غير موجودة" : "Page not found"}
       </h1>
-      <p className="text-small-regular text-ui-fg-base">
+      <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.875rem" }}>
         {isAR
           ? "الصفحة التي تحاول الوصول إليها غير موجودة."
           : "The page you tried to access does not exist."}
       </p>
-      <Link className="flex gap-x-1 items-center group" href="/">
-        <Text className="text-ui-fg-interactive">
-          {isAR ? "العودة للرئيسية" : "Go to frontpage"}
-        </Text>
-        <ArrowUpRightMini
-          className="group-hover:rotate-45 ease-in-out duration-150"
-          color="var(--fg-interactive)"
-        />
+      <Link
+        href="/"
+        style={{
+          color: "#00CFFF",
+          fontSize: "0.875rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          textDecoration: "underline",
+        }}
+      >
+        {isAR ? "العودة للرئيسية" : "Go to frontpage"}
       </Link>
     </div>
   )
