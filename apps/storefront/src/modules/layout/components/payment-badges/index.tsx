@@ -41,7 +41,7 @@ export default function PaymentBadges({ compact = false }: { compact?: boolean }
   const { lang } = useLanguage()
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${compact ? '' : 'gap-2.5'}`}>
+    <div dir="ltr" className={`flex flex-wrap items-center gap-2 ${compact ? '' : 'gap-2.5'}`}>
       {!compact && (
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00CFFF" strokeWidth="2">
