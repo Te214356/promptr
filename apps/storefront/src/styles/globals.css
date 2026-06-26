@@ -16,8 +16,9 @@ body {
   color: #ffffff;
 }
 
-input { color: black !important; }
-select { color: black !important; }
+input, select, textarea {
+  color: #000000 !important;
+}
 
 @layer utilities {
   /* Chrome, Safari and Opera */
