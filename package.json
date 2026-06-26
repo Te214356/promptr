@@ -22,14 +22,18 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5",
-    "turbo": "^2.0.14"
+    "turbo": "^2.0.14",
+    "react": "19.0.5",
+    "react-dom": "19.0.5"
   },
   "workspaces": [
     "apps/**",
     "!apps/backend/.medusa/**"
   ],
   "overrides": {
-    "ajv": "^8.0.0"
+    "ajv": "^8.0.0",
+    "react": "19.0.5",
+    "react-dom": "19.0.5"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.0"
