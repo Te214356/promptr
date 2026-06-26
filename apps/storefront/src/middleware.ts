@@ -112,7 +112,24 @@ export async function middleware(request: NextRequest) {
 
   let cacheId = cacheIdCookie?.value || crypto.randomUUID()
 
-  const regionMap = await getRegionMap(cacheId)
+  let regionMap: Map<string, HttpTypes.StoreRegion | number>
+
+  try {
+    regionMap = await getRegionMap(cacheId)
+  } catch {
+    // Backend temporarily unavailable — redirect to default region instead of 500
+    const fallback = DEFAULT_REGION
+    const redirectPath =
+      request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
+    const queryString = request.nextUrl.search || ""
+    if (!request.nextUrl.pathname.split("/")[1]?.includes(fallback)) {
+      return NextResponse.redirect(
+        `${request.nextUrl.origin}/${fallback}${redirectPath}${queryString}`,
+        307
+      )
+    }
+    return NextResponse.next()
+  }
 
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
