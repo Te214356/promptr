@@ -3,6 +3,7 @@ import { useLanguage } from '@lib/context/language-context'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import PaymentBadges from '@modules/layout/components/payment-badges'
 import { HttpTypes } from '@medusajs/types'
+import PromptrLogo from '@modules/common/components/promptr-logo'
 
 const WA_NUMBER = "966551859849"
 const WA_URL = `https://wa.me/${WA_NUMBER}`
@@ -81,11 +82,8 @@ export default function FooterClient({ collections, categories }: FooterClientPr
 
           {/* Brand column */}
           <div className="flex flex-col gap-y-3 min-w-[180px] max-w-[260px]">
-            <LocalizedClientLink
-              href="/"
-              className="font-bold text-2xl tracking-widest text-white hover:text-[#00CFFF] transition-colors duration-200 uppercase"
-            >
-              Promptr
+            <LocalizedClientLink href="/" className="hover:opacity-80 transition-opacity duration-200 w-fit">
+              <PromptrLogo size="md" showTagline={true} />
             </LocalizedClientLink>
 
             <p className="text-white/40 text-xs leading-relaxed">{t.tagline}</p>

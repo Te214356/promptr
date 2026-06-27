@@ -9,6 +9,7 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import LanguageToggle from "@modules/layout/components/language-toggle"
 import NavAccountLink from "@modules/layout/components/nav-account-link"
+import PromptrLogo from "@modules/common/components/promptr-logo"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
@@ -30,10 +31,10 @@ export default async function Nav() {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="font-bold text-xl tracking-widest text-white hover:text-[#00CFFF] transition-colors duration-200 uppercase"
+              className="hover:opacity-80 transition-opacity duration-200"
               data-testid="nav-store-link"
             >
-              Promptr
+              <PromptrLogo size="sm" showTagline={false} />
             </LocalizedClientLink>
           </div>
 
