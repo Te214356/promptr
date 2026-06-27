@@ -6,14 +6,14 @@ const CONTENT = {
   ar: {
     headline: "متجرك الرقمي المتكامل",
     subheadline: "منصة متكاملة للمنتجات الرقمية في السعودية",
-    body: "منتجات رقمية مختارة للعالم العربي الحديث — بطاقات شحن، قوالب، كتب، وأدوات AI",
+    body: "منتجات رقمية مختارة للعالم العربي الحديث — قوالب، كتب، وأدوات AI",
     cta: "استكشف المتجر",
     ctaSecondary: "جميع المنتجات",
   },
   en: {
     headline: "Your Complete Digital Marketplace",
     subheadline: "The premium platform for digital products in Saudi Arabia",
-    body: "Curated digital products for the modern Arab world — recharge cards, templates, books, and AI tools",
+    body: "Curated digital products for the modern Arab world — templates, books, and AI tools",
     cta: "Explore Store",
     ctaSecondary: "All Products",
   },

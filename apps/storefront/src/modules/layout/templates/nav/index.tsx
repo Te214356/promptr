@@ -34,7 +34,7 @@ export default async function Nav() {
               className="hover:opacity-80 transition-opacity duration-200"
               data-testid="nav-store-link"
             >
-              <PromptrLogo size="sm" showTagline={false} />
+              <PromptrLogo size="md" showTagline={false} />
             </LocalizedClientLink>
           </div>
 
