@@ -45,6 +45,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Generated / local files
+yarn.lock
+graphify-out/
+test-moyasar.mjs
+
 # macOS system files
 .DS_Store
 .DS_Store?
