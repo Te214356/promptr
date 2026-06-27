@@ -1,9 +1,9 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "buildCommand": "npm ci && npm run build"
+    "buildCommand": "npm ci && npm run build --filter=@dtc/storefront"
   },
   "deploy": {
-    "startCommand": "npm run start"
+    "startCommand": "cd apps/storefront && next start -p 8000"
   }
 }

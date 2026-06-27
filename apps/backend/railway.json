@@ -4,6 +4,6 @@
     "buildCommand": "npm ci --workspace=@dtc/backend && npm run build --workspace=@dtc/backend"
   },
   "deploy": {
-    "startCommand": "cd apps/backend/.medusa/server && medusa db:migrate && medusa start"
+    "startCommand": "cd apps/backend/.medusa/server && medusa start"
   }
 }
