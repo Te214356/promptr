@@ -48,6 +48,14 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "dtcbackend-production-32a2.up.railway.app",
+      },
+      {
+        protocol: "https",
+        hostname: "*.up.railway.app",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
       {
