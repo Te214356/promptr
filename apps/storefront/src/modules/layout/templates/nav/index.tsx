@@ -9,7 +9,6 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import LanguageToggle from "@modules/layout/components/language-toggle"
 import NavAccountLink from "@modules/layout/components/nav-account-link"
-import PromptrLogo from "@modules/common/components/promptr-logo"
 
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
@@ -34,7 +33,33 @@ export default async function Nav() {
               className="hover:opacity-80 transition-opacity duration-200"
               data-testid="nav-store-link"
             >
-              <PromptrLogo size="lg" showTagline={false} />
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 36 36"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient id="nav-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#6C2BFF" />
+                    <stop offset="100%" stopColor="#00CFFF" />
+                  </linearGradient>
+                </defs>
+                <rect width="36" height="36" rx="9" fill="url(#nav-grad)" />
+                <text
+                  x="9"
+                  y="26"
+                  fill="white"
+                  fontSize="22"
+                  fontWeight="800"
+                  fontFamily="'Arial Black', Arial, sans-serif"
+                  letterSpacing="-1"
+                >
+                  P
+                </text>
+                <circle cx="27" cy="11" r="5" fill="#00CFFF" />
+              </svg>
             </LocalizedClientLink>
           </div>
 
