@@ -1,8 +1,6 @@
-import { Container, clx } from "@medusajs/ui"
+import { clx } from "@medusajs/ui"
 import Image from "next/image"
 import React from "react"
-
-import PlaceholderImage from "@modules/common/icons/placeholder-image"
 
 type ThumbnailProps = {
   thumbnail?: string | null
@@ -25,9 +23,9 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   const initialImage = thumbnail || images?.[0]?.url
 
   return (
-    <Container
+    <div
       className={clx(
-        "relative w-full overflow-hidden p-0 bg-[#0d0d1f] shadow-elevation-card-rest rounded-large group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
+        "relative w-full overflow-hidden bg-[#0d0d1f] rounded-large shadow-elevation-card-rest group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
         className,
         {
           "aspect-[11/14]": isFeatured,
@@ -42,7 +40,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
       data-testid={dataTestid}
     >
       <ImageOrPlaceholder image={initialImage} size={size} />
-    </Container>
+    </div>
   )
 }
 

@@ -34,8 +34,8 @@ export default async function Nav() {
               data-testid="nav-store-link"
             >
               <svg
-                width="38"
-                height="38"
+                width="44"
+                height="44"
                 viewBox="0 0 36 36"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -63,10 +63,10 @@ export default async function Nav() {
               </svg>
               <span
                 style={{
-                  fontSize: 18,
+                  fontSize: 21,
                   fontWeight: 800,
-                  color: "#F5F5F5",
-                  letterSpacing: "0.18em",
+                  color: "#FFFFFF",
+                  letterSpacing: "0.2em",
                   fontFamily: "'Arial Black', Arial, sans-serif",
                   textTransform: "uppercase",
                   lineHeight: 1,
