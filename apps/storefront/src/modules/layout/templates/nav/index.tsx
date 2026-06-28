@@ -30,15 +30,16 @@ export default async function Nav() {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="hover:opacity-80 transition-opacity duration-200"
+              className="hover:opacity-80 transition-opacity duration-200 flex items-center gap-2.5"
               data-testid="nav-store-link"
             >
               <svg
-                width="48"
-                height="48"
+                width="38"
+                height="38"
                 viewBox="0 0 36 36"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                style={{ flexShrink: 0 }}
               >
                 <defs>
                   <linearGradient id="nav-grad" x1="0" y1="0" x2="1" y2="1">
@@ -60,6 +61,19 @@ export default async function Nav() {
                 </text>
                 <circle cx="27" cy="11" r="5" fill="#00CFFF" />
               </svg>
+              <span
+                style={{
+                  fontSize: 18,
+                  fontWeight: 800,
+                  color: "#F5F5F5",
+                  letterSpacing: "0.18em",
+                  fontFamily: "'Arial Black', Arial, sans-serif",
+                  textTransform: "uppercase",
+                  lineHeight: 1,
+                }}
+              >
+                PROMPTR
+              </span>
             </LocalizedClientLink>
           </div>
 

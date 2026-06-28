@@ -27,7 +27,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <Container
       className={clx(
-        "relative w-full overflow-hidden p-4 bg-ui-bg-subtle shadow-elevation-card-rest rounded-large group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
+        "relative w-full overflow-hidden p-0 bg-[#0d0d1f] shadow-elevation-card-rest rounded-large group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
         className,
         {
           "aspect-[11/14]": isFeatured,
@@ -61,14 +61,7 @@ const ImageOrPlaceholder = ({
       fill
     />
   ) : (
-    <div className="w-full h-full absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#6C2BFF]/30 to-[#080810] gap-3">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="#6C2BFF" fillOpacity="0.25" />
-        <path d="M12 28V18l8 6 8-6v10" stroke="#6C2BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="20" cy="14" r="4" stroke="#00CFFF" strokeWidth="1.5" />
-      </svg>
-      <span className="text-white/50 text-xs font-semibold tracking-widest uppercase">Promptr</span>
-    </div>
+    <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-[#6C2BFF]/20 to-[#080810]" />
   )
 }
 
