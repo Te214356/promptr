@@ -8,7 +8,7 @@ const CATEGORIES = [
     titleAr: "أدوات الذكاء الاصطناعي",
     titleEn: "AI Tools & Prompts",
     accent: "#6C2BFF",
-    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782612975717-high-level-description-a-dramatic-single_H43AKPJIXnyLAEbre_u_ZQ_77ejAWh2STWVSaBjGnXPPw_cover_promptr.jpg",
+    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782630095815-high-level-description-a-cinematic-3d-re_NiMhLzr4VQ6f5VcQM4VEVg_UYn_yjMkT6mXXt9hvh9_Pg_cover.jpg",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z" strokeLinecap="round" strokeLinejoin="round" />
@@ -21,7 +21,7 @@ const CATEGORIES = [
     titleAr: "قوالب وتصاميم وواجهات",
     titleEn: "Templates & Design",
     accent: "#00CFFF",
-    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782612978588-high-level-description-a-3d-render-of-fi_ort_qpNLVY-ce0yZs7_fpg_chwLvAv_SlGkX20mo3fwPA_promptr.jpg",
+    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782630102843-high-level-description-a-moody-3d-render_GCN03TnGV4mKWLQaKCOC8w_fALYfn2tSqid8VPHswacEw.jpg",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="3" y="3" width="8" height="8" rx="1" strokeLinecap="round" strokeLinejoin="round" />
@@ -36,7 +36,7 @@ const CATEGORIES = [
     titleAr: "كتب رقمية",
     titleEn: "Digital Books",
     accent: "#6C2BFF",
-    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782612967779-high-level-description-a-3d-render-of-an_e1sQFgRkUsqhR37egDwjEg_LwjPJcucRH2RlhOqpPByUQ_promptr.jpg",
+    image: "https://dtcbackend-production-32a2.up.railway.app/static/1782630110279-high-level-description-a-cinematic-3d-ma_AUupCT7xX6eBuFQV82dlxw_2-cfsLJ3SYKJSXhsUKVgZQ.jpg",
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" strokeLinecap="round" strokeLinejoin="round" />
