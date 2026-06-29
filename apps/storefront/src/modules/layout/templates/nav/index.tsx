@@ -30,47 +30,21 @@ export default async function Nav() {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="hover:opacity-80 transition-opacity duration-200 flex items-center gap-2.5"
+              className="hover:opacity-80 transition-opacity duration-200"
               data-testid="nav-store-link"
             >
-              <svg
-                width="44"
-                height="44"
-                viewBox="0 0 36 36"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{ flexShrink: 0 }}
-              >
-                <defs>
-                  <linearGradient id="nav-grad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#6C2BFF" />
-                    <stop offset="100%" stopColor="#00CFFF" />
-                  </linearGradient>
-                </defs>
-                <rect width="36" height="36" rx="9" fill="url(#nav-grad)" />
-                <text
-                  x="9"
-                  y="26"
-                  fill="white"
-                  fontSize="22"
-                  fontWeight="800"
-                  fontFamily="'Arial Black', Arial, sans-serif"
-                  letterSpacing="-1"
-                >
-                  P
-                </text>
-                <circle cx="27" cy="11" r="5" fill="#00CFFF" />
-              </svg>
               <span
                 style={{
-                  fontSize: 21,
-                  fontWeight: 800,
-                  color: "#FFFFFF",
-                  letterSpacing: "0.2em",
-                  marginRight: "-0.2em",
-                  fontFamily: "'Arial Black', Arial, sans-serif",
+                  fontSize: 22,
+                  fontWeight: 900,
+                  letterSpacing: "0.25em",
                   textTransform: "uppercase",
                   lineHeight: 1,
+                  fontFamily: "'Arial Black', Arial, sans-serif",
+                  background: "linear-gradient(135deg, #6C2BFF 0%, #00CFFF 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                 }}
               >
                 PROMPTR
