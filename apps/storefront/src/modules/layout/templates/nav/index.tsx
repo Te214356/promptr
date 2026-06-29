@@ -67,6 +67,7 @@ export default async function Nav() {
                   fontWeight: 800,
                   color: "#FFFFFF",
                   letterSpacing: "0.2em",
+                  marginRight: "-0.2em",
                   fontFamily: "'Arial Black', Arial, sans-serif",
                   textTransform: "uppercase",
                   lineHeight: 1,
