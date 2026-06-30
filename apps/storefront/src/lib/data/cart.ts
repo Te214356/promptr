@@ -385,7 +385,8 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
   if (typeof rawCountryCode !== "string" || !/^[a-z]{2}$/.test(rawCountryCode)) {
     return "Invalid country code"
   }
-  redirect(`/${rawCountryCode}/checkout?step=delivery`)
+  const isDigital = formData.get("is_digital") === "1"
+  redirect(`/${rawCountryCode}/checkout?step=${isDigital ? "payment" : "delivery"}`)
 }
 
 /**

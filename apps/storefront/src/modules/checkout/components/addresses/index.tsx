@@ -18,9 +18,11 @@ import { useLanguage } from "@lib/context/language-context"
 const Addresses = ({
   cart,
   customer,
+  isDigitalOnly = false,
 }: {
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
+  isDigitalOnly?: boolean
 }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -66,6 +68,7 @@ const Addresses = ({
       </div>
       {isOpen ? (
         <form action={formAction}>
+          <input type="hidden" name="is_digital" value={isDigitalOnly ? "1" : ""} />
           <div className="pb-8">
             <ShippingAddress
               customer={customer}
@@ -86,8 +89,10 @@ const Addresses = ({
                 <BillingAddress cart={cart} />
               </div>
             )}
-            <SubmitButton className="mt-6" data-testid="submit-address-button">
-              {isAR ? "المتابعة للتوصيل" : "Continue to delivery"}
+            <SubmitButton className="mt-6 w-full small:w-auto" data-testid="submit-address-button">
+              {isDigitalOnly
+                ? (isAR ? "المتابعة للدفع" : "Continue to payment")
+                : (isAR ? "المتابعة للتوصيل" : "Continue to delivery")}
             </SubmitButton>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
@@ -97,9 +102,9 @@ const Addresses = ({
           <div className="text-small-regular">
             {cart && cart.shipping_address ? (
               <div className="flex items-start gap-x-8">
-                <div className="flex items-start gap-x-1 w-full">
+                <div className="flex flex-col small:flex-row items-start gap-x-1 gap-y-4 w-full">
                   <div
-                    className="flex flex-col w-1/3"
+                    className="flex flex-col w-full small:w-1/3"
                     data-testid="shipping-address-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">
@@ -123,7 +128,7 @@ const Addresses = ({
                   </div>
 
                   <div
-                    className="flex flex-col w-1/3 "
+                    className="flex flex-col w-full small:w-1/3"
                     data-testid="shipping-contact-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">
@@ -138,7 +143,7 @@ const Addresses = ({
                   </div>
 
                   <div
-                    className="flex flex-col w-1/3"
+                    className="flex flex-col w-full small:w-1/3"
                     data-testid="billing-address-summary"
                   >
                     <Text className="txt-medium-plus text-ui-fg-base mb-1">

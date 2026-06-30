@@ -54,8 +54,7 @@ const Payment = ({
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
 
-  const paymentReady =
-    (activeSession && cart?.shipping_methods.length !== 0) || paidByGiftcard
+  const paymentReady = !!activeSession || paidByGiftcard
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -168,7 +167,7 @@ const Payment = ({
           )}
 
           {paidByGiftcard && (
-            <div className="flex flex-col w-1/3">
+            <div className="flex flex-col w-full small:w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
                 {isAR ? "طريقة الدفع" : "Payment method"}
               </Text>
@@ -188,7 +187,7 @@ const Payment = ({
 
           <Button
             size="large"
-            className="mt-6"
+            className="mt-6 w-full small:w-auto"
             onClick={handleSubmit}
             isLoading={isLoading}
             disabled={
@@ -205,8 +204,8 @@ const Payment = ({
 
         <div className={isOpen ? "hidden" : "block"}>
           {cart && paymentReady && activeSession ? (
-            <div className="flex items-start gap-x-1 w-full">
-              <div className="flex flex-col w-1/3">
+            <div className="flex flex-col small:flex-row items-start gap-x-1 gap-y-4 w-full">
+              <div className="flex flex-col w-full small:w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   {isAR ? "طريقة الدفع" : "Payment method"}
                 </Text>
@@ -218,7 +217,7 @@ const Payment = ({
                     activeSession?.provider_id}
                 </Text>
               </div>
-              <div className="flex flex-col w-1/3">
+              <div className="flex flex-col w-full small:w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
                   {isAR ? "تفاصيل الدفع" : "Payment details"}
                 </Text>

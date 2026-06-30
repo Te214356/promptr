@@ -20,15 +20,20 @@ export default async function CheckoutForm({
   const shippingMethods = await listCartShippingMethods(cart.id)
   const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
 
-  if (!shippingMethods || !paymentMethods) {
+  if (!paymentMethods) {
     return null
   }
 
+  // All Promptr products are digital — skip shipping step when no methods exist
+  const isDigitalOnly = !shippingMethods?.length
+
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
-      <Addresses cart={cart} customer={customer} />
+      <Addresses cart={cart} customer={customer} isDigitalOnly={isDigitalOnly} />
 
-      <Shipping cart={cart} availableShippingMethods={shippingMethods} />
+      {!isDigitalOnly && (
+        <Shipping cart={cart} availableShippingMethods={shippingMethods} />
+      )}
 
       <Payment cart={cart} availablePaymentMethods={paymentMethods} />
 
