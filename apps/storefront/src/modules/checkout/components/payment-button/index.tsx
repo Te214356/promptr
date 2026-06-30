@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripeLike } from "@lib/constants"
+import { isManual, isMoyasar, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
@@ -21,12 +21,12 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   const { lang } = useLanguage()
   const isAR = lang === "ar"
 
+  // Removed cart.shipping_methods.length check — digital products have no shipping methods
   const notReady =
     !cart ||
     !cart.shipping_address ||
     !cart.billing_address ||
-    !cart.email ||
-    (cart.shipping_methods?.length ?? 0) < 1
+    !cart.email
 
   const paymentSession = cart.payment_collection?.payment_sessions?.[0]
 
@@ -38,6 +38,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
           cart={cart}
           data-testid={dataTestId}
         />
+      )
+    case isMoyasar(paymentSession?.provider_id):
+      return (
+        <MoyasarPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
     case isManual(paymentSession?.provider_id):
       return (
@@ -64,12 +68,8 @@ const StripePaymentButton = ({
 
   const onPaymentCompleted = async () => {
     await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+      .catch((err) => { setErrorMessage(err.message) })
+      .finally(() => { setSubmitting(false) })
   }
 
   const stripe = useStripe()
@@ -102,10 +102,7 @@ const StripePaymentButton = ({
         payment_method: {
           card: card,
           billing_details: {
-            name:
-              cart.billing_address?.first_name +
-              " " +
-              cart.billing_address?.last_name,
+            name: cart.billing_address?.first_name + " " + cart.billing_address?.last_name,
             address: {
               city: cart.billing_address?.city ?? undefined,
               country: cart.billing_address?.country_code ?? undefined,
@@ -122,26 +119,18 @@ const StripePaymentButton = ({
       .then(({ error, paymentIntent }) => {
         if (error) {
           const pi = error.payment_intent
-
-          if (
-            (pi && pi.status === "requires_capture") ||
-            (pi && pi.status === "succeeded")
-          ) {
+          if ((pi && pi.status === "requires_capture") || (pi && pi.status === "succeeded")) {
             onPaymentCompleted()
           }
-
           setErrorMessage(error.message || null)
           return
         }
-
         if (
           (paymentIntent && paymentIntent.status === "requires_capture") ||
           paymentIntent.status === "succeeded"
         ) {
           return onPaymentCompleted()
         }
-
-        return
       })
   }
 
@@ -151,39 +140,34 @@ const StripePaymentButton = ({
         disabled={disabled || notReady}
         onClick={handlePayment}
         size="large"
+        className="w-full small:w-auto"
         isLoading={submitting}
         data-testid={dataTestId}
       >
         {isAR ? "تأكيد الطلب" : "Place order"}
       </Button>
-      <ErrorMessage
-        error={errorMessage}
-        data-testid="stripe-payment-error-message"
-      />
+      <ErrorMessage error={errorMessage} data-testid="stripe-payment-error-message" />
     </>
   )
 }
 
-const ManualTestPaymentButton = ({ notReady, "data-testid": dataTestId }: { notReady: boolean; "data-testid"?: string }) => {
-  const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+const MoyasarPaymentButton = ({
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  notReady: boolean
+  "data-testid"?: string
+}) => {
   const { lang } = useLanguage()
   const isAR = lang === "ar"
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const onPaymentCompleted = async () => {
-    await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
-  }
-
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setSubmitting(true)
-
-    onPaymentCompleted()
+    await placeOrder()
+      .catch((err) => { setErrorMessage(err.message) })
+      .finally(() => { setSubmitting(false) })
   }
 
   return (
@@ -193,14 +177,48 @@ const ManualTestPaymentButton = ({ notReady, "data-testid": dataTestId }: { notR
         isLoading={submitting}
         onClick={handlePayment}
         size="large"
+        className="w-full small:w-auto"
+        data-testid={dataTestId}
+      >
+        {isAR ? "تأكيد الطلب" : "Place order"}
+      </Button>
+      <ErrorMessage error={errorMessage} data-testid="moyasar-payment-error-message" />
+    </>
+  )
+}
+
+const ManualTestPaymentButton = ({
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
+  const handlePayment = () => {
+    setSubmitting(true)
+    placeOrder()
+      .catch((err) => { setErrorMessage(err.message) })
+      .finally(() => { setSubmitting(false) })
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        className="w-full small:w-auto"
         data-testid="submit-order-button"
       >
         {isAR ? "تأكيد الطلب" : "Place order"}
       </Button>
-      <ErrorMessage
-        error={errorMessage}
-        data-testid="manual-payment-error-message"
-      />
+      <ErrorMessage error={errorMessage} data-testid="manual-payment-error-message" />
     </>
   )
 }

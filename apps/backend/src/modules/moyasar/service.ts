@@ -130,34 +130,29 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
   }
 
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
-    const { amount, currency_code, context } = input
+    const { data } = input
 
-    try {
-      const payment = await this.moyasarRequest<any>("POST", "/payments", {
-        amount: this.toMoyasarAmount(amount as number),
-        currency: currency_code.toUpperCase(),
-        description: "Order payment",
-        publishable_api_key: this.options_.publishableKey,
-        source: {
-          type: "creditcard",
-        },
-        metadata: {
-          customer_id: context?.customer?.id,
-        },
-      })
-
-      return {
-        id: payment.id,
-        data: {
-          moyasar_id: payment.id,
-          status: payment.status,
-          amount: payment.amount,
-          currency: payment.currency,
-          source_url: payment.source?.transaction_url,
-        },
+    // If moyasar_id is provided (from the callback after MPF payment), verify it.
+    if (data?.moyasar_id) {
+      try {
+        const payment = await this.moyasarRequest<any>("GET", `/payments/${data.moyasar_id}`)
+        return {
+          id: payment.id,
+          data: {
+            moyasar_id: payment.id,
+            moyasar_status: payment.status,
+          },
+        }
+      } catch (error) {
+        return this.buildError("Failed to verify Moyasar payment", error) as any
       }
-    } catch (error) {
-      return this.buildError("Failed to initiate Moyasar payment", error) as any
+    }
+
+    // No card details yet — the Moyasar.js form will collect them client-side.
+    // Return a pending local session; moyasar_id will be set after the MPF callback.
+    return {
+      id: `ms_pending_${Date.now()}`,
+      data: { status: "pending" },
     }
   }
 
@@ -166,10 +161,8 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     const moyasarId = data?.moyasar_id as string
 
     if (!moyasarId) {
-      return {
-        status: STATUS.ERROR,
-        data: { ...data, error: "Missing moyasar_id" },
-      }
+      // Payment not completed yet — still pending MPF form submission.
+      return { status: STATUS.PENDING, data }
     }
 
     try {
