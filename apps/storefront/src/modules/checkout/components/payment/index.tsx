@@ -93,6 +93,14 @@ const Payment = ({
     }
   }
 
+  // Auto-select when there is only one payment method and nothing is selected yet
+  useEffect(() => {
+    if (!selectedPaymentMethod && availablePaymentMethods?.length === 1) {
+      setPaymentMethod(availablePaymentMethods[0].id)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availablePaymentMethods?.length])
+
   useEffect(() => {
     setError(null)
   }, [isOpen])
@@ -101,7 +109,7 @@ const Payment = ({
   const isEmptyCollapsed = !isOpen && !paymentReady && !paidByGiftcard
 
   return (
-    <div className={clx("bg-white", { "hidden small:block": isEmptyCollapsed })}>
+    <div className={clx("bg-white p-4 small:p-0", { "hidden small:block": isEmptyCollapsed })}>
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"

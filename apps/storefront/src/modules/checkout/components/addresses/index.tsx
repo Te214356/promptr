@@ -45,7 +45,7 @@ const Addresses = ({
   const [message, formAction] = useActionState(setAddresses, null)
 
   return (
-    <div className="bg-white">
+    <div className="bg-white p-4 small:p-0">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"

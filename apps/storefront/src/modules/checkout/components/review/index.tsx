@@ -24,7 +24,7 @@ const Review = ({ cart }: { cart: any }) => {
   const isEmptyCollapsed = !isOpen && !previousStepsCompleted
 
   return (
-    <div className={clx("bg-white", { "hidden small:block": isEmptyCollapsed })}>
+    <div className={clx("bg-white p-4 small:p-0", { "hidden small:block": isEmptyCollapsed })}>
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
