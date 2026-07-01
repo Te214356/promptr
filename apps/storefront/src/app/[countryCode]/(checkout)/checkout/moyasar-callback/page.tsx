@@ -8,11 +8,19 @@ type Props = {
 
 export default async function MoyasarCallbackPage({ params, searchParams }: Props) {
   const { countryCode } = await params
-  const { id: moyasarPaymentId, status, message } = await searchParams
+  const { id: paymentId, status, message } = await searchParams
 
-  if (!moyasarPaymentId || status !== "paid") {
+  if (status === "failed") {
     const reason = message ? encodeURIComponent(message) : "payment_failed"
     redirect(`/${countryCode}/checkout?step=payment&error=${reason}`)
+  }
+
+  if (status === "canceled" || !paymentId) {
+    redirect(`/${countryCode}/checkout?step=payment`)
+  }
+
+  if (status !== "paid") {
+    redirect(`/${countryCode}/checkout?step=payment&error=payment_failed`)
   }
 
   const cart = await retrieveCart()
@@ -20,20 +28,21 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
     redirect(`/${countryCode}/cart`)
   }
 
-  // Create/update the Medusa payment session with the verified Moyasar payment ID.
-  // The backend will call Moyasar GET /payments/{id} to confirm it's genuinely paid.
+  // Update the payment session with the verified Moyasar payment ID.
+  // The backend initiatePayment calls Moyasar GET /payments/{id} to confirm it's genuinely paid.
   try {
     await initiatePaymentSession(cart, {
       provider_id: "pp_moyasar_moyasar",
-      data: { moyasar_id: moyasarPaymentId },
+      data: { moyasar_id: paymentId },
     } as any)
   } catch {
-    redirect(`/${countryCode}/checkout?step=payment&error=session_failed`)
+    redirect(`/${countryCode}/checkout?step=payment&error=payment_failed`)
   }
 
-  // Place the order — Medusa calls authorizePayment → confirmed → order created → redirect
+  // Complete the cart — backend calls authorizePayment → Moyasar verification → order created.
+  // placeOrder redirects internally to /order/{id}/confirmed on success.
   await placeOrder()
 
-  // placeOrder redirects internally; this line is only reached on failure
+  // Only reached if cart wasn't converted to an order (payment not yet authorized).
   redirect(`/${countryCode}/checkout?step=payment&error=order_failed`)
 }
