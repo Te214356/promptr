@@ -11,7 +11,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   }
 
   const productService = req.scope.resolve(Modules.PRODUCT) as any
-  const { products } = await productService.listAndCountProducts(
+  const [products] = await productService.listAndCountProducts(
     {},
     { relations: ["images"], take: 200 }
   )
