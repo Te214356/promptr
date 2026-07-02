@@ -1,4 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { Modules } from "@medusajs/framework/utils"
 
 const OLD_BASE = "https://dtcbackend-production-32a2.up.railway.app/static"
 const NEW_BASE = "https://pub-8e6feaf55e8e2b16e30e47579b3213ac.r2.dev"
@@ -9,8 +10,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     return res.status(401).json({ error: "unauthorized" })
   }
 
-  const productModule = req.scope.resolve("productModuleService") as any
-  const { products } = await productModule.listAndCountProducts(
+  const productService = req.scope.resolve(Modules.PRODUCT) as any
+  const { products } = await productService.listAndCountProducts(
     {},
     { relations: ["images"], take: 200 }
   )
@@ -37,7 +38,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     if (!hasChange) continue
 
-    await productModule.updateProducts(product.id, {
+    await productService.updateProducts(product.id, {
       thumbnail: newThumb,
       images: newImages,
     })
