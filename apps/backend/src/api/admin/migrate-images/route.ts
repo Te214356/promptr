@@ -2,8 +2,13 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
 const OLD_BASE = "https://dtcbackend-production-32a2.up.railway.app/static"
 const NEW_BASE = "https://pub-8e6feaf55e8e2b16e30e47579b3213ac.r2.dev"
+const SECRET = process.env.MIGRATE_SECRET || ""
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
+  if (!SECRET || req.headers["x-migrate-secret"] !== SECRET) {
+    return res.status(401).json({ error: "unauthorized" })
+  }
+
   const productModule = req.scope.resolve("productModuleService") as any
   const { products } = await productModule.listAndCountProducts(
     {},
@@ -36,13 +41,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       thumbnail: newThumb,
       images: newImages,
     })
-    results.push(`✓ ${product.title}`)
+    results.push(`${product.title}: ${oldThumb.split("/").pop()} -> R2`)
     updated++
   }
 
-  res.json({
-    total: products.length,
-    updated,
-    results,
-  })
+  res.json({ total: products.length, updated, results })
 }
