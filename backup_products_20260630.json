@@ -1,0 +1,406 @@
+{
+  "backup_date": "2026-06-30",
+  "count": 16,
+  "products": [
+    {
+      "id": "prod_01KVSCA0TV7T2GMBVKFFSWSY8G",
+      "title": "حزمة برومبتس ChatGPT للمحترفين",
+      "subtitle": null,
+      "description": "50 برومبت احترافي لـ ChatGPT مصمم للسوق العربي",
+      "handle": "chatgpt-prompts-pro-arabic",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716053649-2.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716053649-2.png"
+      ],
+      "prices": [
+        {
+          "amount": 4900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KVSCA0VFAHP7ZH631MESDQ23",
+          "title": "نسخة رقمية",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW540HACE86KYJEZXP39G5SB",
+      "title": "مكتبة الأوامر العربية",
+      "subtitle": "بروميبتس ChatGPT العربية",
+      "description": "150 أمراً جاهزاً لـ ChatGPT مصنّفاً للمحتوى والتسويق والبريد والأعمال",
+      "handle": "chatgpt-arabic-prompts",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716055597-3.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716055597-3.png"
+      ],
+      "prices": [
+        {
+          "amount": 9900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW540HBE4VB9ZETB96G3GY09",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543M6RK6MHX66KQJ64RHWD",
+      "title": "دليل الصور الاحترافية",
+      "subtitle": "بروميبتس Midjourney",
+      "description": "200 أمراً مختبراً لـ Midjourney في خمس فئات تصميمية",
+      "handle": "midjourney-arabic-prompts",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716069210-11.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716069210-11.png"
+      ],
+      "prices": [
+        {
+          "amount": 10900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543M7DV73HZN9V2QEHZMPX",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543NCF5KEWQWW5Z537GYBK",
+      "title": "مجموعة GPT الجاهزة",
+      "subtitle": "أدوات AI جاهزة",
+      "description": "20 Custom GPT جاهزاً للاستخدام الفوري مع workflows مُعدَّة مسبقاً",
+      "handle": "ready-ai-tools",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716062469-7.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716062469-7.png"
+      ],
+      "prices": [
+        {
+          "amount": 14900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543ND4ZHHS8ABKWZST2X74",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543PGH7KCFQ14FC5QB06DZ",
+      "title": "أساسيات الذكاء الاصطناعي",
+      "subtitle": "دليل AI للمبتدئين",
+      "description": "كتاب إلكتروني 80 صفحة من الصفر للاستخدام الاحترافي بلغة مفهومة",
+      "handle": "ai-beginners-guide",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716052069-1.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716052069-1.png"
+      ],
+      "prices": [
+        {
+          "amount": 6900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543PH2XBH3Y5D2Z91YDEH7",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543QMRHT48N7XRA3HHAHGX",
+      "title": "حزمة أتمتة الأعمال",
+      "subtitle": "أتمتة الأعمال بالـ AI",
+      "description": "15 سيناريو أتمتة جاهز لـ Make وZapier وChatGPT",
+      "handle": "business-automation-ai",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716059048-5.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716059048-5.png"
+      ],
+      "prices": [
+        {
+          "amount": 13900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543QNBRFF1YP8G7TBMG2Z1",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543RRJC15BZQCYZVCW2PVC",
+      "title": "قوالب السوشيال الجاهزة",
+      "subtitle": "قوالب Canva عربية",
+      "description": "50 قالب Canva عربي جاهز للتعديل لانستقرام وستوريز وتويتر ولينكدإن ويوتيوب",
+      "handle": "canva-arabic-social-templates",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716074531-14.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716074531-14.png"
+      ],
+      "prices": [
+        {
+          "amount": 9900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543RS46E7RQNQKPF6NMKXA",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543SWQZH3XJBWW5HY21DEJ",
+      "title": "مجموعة السيرة الاحترافية",
+      "subtitle": "قوالب CV وبطاقة عمل",
+      "description": "10 تصميم سيرة ذاتية و10 بطاقة عمل بصيغ Canva وWord",
+      "handle": "cv-business-card-templates",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716070856-12.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716070856-12.png"
+      ],
+      "prices": [
+        {
+          "amount": 7900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543SXVV1FK3XNDGVRW6WWS",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543V280B7D9D3R9B11WSCD",
+      "title": "نظام العمل في Notion",
+      "subtitle": "قوالب Notion للمشاريع",
+      "description": "12 قالب Notion لإدارة المشاريع والأهداف والعملاء والإنتاجية اليومية",
+      "handle": "notion-arabic-templates",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716067510-10.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716067510-10.png"
+      ],
+      "prices": [
+        {
+          "amount": 8900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543V39X3PHPFEBRXHFWAE5",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543W7AC960T529099DKMC3",
+      "title": "جداول التخطيط المالي",
+      "subtitle": "قوالب Excel للميزانية",
+      "description": "8 جداول Excel لتتبع الميزانية والمصروفات وتخطيط المشاريع",
+      "handle": "excel-finance-templates",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716065916-9.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716065916-9.png"
+      ],
+      "prices": [
+        {
+          "amount": 5900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543W7YV7JXPQD55W36WFXA",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543XC02YVMMFRS52MT4SYN",
+      "title": "الهوية البصرية الجاهزة",
+      "subtitle": "حزمة هوية بصرية",
+      "description": "لوجو وألوان وخطوط وقوالب سوشيال في حزمة واحدة جاهزة للتعديل",
+      "handle": "brand-identity-kit",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716072783-13.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716072783-13.png"
+      ],
+      "prices": [
+        {
+          "amount": 14900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543XCM0X49X0GNPDER5B67",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543YGNH4JE21FKZ6XKFQ6Y",
+      "title": "مشروعك الرقمي في السعودية",
+      "subtitle": "دليل ريادة الأعمال الرقمية",
+      "description": "100 صفحة من التجارب السعودية والخطوات العملية لبدء مشروع رقمي ناجح في المملكة",
+      "handle": "digital-entrepreneurship-saudi",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716064239-8.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716064239-8.png"
+      ],
+      "prices": [
+        {
+          "amount": 7900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543YH63SVVSX469VJ0JTXT",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW543ZMGD1WA6R96CYJ17ZBS",
+      "title": "الذكاء الاصطناعي مصدر دخل",
+      "subtitle": "كتاب AI للعمل والربح",
+      "description": "90 صفحة كيف تستخدم أدوات الذكاء الاصطناعي لتزيد دخلك مع حالات استخدام حقيقية",
+      "handle": "ai-work-profit-book",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716057229-4.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716057229-4.png"
+      ],
+      "prices": [
+        {
+          "amount": 8900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW543ZN6WAHN9VR9DJQC16WT",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW5440R7V9FJHVD6A0B81TMX",
+      "title": "التسويق الرقمي للخليج",
+      "subtitle": "دليل التسويق الرقمي السعودي",
+      "description": "120 صفحة استراتيجيات عملية للتسويق في السوق الخليجي وما يختلف هنا عن أي سوق آخر",
+      "handle": "digital-marketing-saudi-guide",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716076513-15.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716076513-15.png"
+      ],
+      "prices": [
+        {
+          "amount": 9900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW5440RQ8Y0QNG5J68VEH1R4",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW5441W0VDAPWEF6K7Q24W05",
+      "title": "من الفكرة لمتجر حقيقي",
+      "subtitle": "كتاب بناء متجر إلكتروني ناجح",
+      "description": "100 صفحة من الفكرة الأولى حتى الإطلاق والتسويق واختيار المنصة وإعداد المدفوعات",
+      "handle": "ecommerce-success-guide",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716078458-16.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716078458-16.png"
+      ],
+      "prices": [
+        {
+          "amount": 11900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW5441WH21AEAQKXP83AP16S",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    },
+    {
+      "id": "prod_01KW5442ZHBP88YSA70MC18HN9",
+      "title": "استثمارك الرقمي الأول",
+      "subtitle": "دليل الاستثمار الرقمي للمبتدئين",
+      "description": "80 صفحة كيف تبدأ استثمارك الرقمي بـ 1000 ريال مع المنصات والمخاطر الحقيقية",
+      "handle": "digital-investment-guide",
+      "status": "published",
+      "thumbnail": "https://dtcbackend-production-32a2.up.railway.app/static/1782716060791-6.png",
+      "images": [
+        "https://dtcbackend-production-32a2.up.railway.app/static/1782716060791-6.png"
+      ],
+      "prices": [
+        {
+          "amount": 6900,
+          "currency": "sar"
+        }
+      ],
+      "variants": [
+        {
+          "id": "variant_01KW544308KJS6B2C8WZGZPY2Z",
+          "title": "رقمي",
+          "sku": null
+        }
+      ]
+    }
+  ]
+}

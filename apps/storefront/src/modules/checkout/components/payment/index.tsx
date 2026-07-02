@@ -1,16 +1,13 @@
 "use client"
 
-import { RadioGroup } from "@headlessui/react"
-import { isStripeLike, isMoyasar, paymentInfoMap } from "@lib/constants"
+import { isMoyasar } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
-import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
-import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
+import { CheckCircleSolid } from "@medusajs/icons"
+import { Button, Heading, Text, clx } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import MoyasarForm from "@modules/checkout/components/moyasar-form"
-import PaymentContainer, {
-  StripeCardContainer,
-} from "@modules/checkout/components/payment-container"
 import Divider from "@modules/common/components/divider"
+import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useLanguage } from "@lib/context/language-context"
@@ -23,15 +20,13 @@ const Payment = ({
   availablePaymentMethods: any[]
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession: any) => paymentSession.status === "pending"
+    (s: any) => s.status === "pending"
   )
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [cardBrand, setCardBrand] = useState<string | null>(null)
-  const [cardComplete, setCardComplete] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
-    activeSession?.provider_id ?? ""
+  const [moyasarReady, setMoyasarReady] = useState(
+    isMoyasar(activeSession?.provider_id) && !!activeSession
   )
 
   const searchParams = useSearchParams()
@@ -41,18 +36,8 @@ const Payment = ({
   const isAR = lang === "ar"
 
   const isOpen = searchParams.get("step") === "payment"
-
-  const setPaymentMethod = async (method: string) => {
-    setError(null)
-    setSelectedPaymentMethod(method)
-    if (isStripeLike(method)) {
-      await initiatePaymentSession(cart, { provider_id: method })
-    }
-  }
-
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
-
   const paymentReady = !!activeSession || paidByGiftcard
 
   const createQueryString = useCallback(
@@ -70,42 +55,26 @@ const Payment = ({
     })
   }
 
-  const handleSubmit = async () => {
-    setIsLoading(true)
-    try {
-      const shouldInputCard = isStripeLike(selectedPaymentMethod) && !activeSession
-      const checkActiveSession = activeSession?.provider_id === selectedPaymentMethod
-
-      if (!checkActiveSession) {
-        await initiatePaymentSession(cart, { provider_id: selectedPaymentMethod })
-      }
-
-      if (!shouldInputCard) {
-        return router.push(
-          pathname + "?" + createQueryString("step", "review"),
-          { scroll: false }
-        )
-      }
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Auto-select when there is only one payment method and nothing is selected yet
+  // Auto-initiate Moyasar session when payment step opens
   useEffect(() => {
-    if (!selectedPaymentMethod && availablePaymentMethods?.length === 1) {
-      setPaymentMethod(availablePaymentMethods[0].id)
-    }
+    if (!isOpen || moyasarReady || isLoading) return
+
+    const moyasarMethod = availablePaymentMethods?.find((m) => isMoyasar(m.id))
+    if (!moyasarMethod) return
+
+    setIsLoading(true)
+    setError(null)
+    initiatePaymentSession(cart, { provider_id: moyasarMethod.id })
+      .then(() => setMoyasarReady(true))
+      .catch((err: any) => setError(err.message ?? "فشل تهيئة الدفع"))
+      .finally(() => setIsLoading(false))
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availablePaymentMethods?.length])
+  }, [isOpen])
 
   useEffect(() => {
     setError(null)
   }, [isOpen])
 
-  // Hide the empty box on mobile when payment step is not yet reached
   const isEmptyCollapsed = !isOpen && !paymentReady && !paidByGiftcard
 
   return (
@@ -126,7 +95,6 @@ const Payment = ({
             <button
               onClick={handleEdit}
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
-              data-testid="edit-payment-button"
             >
               {isAR ? "تعديل" : "Edit"}
             </button>
@@ -134,116 +102,44 @@ const Payment = ({
         )}
       </div>
 
-      <div>
-        <div className={isOpen ? "block" : "hidden"}>
-          {!paidByGiftcard && availablePaymentMethods?.length && (
-            <RadioGroup
-              value={selectedPaymentMethod}
-              onChange={(value: string) => setPaymentMethod(value)}
-            >
-              {availablePaymentMethods.map((paymentMethod) => (
-                <div key={paymentMethod.id}>
-                  {isStripeLike(paymentMethod.id) ? (
-                    <StripeCardContainer
-                      paymentProviderId={paymentMethod.id}
-                      selectedPaymentOptionId={selectedPaymentMethod}
-                      paymentInfoMap={paymentInfoMap}
-                      setCardBrand={setCardBrand}
-                      setError={setError}
-                      setCardComplete={setCardComplete}
-                    />
-                  ) : (
-                    <PaymentContainer
-                      paymentInfoMap={paymentInfoMap}
-                      paymentProviderId={paymentMethod.id}
-                      selectedPaymentOptionId={selectedPaymentMethod}
-                    />
-                  )}
-                </div>
-              ))}
-            </RadioGroup>
-          )}
+      <div className={isOpen ? "block" : "hidden"}>
+        {isLoading && (
+          <div className="flex justify-center py-8">
+            <Spinner />
+          </div>
+        )}
 
-          {/* Moyasar.js embedded card form — shows when Moyasar is selected */}
-          {isMoyasar(selectedPaymentMethod) && (cart.total ?? 0) > 0 && (
-            <MoyasarForm
-              amount={cart.total}
-              currency={cart.currency_code ?? "SAR"}
-            />
-          )}
+        {!isLoading && moyasarReady && (
+          <MoyasarForm
+            amount={cart.total ?? 0}
+            currency={cart.currency_code ?? "sar"}
+          />
+        )}
 
-          {paidByGiftcard && (
-            <div className="flex flex-col w-full small:w-1/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                {isAR ? "طريقة الدفع" : "Payment method"}
-              </Text>
-              <Text className="txt-medium text-ui-fg-subtle" data-testid="payment-method-summary">
-                {isAR ? "بطاقة هدية" : "Gift card"}
-              </Text>
-            </div>
-          )}
+        <ErrorMessage error={error} data-testid="payment-method-error-message" />
 
-          <ErrorMessage error={error} data-testid="payment-method-error-message" />
-
-          {/* Hide "Continue to Review" for Moyasar — the MPF form has its own submit */}
-          {!isMoyasar(selectedPaymentMethod) && (
-            <Button
-              size="large"
-              className="mt-6 w-full small:w-auto"
-              onClick={handleSubmit}
-              isLoading={isLoading}
-              disabled={
-                (isStripeLike(selectedPaymentMethod) && !cardComplete) ||
-                (!selectedPaymentMethod && !paidByGiftcard)
-              }
-              data-testid="submit-payment-button"
-            >
-              {!activeSession && isStripeLike(selectedPaymentMethod)
-                ? (isAR ? "أدخل بيانات البطاقة" : "Enter card details")
-                : (isAR ? "المتابعة للمراجعة" : "Continue to review")}
-            </Button>
-          )}
-        </div>
-
-        <div className={isOpen ? "hidden" : "block"}>
-          {cart && paymentReady && activeSession ? (
-            <div className="flex flex-col small:flex-row items-start gap-x-1 gap-y-4 w-full">
-              <div className="flex flex-col w-full small:w-1/3">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  {isAR ? "طريقة الدفع" : "Payment method"}
-                </Text>
-                <Text className="txt-medium text-ui-fg-subtle" data-testid="payment-method-summary">
-                  {paymentInfoMap[activeSession?.provider_id]?.title || activeSession?.provider_id}
-                </Text>
-              </div>
-              <div className="flex flex-col w-full small:w-1/3">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  {isAR ? "تفاصيل الدفع" : "Payment details"}
-                </Text>
-                <div className="flex gap-2 txt-medium text-ui-fg-subtle items-center" data-testid="payment-details-summary">
-                  <Container className="flex items-center h-7 w-fit p-2 bg-ui-button-neutral-hover">
-                    {paymentInfoMap[selectedPaymentMethod]?.icon || <CreditCard />}
-                  </Container>
-                  <Text>
-                    {isStripeLike(selectedPaymentMethod) && cardBrand
-                      ? cardBrand
-                      : paymentInfoMap[activeSession?.provider_id]?.title || activeSession?.provider_id}
-                  </Text>
-                </div>
-              </div>
-            </div>
-          ) : paidByGiftcard ? (
-            <div className="flex flex-col w-full small:w-1/3">
-              <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                {isAR ? "طريقة الدفع" : "Payment method"}
-              </Text>
-              <Text className="txt-medium text-ui-fg-subtle" data-testid="payment-method-summary">
-                {isAR ? "بطاقة هدية" : "Gift card"}
-              </Text>
-            </div>
-          ) : null}
-        </div>
+        {!isLoading && error && (
+          <Button
+            size="large"
+            className="mt-4 w-full small:w-auto"
+            onClick={() => {
+              setError(null)
+              setMoyasarReady(false)
+            }}
+          >
+            {isAR ? "إعادة المحاولة" : "Retry"}
+          </Button>
+        )}
       </div>
+
+      <div className={isOpen ? "hidden" : "block"}>
+        {paymentReady && (
+          <Text className="txt-medium text-ui-fg-subtle">
+            {isAR ? "جاهز للدفع" : "Ready to pay"}
+          </Text>
+        )}
+      </div>
+
       <Divider className="mt-8" />
     </div>
   )

@@ -29,11 +29,14 @@ const CountrySelect = forwardRef<
     }))
   }, [region])
 
+  const isSingleCountry = (countryOptions?.length ?? 0) === 1
+
   return (
     <NativeSelect
       ref={innerRef}
       placeholder={placeholder}
       defaultValue={defaultValue}
+      className={isSingleCountry ? "pointer-events-none bg-ui-bg-disabled text-ui-fg-disabled" : ""}
       {...props}
     >
       {countryOptions?.map(({ value, label }, index) => (

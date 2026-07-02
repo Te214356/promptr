@@ -15,12 +15,10 @@ const Review = ({ cart }: { cart: any }) => {
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
 
-  // Removed cart.shipping_methods.length > 0 — digital products have no shipping methods
   const previousStepsCompleted =
     cart.shipping_address &&
     (cart.payment_collection || paidByGiftcard)
 
-  // Hide empty box on mobile when review step is not yet reached
   const isEmptyCollapsed = !isOpen && !previousStepsCompleted
 
   return (

@@ -1,6 +1,8 @@
+"use client"
+
 import { clx } from "@medusajs/ui"
 import Image from "next/image"
-import React from "react"
+import React, { useState } from "react"
 
 type ThumbnailProps = {
   thumbnail?: string | null
@@ -48,18 +50,25 @@ const ImageOrPlaceholder = ({
   image,
   size,
 }: Pick<ThumbnailProps, "size"> & { image?: string }) => {
-  return image ? (
+  const [failed, setFailed] = useState(false)
+
+  if (!image || failed) {
+    return (
+      <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-[#6C2BFF]/50 via-[#1a0a3a] to-[#00CFFF]/30" />
+    )
+  }
+
+  return (
     <Image
       src={image}
-      alt="Thumbnail"
+      alt=""
       className="absolute inset-0 object-cover object-center"
       draggable={false}
       quality={50}
       sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
       fill
+      onError={() => setFailed(true)}
     />
-  ) : (
-    <div className="w-full h-full absolute inset-0 bg-gradient-to-br from-[#6C2BFF]/20 to-[#080810]" />
   )
 }
 

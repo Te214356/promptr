@@ -4,6 +4,6 @@
     "buildCommand": "npm ci --workspace=@dtc/backend && npm run build --workspace=@dtc/backend"
   },
   "deploy": {
-    "startCommand": "cd apps/backend/.medusa/server && medusa start"
+    "startCommand": "ln -sfn /mnt/uploads apps/backend/.medusa/server/static && cd apps/backend/.medusa/server && medusa start"
   }
 }
