@@ -445,15 +445,16 @@ export async function completeCart(cartId?: string): Promise<{ orderId: string; 
 
   let cartRes: any
   try {
-    cartRes = await sdk.store.cart
-      .complete(id, {}, headers)
-      .then(async (res) => {
-        const cartCacheTag = await getCacheTag("carts")
-        revalidateTag(cartCacheTag)
-        return res
-      })
+    cartRes = await sdk.store.cart.complete(id, {}, headers)
   } catch {
     return null
+  }
+
+  try {
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } catch {
+    // non-fatal: revalidateTag throws during Server Component render
   }
 
   if (cartRes?.type === "order") {
