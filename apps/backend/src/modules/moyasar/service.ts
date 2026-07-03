@@ -144,7 +144,8 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
           },
         }
       } catch (error) {
-        return this.buildError("Failed to verify Moyasar payment", error) as any
+        this.buildError("Failed to verify Moyasar payment", error)
+        throw error
       }
     }
 
@@ -177,7 +178,8 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
         },
       }
     } catch (error) {
-      return this.buildError("Failed to authorize Moyasar payment", error) as any
+      this.buildError("Failed to authorize Moyasar payment", error)
+      throw error
     }
   }
 

@@ -245,14 +245,19 @@ export async function initiatePaymentSession(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.store.payment
+  const resp = await sdk.store.payment
     .initiatePaymentSession(cart, data, {}, headers)
-    .then(async (resp) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-      return resp
-    })
     .catch(medusaError)
+
+  // Revalidate cache separately so any failure here does NOT abort the payment flow.
+  try {
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } catch (e: any) {
+    console.error("[initiatePaymentSession] revalidateTag failed (non-fatal):", e?.message)
+  }
+
+  return resp
 }
 
 export async function applyPromotions(codes: string[]) {
