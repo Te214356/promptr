@@ -1,7 +1,8 @@
+"use client"
+
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@medusajs/ui"
-
+import { useLanguage } from "@lib/context/language-context"
 import Divider from "@modules/common/components/divider"
 
 type ShippingDetailsProps = {
@@ -9,60 +10,70 @@ type ShippingDetailsProps = {
 }
 
 const ShippingDetails = ({ order }: ShippingDetailsProps) => {
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
   return (
     <div>
-      <Heading level="h2" className="flex flex-row text-3xl-regular my-6">
-        Delivery
-      </Heading>
+      <h2 className="text-2xl font-semibold text-white mb-6">
+        {isAR ? "التوصيل" : "Delivery"}
+      </h2>
       <div className="flex items-start gap-x-8">
         <div
           className="flex flex-col w-1/3"
           data-testid="shipping-address-summary"
         >
-          <Text className="txt-medium-plus text-ui-fg-base mb-1">
-            Shipping Address
-          </Text>
-          <Text className="txt-medium text-ui-fg-subtle">
+          <span className="text-sm font-semibold text-white/70 mb-1">
+            {isAR ? "عنوان الشحن" : "Shipping Address"}
+          </span>
+          <span className="text-sm text-white/50">
             {order.shipping_address?.first_name}{" "}
             {order.shipping_address?.last_name}
-          </Text>
-          <Text className="txt-medium text-ui-fg-subtle">
+          </span>
+          <span className="text-sm text-white/50">
             {order.shipping_address?.address_1}{" "}
             {order.shipping_address?.address_2}
-          </Text>
-          <Text className="txt-medium text-ui-fg-subtle">
+          </span>
+          <span className="text-sm text-white/50">
             {order.shipping_address?.postal_code},{" "}
             {order.shipping_address?.city}
-          </Text>
-          <Text className="txt-medium text-ui-fg-subtle">
+          </span>
+          <span className="text-sm text-white/50">
             {order.shipping_address?.country_code?.toUpperCase()}
-          </Text>
+          </span>
         </div>
 
         <div
-          className="flex flex-col w-1/3 "
+          className="flex flex-col w-1/3"
           data-testid="shipping-contact-summary"
         >
-          <Text className="txt-medium-plus text-ui-fg-base mb-1">Contact</Text>
-          <Text className="txt-medium text-ui-fg-subtle">
+          <span className="text-sm font-semibold text-white/70 mb-1">
+            {isAR ? "معلومات التواصل" : "Contact"}
+          </span>
+          <span className="text-sm text-white/50">
             {order.shipping_address?.phone}
-          </Text>
-          <Text className="txt-medium text-ui-fg-subtle">{order.email}</Text>
+          </span>
+          <span className="text-sm text-white/50">{order.email}</span>
         </div>
 
         <div
           className="flex flex-col w-1/3"
           data-testid="shipping-method-summary"
         >
-          <Text className="txt-medium-plus text-ui-fg-base mb-1">Method</Text>
-          <Text className="txt-medium text-ui-fg-subtle">
-            {(order as any).shipping_methods[0]?.name} (
-            {convertToLocale({
-              amount: order.shipping_methods?.[0].total ?? 0,
-              currency_code: order.currency_code,
-            })}
-            )
-          </Text>
+          <span className="text-sm font-semibold text-white/70 mb-1">
+            {isAR ? "طريقة التوصيل" : "Method"}
+          </span>
+          <span className="text-sm text-white/50">
+            {(order as any).shipping_methods?.[0]?.name}{" "}
+            {order.shipping_methods?.[0]?.total != null && (
+              <>
+                ({convertToLocale({
+                  amount: order.shipping_methods[0].total ?? 0,
+                  currency_code: order.currency_code,
+                })})
+              </>
+            )}
+          </span>
         </div>
       </div>
       <Divider className="mt-8" />
