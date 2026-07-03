@@ -458,13 +458,21 @@ export async function completeCart(cartId?: string): Promise<{ orderId: string; 
   }
 
   if (cartRes?.type === "order") {
-    const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
-    await removeCartId()
-    return {
-      orderId: cartRes.order.id,
-      countryCode: cartRes.order.shipping_address?.country_code?.toLowerCase() ?? "sa",
+    try {
+      const orderCacheTag = await getCacheTag("orders")
+      revalidateTag(orderCacheTag)
+    } catch {
+      // non-fatal: revalidateTag throws during Server Component render
     }
+    try {
+      await removeCartId()
+    } catch {
+      // non-fatal: cookies.set throws during Server Component render
+    }
+    const orderId = cartRes.order.id
+    const countryCode = cartRes.order.shipping_address?.country_code?.toLowerCase() ?? "sa"
+    console.log(`[moyasar-callback] completeCart result=${orderId}`)
+    return { orderId, countryCode }
   }
 
   return null
