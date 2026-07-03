@@ -10,12 +10,12 @@ declare global {
   }
 }
 
-type Props = { amount: number; currency: string }
+type Props = { amount: number; currency: string; cartId: string }
 
 const MPF_CSS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.css"
 const MPF_JS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"
 
-export default function MoyasarForm({ amount, currency }: Props) {
+export default function MoyasarForm({ amount, currency, cartId }: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
   const params = useParams()
@@ -39,7 +39,7 @@ export default function MoyasarForm({ amount, currency }: Props) {
         currency: currency.toUpperCase(),
         description: "Promptr Order",
         publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY ?? "",
-        callback_url: `${window.location.origin}/${countryCode}/checkout/moyasar-callback`,
+        callback_url: `${window.location.origin}/${countryCode}/checkout/moyasar-callback?cart_id=${cartId}`,
         methods: ["creditcard"],
         supported_networks: ["visa", "mastercard", "mada"],
       })

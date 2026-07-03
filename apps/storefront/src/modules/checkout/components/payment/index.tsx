@@ -96,6 +96,7 @@ const Payment = ({
           <MoyasarForm
             amount={cart.total ?? 0}
             currency={cart.currency_code ?? "sar"}
+            cartId={cart.id}
           />
         )}
 

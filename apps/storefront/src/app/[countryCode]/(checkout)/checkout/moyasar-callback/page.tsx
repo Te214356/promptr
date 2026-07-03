@@ -4,14 +4,24 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 
 type Props = {
   params: Promise<{ countryCode: string }>
-  searchParams: Promise<{ id?: string; status?: string; message?: string }>
+  searchParams: Promise<{
+    id?: string
+    status?: string
+    message?: string
+    cart_id?: string
+  }>
 }
 
 export default async function MoyasarCallbackPage({ params, searchParams }: Props) {
   const { countryCode } = await params
-  const { id: paymentId, status, message } = await searchParams
+  const { id: paymentId, status, message, cart_id: cartIdFromUrl } = await searchParams
 
-  // Handle non-paid statuses without redirecting to checkout (checkout would 404 without a cart)
+  // Temporary diagnostic log — remove after confirming flow works in production
+  console.log(
+    `[moyasar-callback] cart_id_url=${cartIdFromUrl ?? "none"} ` +
+    `payment_id=${paymentId ?? "none"} status=${status ?? "none"}`
+  )
+
   if (status === "canceled") {
     return <CallbackError countryCode={countryCode} message="تم إلغاء عملية الدفع." />
   }
@@ -24,31 +34,47 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
     return <CallbackError countryCode={countryCode} message="بيانات الدفع غير مكتملة أو غير صالحة." />
   }
 
-  // Retrieve the current cart
-  const cart = await retrieveCart()
+  // Retrieve cart: prefer explicit cart_id from URL (survives cross-domain cookie loss in
+  // Safari Private / strict browsers), fall back to the _medusa_cart_id cookie.
+  const cart = await retrieveCart(cartIdFromUrl || undefined)
+
+  console.log(
+    `[moyasar-callback] cart_found=${!!cart} ` +
+    `cart_id_resolved=${cart?.id ?? "none"} ` +
+    `source=${cartIdFromUrl ? "url_param" : cart ? "cookie" : "none"}`
+  )
+
   if (!cart) {
-    return <CallbackError countryCode={countryCode} message="انتهت صلاحية الجلسة. يرجى إضافة المنتجات مرة أخرى والمتابعة." isCartGone />
+    return (
+      <CallbackError
+        countryCode={countryCode}
+        message="انتهت صلاحية الجلسة. يرجى إضافة المنتجات مرة أخرى والمتابعة."
+        isCartGone
+      />
+    )
   }
 
-  // Create the payment session with moyasar_id — backend verifies the payment with Moyasar API
-  // using the secret key before returning, so this is a server-side verification (not URL trust).
+  // Create the payment session with moyasar_id — backend verifies the payment server-side
+  // via Moyasar API using the secret key (not trusting the URL status param alone).
   try {
     await initiatePaymentSession(cart, {
       provider_id: "pp_moyasar_moyasar",
       data: { moyasar_id: paymentId },
     } as any)
-  } catch {
+  } catch (err: any) {
+    console.error("[moyasar-callback] initiatePaymentSession failed:", err?.message ?? err)
     return <CallbackError countryCode={countryCode} message="فشل التحقق من الدفع. يرجى التواصل مع الدعم." />
   }
 
   // Complete the cart — backend runs authorizePayment which calls Moyasar API again
-  const result = await completeCart()
+  const result = await completeCart(cart.id)
+
+  console.log(`[moyasar-callback] completeCart result=${result ? result.orderId : "null"}`)
 
   if (!result) {
     return <CallbackError countryCode={countryCode} message="تم التحقق من الدفع لكن فشل إنشاء الطلب. يرجى التواصل مع الدعم." />
   }
 
-  // Success — redirect to the existing order confirmation page
   redirect(`/${result.countryCode}/order/${result.orderId}/confirmed`)
 }
 

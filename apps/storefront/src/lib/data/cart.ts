@@ -432,8 +432,8 @@ export async function placeOrder(cartId?: string) {
  * Completes a cart and returns the created order without performing internal redirects.
  * Used by the Moyasar callback page to complete the cart after payment verification.
  */
-export async function completeCart(): Promise<{ orderId: string; countryCode: string } | null> {
-  const id = await getCartId()
+export async function completeCart(cartId?: string): Promise<{ orderId: string; countryCode: string } | null> {
+  const id = cartId || (await getCartId())
   if (!id) return null
 
   const headers = { ...(await getAuthHeaders()) }
