@@ -15,11 +15,13 @@ const ShippingAddress = ({
   cart,
   checked,
   onChange,
+  isDigitalOnly = false,
 }: {
   customer: HttpTypes.StoreCustomer | null
   cart: HttpTypes.StoreCart | null
   checked: boolean
   onChange: () => void
+  isDigitalOnly?: boolean
 }) => {
   const { lang } = useLanguage()
   const isAR = lang === "ar"
@@ -86,9 +88,7 @@ const ShippingAddress = ({
   }, [cart])
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLInputElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,
@@ -98,9 +98,10 @@ const ShippingAddress = ({
 
   return (
     <>
-      {customer && (addressesInRegion?.length || 0) > 0 && (
+      {/* Saved addresses dropdown (non-digital only) */}
+      {!isDigitalOnly && customer && (addressesInRegion?.length || 0) > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
+          <p className="text-small-regular text-white/70">
             {isAR
               ? `مرحباً ${customer.first_name}، هل تريد استخدام أحد عناوينك المحفوظة؟`
               : `Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
@@ -116,108 +117,170 @@ const ShippingAddress = ({
           />
         </Container>
       )}
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label={isAR ? "الاسم الأول" : "First name"}
-          name="shipping_address.first_name"
-          autoComplete="given-name"
-          value={formData["shipping_address.first_name"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-first-name-input"
-        />
-        <Input
-          label={isAR ? "اسم العائلة" : "Last name"}
-          name="shipping_address.last_name"
-          autoComplete="family-name"
-          value={formData["shipping_address.last_name"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-last-name-input"
-        />
-        <Input
-          label={isAR ? "العنوان" : "Address"}
-          name="shipping_address.address_1"
-          autoComplete="address-line1"
-          value={formData["shipping_address.address_1"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-address-input"
-        />
-        <Input
-          label={isAR ? "الشركة" : "Company"}
-          name="shipping_address.company"
-          value={formData["shipping_address.company"]}
-          onChange={handleChange}
-          autoComplete="organization"
-          data-testid="shipping-company-input"
-        />
-        <Input
-          label={isAR ? "الرمز البريدي" : "Postal code"}
-          name="shipping_address.postal_code"
-          autoComplete="postal-code"
-          value={formData["shipping_address.postal_code"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-postal-code-input"
-        />
-        <Input
-          label={isAR ? "المدينة" : "City"}
-          name="shipping_address.city"
-          autoComplete="address-level2"
-          value={formData["shipping_address.city"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-city-input"
-        />
-        <CountrySelect
-          name="shipping_address.country_code"
-          autoComplete="country"
-          region={cart?.region}
-          value={formData["shipping_address.country_code"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-country-select"
-        />
-        <Input
-          label={isAR ? "المنطقة / المحافظة" : "State / Province"}
-          name="shipping_address.province"
-          autoComplete="address-level1"
-          value={formData["shipping_address.province"]}
-          onChange={handleChange}
-          data-testid="shipping-province-input"
-        />
-      </div>
-      <div className="my-8">
-        <Checkbox
-          label={isAR ? "عنوان الفاتورة مطابق لعنوان الشحن" : "Billing address same as shipping address"}
-          name="same_as_billing"
-          checked={checked}
-          onChange={onChange}
-          data-testid="billing-address-checkbox"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <Input
-          label={isAR ? "البريد الإلكتروني" : "Email"}
-          name="email"
-          type="email"
-          title={isAR ? "أدخل بريداً إلكترونياً صحيحاً." : "Enter a valid email address."}
-          autoComplete="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          data-testid="shipping-email-input"
-        />
-        <Input
-          label={isAR ? "رقم الجوال" : "Phone"}
-          name="shipping_address.phone"
-          autoComplete="tel"
-          value={formData["shipping_address.phone"]}
-          onChange={handleChange}
-          data-testid="shipping-phone-input"
-        />
-      </div>
+
+      {isDigitalOnly ? (
+        <>
+          {/* Digital products: name + email + phone only */}
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label={isAR ? "الاسم الأول" : "First name"}
+              name="shipping_address.first_name"
+              autoComplete="given-name"
+              value={formData["shipping_address.first_name"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-first-name-input"
+            />
+            <Input
+              label={isAR ? "اسم العائلة" : "Last name"}
+              name="shipping_address.last_name"
+              autoComplete="family-name"
+              value={formData["shipping_address.last_name"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-last-name-input"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <Input
+              label={isAR ? "البريد الإلكتروني" : "Email"}
+              name="email"
+              type="email"
+              title={isAR ? "أدخل بريداً إلكترونياً صحيحاً." : "Enter a valid email address."}
+              autoComplete="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              data-testid="shipping-email-input"
+            />
+            <Input
+              label={isAR ? "رقم الجوال (اختياري)" : "Phone (optional)"}
+              name="shipping_address.phone"
+              autoComplete="tel"
+              value={formData["shipping_address.phone"]}
+              onChange={handleChange}
+              data-testid="shipping-phone-input"
+            />
+          </div>
+          {/* Hidden fields: auto-fill required Medusa address fields */}
+          <input type="hidden" name="shipping_address.address_1" value="Digital Product" />
+          <input type="hidden" name="shipping_address.city" value="Riyadh" />
+          <input type="hidden" name="shipping_address.postal_code" value="00000" />
+          <input type="hidden" name="shipping_address.country_code" value="sa" />
+          <input type="hidden" name="shipping_address.company" value="" />
+          <input type="hidden" name="shipping_address.province" value="" />
+          {/* Billing same as shipping (always true for digital) */}
+          <input type="hidden" name="same_as_billing" value="on" />
+        </>
+      ) : (
+        <>
+          {/* Physical products: full address form */}
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label={isAR ? "الاسم الأول" : "First name"}
+              name="shipping_address.first_name"
+              autoComplete="given-name"
+              value={formData["shipping_address.first_name"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-first-name-input"
+            />
+            <Input
+              label={isAR ? "اسم العائلة" : "Last name"}
+              name="shipping_address.last_name"
+              autoComplete="family-name"
+              value={formData["shipping_address.last_name"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-last-name-input"
+            />
+            <Input
+              label={isAR ? "العنوان" : "Address"}
+              name="shipping_address.address_1"
+              autoComplete="address-line1"
+              value={formData["shipping_address.address_1"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-address-input"
+            />
+            <Input
+              label={isAR ? "الشركة" : "Company"}
+              name="shipping_address.company"
+              value={formData["shipping_address.company"]}
+              onChange={handleChange}
+              autoComplete="organization"
+              data-testid="shipping-company-input"
+            />
+            <Input
+              label={isAR ? "الرمز البريدي" : "Postal code"}
+              name="shipping_address.postal_code"
+              autoComplete="postal-code"
+              value={formData["shipping_address.postal_code"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-postal-code-input"
+            />
+            <Input
+              label={isAR ? "المدينة" : "City"}
+              name="shipping_address.city"
+              autoComplete="address-level2"
+              value={formData["shipping_address.city"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-city-input"
+            />
+            <CountrySelect
+              name="shipping_address.country_code"
+              autoComplete="country"
+              region={cart?.region}
+              value={formData["shipping_address.country_code"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-country-select"
+            />
+            <Input
+              label={isAR ? "المنطقة / المحافظة" : "State / Province"}
+              name="shipping_address.province"
+              autoComplete="address-level1"
+              value={formData["shipping_address.province"]}
+              onChange={handleChange}
+              data-testid="shipping-province-input"
+            />
+          </div>
+          <div className="my-8">
+            {/* Hidden input mirrors checkbox state — the Checkbox is type="button" and doesn't submit */}
+            <input type="hidden" name="same_as_billing" value={checked ? "on" : ""} />
+            <Checkbox
+              label={isAR ? "عنوان الفاتورة مطابق لعنوان الشحن" : "Billing address same as shipping address"}
+              name="_same_as_billing_ui"
+              checked={checked}
+              onChange={onChange}
+              data-testid="billing-address-checkbox"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Input
+              label={isAR ? "البريد الإلكتروني" : "Email"}
+              name="email"
+              type="email"
+              title={isAR ? "أدخل بريداً إلكترونياً صحيحاً." : "Enter a valid email address."}
+              autoComplete="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              data-testid="shipping-email-input"
+            />
+            <Input
+              label={isAR ? "رقم الجوال" : "Phone"}
+              name="shipping_address.phone"
+              autoComplete="tel"
+              value={formData["shipping_address.phone"]}
+              onChange={handleChange}
+              data-testid="shipping-phone-input"
+            />
+          </div>
+        </>
+      )}
     </>
   )
 }
