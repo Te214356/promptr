@@ -1,13 +1,11 @@
 "use client"
 
 import { isMoyasar } from "@lib/constants"
-import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { Button, Heading, Text, clx } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import MoyasarForm from "@modules/checkout/components/moyasar-form"
 import Divider from "@modules/common/components/divider"
-import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useLanguage } from "@lib/context/language-context"
@@ -23,11 +21,8 @@ const Payment = ({
     (s: any) => s.status === "pending"
   )
 
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [moyasarReady, setMoyasarReady] = useState(
-    isMoyasar(activeSession?.provider_id) && !!activeSession
-  )
+  const [moyasarReady, setMoyasarReady] = useState(false)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -38,7 +33,7 @@ const Payment = ({
   const isOpen = searchParams.get("step") === "payment"
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
-  const paymentReady = !!activeSession || paidByGiftcard
+  const paymentReady = moyasarReady || !!activeSession || paidByGiftcard
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -55,19 +50,13 @@ const Payment = ({
     })
   }
 
-  // Auto-initiate Moyasar session when payment step opens
+  // Show Moyasar form immediately when payment step opens — no Medusa session needed until
+  // after payment. The session is created in the callback page with the verified moyasar_id,
+  // avoiding duplicate sessions that break cart.complete().
   useEffect(() => {
-    if (!isOpen || moyasarReady || isLoading) return
-
-    const moyasarMethod = availablePaymentMethods?.find((m) => isMoyasar(m.id))
-    if (!moyasarMethod) return
-
-    setIsLoading(true)
-    setError(null)
-    initiatePaymentSession(cart, { provider_id: moyasarMethod.id })
-      .then(() => setMoyasarReady(true))
-      .catch((err: any) => setError(err.message ?? "فشل تهيئة الدفع"))
-      .finally(() => setIsLoading(false))
+    if (!isOpen || moyasarReady) return
+    const hasMoyasar = availablePaymentMethods?.some((m) => isMoyasar(m.id))
+    if (hasMoyasar) setMoyasarReady(true)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
@@ -103,13 +92,7 @@ const Payment = ({
       </div>
 
       <div className={isOpen ? "block" : "hidden"}>
-        {isLoading && (
-          <div className="flex justify-center py-8">
-            <Spinner />
-          </div>
-        )}
-
-        {!isLoading && moyasarReady && (
+        {moyasarReady && (
           <MoyasarForm
             amount={cart.total ?? 0}
             currency={cart.currency_code ?? "sar"}
@@ -118,7 +101,7 @@ const Payment = ({
 
         <ErrorMessage error={error} data-testid="payment-method-error-message" />
 
-        {!isLoading && error && (
+        {error && (
           <Button
             size="large"
             className="mt-4 w-full small:w-auto"

@@ -81,7 +81,7 @@ export default function MoyasarForm({ amount, currency }: Props) {
         onLoad={initForm}
         onReady={initForm}
       />
-      <div className="mt-6 border border-gray-200 rounded-lg p-4 bg-white min-h-[200px]">
+      <div className="mt-6 border border-white/10 rounded-lg p-4 bg-white min-h-[200px]">
         <div ref={hostRef} />
       </div>
     </>

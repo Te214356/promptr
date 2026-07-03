@@ -1,5 +1,6 @@
-import { initiatePaymentSession, placeOrder, retrieveCart } from "@lib/data/cart"
+import { completeCart, initiatePaymentSession, retrieveCart } from "@lib/data/cart"
 import { redirect } from "next/navigation"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type Props = {
   params: Promise<{ countryCode: string }>
@@ -10,39 +11,96 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
   const { countryCode } = await params
   const { id: paymentId, status, message } = await searchParams
 
+  // Handle non-paid statuses without redirecting to checkout (checkout would 404 without a cart)
+  if (status === "canceled") {
+    return <CallbackError countryCode={countryCode} message="تم إلغاء عملية الدفع." />
+  }
+
   if (status === "failed") {
-    const reason = message ? encodeURIComponent(message) : "payment_failed"
-    redirect(`/${countryCode}/checkout?step=payment&error=${reason}`)
+    return <CallbackError countryCode={countryCode} message={message || "فشلت عملية الدفع. يرجى المحاولة مرة أخرى."} />
   }
 
-  if (status === "canceled" || !paymentId) {
-    redirect(`/${countryCode}/checkout?step=payment`)
+  if (status !== "paid" || !paymentId) {
+    return <CallbackError countryCode={countryCode} message="بيانات الدفع غير مكتملة أو غير صالحة." />
   }
 
-  if (status !== "paid") {
-    redirect(`/${countryCode}/checkout?step=payment&error=payment_failed`)
-  }
-
+  // Retrieve the current cart
   const cart = await retrieveCart()
   if (!cart) {
-    redirect(`/${countryCode}/cart`)
+    return <CallbackError countryCode={countryCode} message="انتهت صلاحية الجلسة. يرجى إضافة المنتجات مرة أخرى والمتابعة." isCartGone />
   }
 
-  // Update the payment session with the verified Moyasar payment ID.
-  // The backend initiatePayment calls Moyasar GET /payments/{id} to confirm it's genuinely paid.
+  // Create the payment session with moyasar_id — backend verifies the payment with Moyasar API
+  // using the secret key before returning, so this is a server-side verification (not URL trust).
   try {
     await initiatePaymentSession(cart, {
       provider_id: "pp_moyasar_moyasar",
       data: { moyasar_id: paymentId },
     } as any)
   } catch {
-    redirect(`/${countryCode}/checkout?step=payment&error=payment_failed`)
+    return <CallbackError countryCode={countryCode} message="فشل التحقق من الدفع. يرجى التواصل مع الدعم." />
   }
 
-  // Complete the cart — backend calls authorizePayment → Moyasar verification → order created.
-  // placeOrder redirects internally to /order/{id}/confirmed on success.
-  await placeOrder()
+  // Complete the cart — backend runs authorizePayment which calls Moyasar API again
+  const result = await completeCart()
 
-  // Only reached if cart wasn't converted to an order (payment not yet authorized).
-  redirect(`/${countryCode}/checkout?step=payment&error=order_failed`)
+  if (!result) {
+    return <CallbackError countryCode={countryCode} message="تم التحقق من الدفع لكن فشل إنشاء الطلب. يرجى التواصل مع الدعم." />
+  }
+
+  // Success — redirect to the existing order confirmation page
+  redirect(`/${result.countryCode}/order/${result.orderId}/confirmed`)
+}
+
+function CallbackError({
+  message,
+  countryCode,
+  isCartGone,
+}: {
+  message: string
+  countryCode: string
+  isCartGone?: boolean
+}) {
+  return (
+    <div className="min-h-screen bg-[#080810] flex flex-col items-center justify-center px-4" dir="rtl">
+      <div className="max-w-md w-full bg-white/[0.03] border border-red-500/20 rounded-2xl p-8 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold text-white mb-3">
+          {isCartGone ? "انتهت الجلسة" : "فشل الدفع"}
+        </h1>
+        <p className="text-white/60 text-sm mb-8 leading-relaxed">{message}</p>
+        <div className="flex flex-col gap-3">
+          {isCartGone ? (
+            <LocalizedClientLink
+              href="/"
+              className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"
+            >
+              العودة للمتجر
+            </LocalizedClientLink>
+          ) : (
+            <>
+              <LocalizedClientLink
+                href="/checkout?step=payment"
+                className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"
+              >
+                إعادة المحاولة
+              </LocalizedClientLink>
+              <LocalizedClientLink
+                href="/cart"
+                className="block w-full py-3 px-6 rounded-lg border border-white/10 text-white/70 font-medium hover:bg-white/5 transition-colors text-center"
+              >
+                العودة للسلة
+              </LocalizedClientLink>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }

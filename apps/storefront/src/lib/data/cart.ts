@@ -429,6 +429,42 @@ export async function placeOrder(cartId?: string) {
 }
 
 /**
+ * Completes a cart and returns the created order without performing internal redirects.
+ * Used by the Moyasar callback page to complete the cart after payment verification.
+ */
+export async function completeCart(): Promise<{ orderId: string; countryCode: string } | null> {
+  const id = await getCartId()
+  if (!id) return null
+
+  const headers = { ...(await getAuthHeaders()) }
+
+  let cartRes: any
+  try {
+    cartRes = await sdk.store.cart
+      .complete(id, {}, headers)
+      .then(async (res) => {
+        const cartCacheTag = await getCacheTag("carts")
+        revalidateTag(cartCacheTag)
+        return res
+      })
+  } catch {
+    return null
+  }
+
+  if (cartRes?.type === "order") {
+    const orderCacheTag = await getCacheTag("orders")
+    revalidateTag(orderCacheTag)
+    await removeCartId()
+    return {
+      orderId: cartRes.order.id,
+      countryCode: cartRes.order.shipping_address?.country_code?.toLowerCase() ?? "sa",
+    }
+  }
+
+  return null
+}
+
+/**
  * Updates the countrycode param and revalidates the regions cache
  * @param regionId
  * @param countryCode
