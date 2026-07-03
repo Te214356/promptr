@@ -136,6 +136,11 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     if (data?.moyasar_id) {
       try {
         const payment = await this.moyasarRequest<any>("GET", `/payments/${data.moyasar_id}`)
+        this.logger_.info(
+          `[moyasar] initiatePayment id=${payment.id} status=${payment.status} ` +
+          `amount=${payment.amount} currency=${payment.currency} ` +
+          `source_type=${payment.source?.type} source_message=${payment.source?.message ?? "none"}`
+        )
         return {
           id: payment.id,
           data: {
@@ -162,24 +167,64 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     const moyasarId = data?.moyasar_id as string
 
     if (!moyasarId) {
-      // Payment not completed yet — still pending MPF form submission.
       return { status: STATUS.PENDING, data }
     }
 
-    try {
-      const payment = await this.moyasarRequest<any>("GET", `/payments/${moyasarId}`)
+    // Moyasar's API can return "initiated" briefly after 3DS completes before
+    // transitioning to "paid". Retry up to 3 times (6s total) to handle this lag.
+    // Only "paid" or "captured" from the API are accepted — never trust URL params.
+    const AUTHORIZED_STATUSES = ["paid", "captured"]
+    const TERMINAL_STATUSES = ["failed", "voided", "refunded"]
+    const MAX_ATTEMPTS = 3
+    const RETRY_DELAY_MS = 2000
 
-      return {
-        status: this.mapStatus(payment.status),
-        data: {
-          ...data,
-          moyasar_id: payment.id,
-          moyasar_status: payment.status,
-        },
+    let lastPayment: any = null
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const payment = await this.moyasarRequest<any>("GET", `/payments/${moyasarId}`)
+        lastPayment = payment
+
+        this.logger_.info(
+          `[moyasar] authorizePayment attempt=${attempt}/${MAX_ATTEMPTS} ` +
+          `id=${payment.id} status=${payment.status} amount=${payment.amount} ` +
+          `source_type=${payment.source?.type} source_message=${payment.source?.message ?? "none"}`
+        )
+
+        if (AUTHORIZED_STATUSES.includes(payment.status)) {
+          return {
+            status: this.mapStatus(payment.status),
+            data: { ...data, moyasar_id: payment.id, moyasar_status: payment.status },
+          }
+        }
+
+        if (TERMINAL_STATUSES.includes(payment.status)) {
+          this.logger_.warn(`[moyasar] authorizePayment: terminal status=${payment.status} id=${payment.id}`)
+          return {
+            status: this.mapStatus(payment.status),
+            data: { ...data, moyasar_id: payment.id, moyasar_status: payment.status },
+          }
+        }
+
+        // status is "initiated" — not yet confirmed, wait and retry
+        if (attempt < MAX_ATTEMPTS) {
+          this.logger_.info(`[moyasar] authorizePayment: status=initiated, retrying in ${RETRY_DELAY_MS}ms`)
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
+        }
+      } catch (error) {
+        this.buildError("Failed to authorize Moyasar payment", error)
+        throw error
       }
-    } catch (error) {
-      this.buildError("Failed to authorize Moyasar payment", error)
-      throw error
+    }
+
+    // Payment still "initiated" after all retries — not yet confirmed by Moyasar API
+    this.logger_.warn(
+      `[moyasar] authorizePayment: still initiated after ${MAX_ATTEMPTS} attempts, ` +
+      `id=${lastPayment?.id} — returning PENDING`
+    )
+    return {
+      status: STATUS.PENDING,
+      data: { ...data, moyasar_status: lastPayment?.status },
     }
   }
 
