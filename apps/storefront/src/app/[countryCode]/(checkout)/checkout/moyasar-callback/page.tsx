@@ -61,7 +61,7 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
     return <CallbackError countryCode={countryCode} message="تم التحقق من الدفع لكن فشل إنشاء الطلب. يرجى التواصل مع الدعم." />
   }
 
-  redirect(`/${result.countryCode}/order/${result.orderId}/confirmed`)
+  redirect(`/api/order-complete?order_id=${result.orderId}&country_code=${result.countryCode}`)
 }
 
 function CallbackError({

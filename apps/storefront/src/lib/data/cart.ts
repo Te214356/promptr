@@ -59,7 +59,14 @@ export async function getOrSetCart(countryCode: string) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, "id,region_id")
+  let cart = await retrieveCart(undefined, "id,region_id,completed_at")
+
+  // If the cookie points to a completed cart (cleanup from a previous order failed),
+  // discard it so a fresh cart is created below.
+  if (cart && (cart as any).completed_at) {
+    await removeCartId().catch(() => {})
+    cart = null
+  }
 
   const headers = {
     ...(await getAuthHeaders()),

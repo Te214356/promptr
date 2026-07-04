@@ -1,6 +1,6 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text } from "@medusajs/ui"
+import { Badge, Heading, Label, Text } from "@medusajs/ui"
 import React from "react"
 
 import { applyPromotions } from "@lib/data/cart"
@@ -59,14 +59,14 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   }
 
   return (
-    <div className="w-full bg-white flex flex-col">
+    <div className="w-full flex flex-col">
       <div className="txt-medium">
         <form action={(a) => addPromotionCode(a)} className="w-full mb-5">
           <Label className="flex gap-x-1 my-2 items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+              className="txt-medium text-white/50 hover:text-white/80 transition-colors"
               data-testid="add-discount-button"
             >
               {isAR ? "إضافة كود خصم" : "Add Promotion Code(s)"}
@@ -76,8 +76,8 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
           {isOpen && (
             <>
               <div className="flex w-full gap-x-2">
-                <Input
-                  className="size-full"
+                <input
+                  className="flex-1 bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-white/30"
                   id="promotion-input"
                   name="code"
                   type="text"
