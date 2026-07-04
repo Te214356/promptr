@@ -3,7 +3,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 // Temporary one-shot endpoint: set all published products to draft.
 // Safe to call multiple times (idempotent). Remove after use.
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
-  const productModule = req.scope.resolve("productModuleService") as any
+  const productModule = req.scope.resolve("product") as any
 
   const { products } = await productModule.listAndCountProducts(
     { status: ["published"] },
