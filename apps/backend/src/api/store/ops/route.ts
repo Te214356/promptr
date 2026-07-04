@@ -11,7 +11,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const results: string[] = []
 
   for (const product of published) {
-    await productModule.updateProducts([{ id: product.id, status: "draft" }])
+    await productModule.updateProducts(product.id, { status: "draft" })
     results.push(`${product.title} → draft`)
   }
 
