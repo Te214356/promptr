@@ -1,9 +1,9 @@
-import repeat from "@lib/util/repeat"
+"use client"
+
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Table } from "@medusajs/ui"
+import { useLanguage } from "@lib/context/language-context"
 
 import Item from "@modules/cart/components/item"
-import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
 type ItemsTemplateProps = {
   cart?: HttpTypes.StoreCart
@@ -11,45 +11,36 @@ type ItemsTemplateProps = {
 
 const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   const items = cart?.items
+  const { lang } = useLanguage()
+  const isAR = lang === "ar"
+
   return (
-    <div className="px-0">
-      <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+    <div className="bg-[#0d0d1f] border border-white/10 rounded-2xl p-5">
+      <h2 className="text-xl font-bold text-white mb-4">
+        {isAR ? "السلة" : "Cart"}
+      </h2>
+
+      {/* Table header */}
+      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 pb-3 border-b border-white/10 text-xs font-semibold text-white/40 uppercase tracking-wide">
+        <span>{isAR ? "المنتج" : "Item"}</span>
+        <span className="text-center w-24">{isAR ? "الكمية" : "Quantity"}</span>
+        <span className="hidden small:block text-right w-20">{isAR ? "السعر" : "Price"}</span>
+        <span className="text-right w-20">{isAR ? "الإجمالي" : "Total"}</span>
       </div>
-      <Table>
-        <Table.Header className="border-t-0">
-          <Table.Row className="text-ui-fg-subtle txt-medium-plus">
-            <Table.HeaderCell className="!pl-0">Item</Table.HeaderCell>
-            <Table.HeaderCell></Table.HeaderCell>
-            <Table.HeaderCell>Quantity</Table.HeaderCell>
-            <Table.HeaderCell className="hidden small:table-cell">
-              Price
-            </Table.HeaderCell>
-            <Table.HeaderCell className="!pr-0 text-right">
-              Total
-            </Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {items
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      currencyCode={cart?.currency_code}
-                    />
-                  )
-                })
-            : repeat(5).map((i) => {
-                return <SkeletonLineItem key={i} />
-              })}
-        </Table.Body>
-      </Table>
+
+      <div className="flex flex-col">
+        {items
+          ? items
+              .sort((a, b) => ((a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1))
+              .map((item) => (
+                <Item
+                  key={item.id}
+                  item={item}
+                  currencyCode={cart?.currency_code ?? "sar"}
+                />
+              ))
+          : null}
+      </div>
     </div>
   )
 }

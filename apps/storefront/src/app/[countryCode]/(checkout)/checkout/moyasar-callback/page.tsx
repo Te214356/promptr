@@ -16,12 +16,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
   const { countryCode } = await params
   const { id: paymentId, status, message, cart_id: cartIdFromUrl } = await searchParams
 
-  // Temporary diagnostic log — remove after confirming flow works in production
-  console.log(
-    `[moyasar-callback] cart_id_url=${cartIdFromUrl ?? "none"} ` +
-    `payment_id=${paymentId ?? "none"} status=${status ?? "none"}`
-  )
-
   if (status === "canceled") {
     return <CallbackError countryCode={countryCode} message="تم إلغاء عملية الدفع." />
   }
@@ -37,12 +31,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
   // Retrieve cart: prefer explicit cart_id from URL (survives cross-domain cookie loss in
   // Safari Private / strict browsers), fall back to the _medusa_cart_id cookie.
   const cart = await retrieveCart(cartIdFromUrl || undefined)
-
-  console.log(
-    `[moyasar-callback] cart_found=${!!cart} ` +
-    `cart_id_resolved=${cart?.id ?? "none"} ` +
-    `source=${cartIdFromUrl ? "url_param" : cart ? "cookie" : "none"}`
-  )
 
   if (!cart) {
     return (
@@ -68,8 +56,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
 
   // Complete the cart — backend runs authorizePayment which calls Moyasar API again
   const result = await completeCart(cart.id)
-
-  console.log(`[moyasar-callback] completeCart result=${result ? result.orderId : "null"}`)
 
   if (!result) {
     return <CallbackError countryCode={countryCode} message="تم التحقق من الدفع لكن فشل إنشاء الطلب. يرجى التواصل مع الدعم." />

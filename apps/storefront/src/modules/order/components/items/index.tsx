@@ -1,10 +1,7 @@
-import repeat from "@lib/util/repeat"
 import { HttpTypes } from "@medusajs/types"
-import { Table } from "@medusajs/ui"
 
 import Divider from "@modules/common/components/divider"
 import Item from "@modules/order/components/item"
-import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 
 type ItemsProps = {
   order: HttpTypes.StoreOrder
@@ -14,29 +11,21 @@ const Items = ({ order }: ItemsProps) => {
   const items = order.items
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-y-2">
       <Divider className="!mb-0" />
-      <Table>
-        <Table.Body data-testid="products-table">
-          {items?.length
-            ? items
-                .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
-                })
-                .map((item) => {
-                  return (
-                    <Item
-                      key={item.id}
-                      item={item}
-                      currencyCode={order.currency_code}
-                    />
-                  )
-                })
-            : repeat(5).map((i) => {
-                return <SkeletonLineItem key={i} />
-              })}
-        </Table.Body>
-      </Table>
+      {items?.length ? (
+        items
+          .sort((a, b) => ((a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1))
+          .map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-x-4 py-3 border-b border-white/5"
+              data-testid="product-row"
+            >
+              <Item item={item} currencyCode={order.currency_code} />
+            </div>
+          ))
+      ) : null}
     </div>
   )
 }

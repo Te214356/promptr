@@ -136,11 +136,6 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     if (data?.moyasar_id) {
       try {
         const payment = await this.moyasarRequest<any>("GET", `/payments/${data.moyasar_id}`)
-        this.logger_.info(
-          `[moyasar] initiatePayment id=${payment.id} status=${payment.status} ` +
-          `amount=${payment.amount} currency=${payment.currency} ` +
-          `source_type=${payment.source?.type} source_message=${payment.source?.message ?? "none"}`
-        )
         return {
           id: payment.id,
           data: {

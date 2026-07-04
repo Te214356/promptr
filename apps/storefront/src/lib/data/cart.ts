@@ -253,8 +253,8 @@ export async function initiatePaymentSession(
   try {
     const cartCacheTag = await getCacheTag("carts")
     revalidateTag(cartCacheTag)
-  } catch (e: any) {
-    console.error("[initiatePaymentSession] revalidateTag failed (non-fatal):", e?.message)
+  } catch {
+    // non-fatal: revalidateTag throws during Server Component render
   }
 
   return resp
@@ -412,19 +412,25 @@ export async function placeOrder(cartId?: string) {
 
   const cartRes = await sdk.store.cart
     .complete(id, {}, headers)
-    .then(async (cartRes) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-      return cartRes
-    })
     .catch(medusaError)
+
+  try {
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  } catch {
+    // non-fatal
+  }
 
   if (cartRes?.type === "order") {
     const countryCode =
       cartRes.order.shipping_address?.country_code?.toLowerCase()
 
-    const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
+    try {
+      const orderCacheTag = await getCacheTag("orders")
+      revalidateTag(orderCacheTag)
+    } catch {
+      // non-fatal
+    }
 
     await removeCartId()
     redirect(`/${countryCode ?? "sa"}/order/${cartRes.order.id}/confirmed`)
@@ -471,7 +477,6 @@ export async function completeCart(cartId?: string): Promise<{ orderId: string; 
     }
     const orderId = cartRes.order.id
     const countryCode = cartRes.order.shipping_address?.country_code?.toLowerCase() ?? "sa"
-    console.log(`[moyasar-callback] completeCart result=${orderId}`)
     return { orderId, countryCode }
   }
 
