@@ -5,20 +5,18 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const productModule = req.scope.resolve("product") as any
 
-  const products = await productModule.listProducts(
-    { status: ["published"] },
-    { take: 100 }
-  )
+  const allProducts = await productModule.listProducts({}, { take: 100 })
+  const published = allProducts.filter((p: any) => p.status === "published")
 
   const results: string[] = []
 
-  for (const product of products) {
+  for (const product of published) {
     await productModule.updateProducts([{ id: product.id, status: "draft" }])
     results.push(`${product.title} → draft`)
   }
 
   res.json({
-    total_found: products.length,
+    total_found: published.length,
     updated: results.length,
     results,
   })
