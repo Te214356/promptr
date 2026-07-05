@@ -66,6 +66,16 @@ export default async function PaginatedProducts({
 
   const totalPages = Math.ceil(count / PRODUCT_LIMIT)
 
+  if (!products.length) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
+        <p className="text-5xl">🚀</p>
+        <p className="text-xl font-semibold text-white">المنتجات قادمة قريباً</p>
+        <p className="text-white/40 text-sm">نعمل على إضافة منتجات جديدة — ترقّب!</p>
+      </div>
+    )
+  }
+
   return (
     <>
       <ul
