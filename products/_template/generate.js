@@ -263,6 +263,7 @@ body {
   margin-top: 32px; padding: 14px 16px;
   background: rgba(108,43,255,0.05); border: 1px solid rgba(108,43,255,0.14);
   border-radius: 8px;
+  page-break-inside: avoid; break-inside: avoid;
 }
 .toc-note-title { font-size: 9pt; font-weight: 700; color: var(--purple); margin-bottom: 6px; }
 .toc-note-body  { font-size: 9pt; color: var(--muted); line-height: 1.7; }
@@ -315,6 +316,7 @@ body {
   margin-top: 20px; padding: 14px 16px;
   background: rgba(0,207,255,0.04); border: 1px solid rgba(0,207,255,0.15);
   border-radius: 8px;
+  page-break-inside: avoid; break-inside: avoid;
 }
 .style-key-title { font-size: 9pt; font-weight: 800; color: var(--cyan); margin-bottom: 5px; }
 .style-key-desc  { font-size: 8.5pt; color: var(--muted); margin-bottom: 10px; }
@@ -322,6 +324,12 @@ body {
 .style-ex { display: flex; gap: 10px; align-items: flex-start; }
 .style-ex-label { font-size: 7.5pt; font-weight: 700; color: var(--purple); white-space: nowrap; min-width: 60px; padding-top: 1px; }
 .style-ex-text  { font-size: 8.5pt; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+/* style-key standalone page */
+.style-key-page-desc { font-size: 11pt; color: var(--muted); margin-bottom: 28px; line-height: 1.7; }
+.style-key-examples-lg { gap: 14px; }
+.style-ex-lg .style-ex-label { font-size: 10pt; min-width: 120px; padding-top: 3px; }
+.style-ex-lg .style-ex-text  { font-size: 11pt; line-height: 1.65; }
 
 .prompt-copy-label {
   font-size: 7pt; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
@@ -393,24 +401,34 @@ body {
     <div class="toc-note-title">كيف تستخدم هذه الحزمة؟</div>
     <div class="toc-note-body">${esc(d.usage_note || 'انسخ أي برومبت، عدّل القيم المكتوبة بين [أقواس] حسب نشاطك، والصق في ChatGPT. كل برومبت مُجرَّب ومرفق بمثال مخرجات حقيقي.')}</div>
   </div>
-  ${d.style_key ? `
-  <div class="style-key-box">
-    <div class="style-key-title">🎛 ${esc(d.style_key.title)}</div>
-    <div class="style-key-desc">${esc(d.style_key.description)}</div>
-    <div class="style-key-examples">
-      ${d.style_key.examples.map(ex => `
-      <div class="style-ex">
-        <span class="style-ex-label">${esc(ex.label)}</span>
-        <span class="style-ex-text">${esc(ex.text)}</span>
-      </div>`).join('')}
-    </div>
-  </div>` : ''}
   <div class="pg-footer">
     <a href="https://promptrsa.com" style="color:inherit;text-decoration:none;">promptrsa.com</a>
     <span class="footer-sep">·</span>
     <span>جميع الحقوق محفوظة © Promptr ${new Date().getFullYear()}</span>
   </div>
 </div>
+${d.style_key ? `
+<div class="page toc-page">
+  <div class="pg-header">
+    <span class="brand-dot">PROMPTR</span>
+    <span class="header-sep">·</span>
+    <span class="header-sub">${esc(d.title)}</span>
+  </div>
+  <div class="toc-title">🎛 ${esc(d.style_key.title)}</div>
+  <div class="style-key-page-desc">${esc(d.style_key.description)}</div>
+  <div class="style-key-examples style-key-examples-lg">
+    ${d.style_key.examples.map(ex => `
+    <div class="style-ex style-ex-lg">
+      <span class="style-ex-label">${esc(ex.label)}</span>
+      <span class="style-ex-text">${esc(ex.text)}</span>
+    </div>`).join('')}
+  </div>
+  <div class="pg-footer">
+    <a href="https://promptrsa.com" style="color:inherit;text-decoration:none;">promptrsa.com</a>
+    <span class="footer-sep">·</span>
+    <span>جميع الحقوق محفوظة © Promptr ${new Date().getFullYear()}</span>
+  </div>
+</div>` : ''}
 
 <!-- ══ SECTIONS ═══════════════════════════════════════════════════════════════ -->
 ${d.sections.map((s, i) => section(s, i)).join('\n')}
