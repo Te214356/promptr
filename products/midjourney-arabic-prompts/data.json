@@ -1,0 +1,640 @@
+{
+  "title": "دليل الصور الاحترافي",
+  "subtitle": "65 برومبتاً + 30 نصيحة تقنية للحصول على صور خليجية أصيلة من Midjourney و Leonardo و Firefly",
+  "price": "69 SAR",
+  "whatsapp": "966551859849",
+  "usage_note": "كل برومبت يأتي بالعربية للفهم والإنجليزية للنسخ المباشر. استخدم النص الإنجليزي كاملاً وعدّل [الأقواس] فقط.",
+  "sections": [
+    {
+      "title": "أساسيات صياغة الصور",
+      "description": "10 نصائح تقنية تبني أساسك في كتابة برومبتس احترافية تنتج صوراً خليجية أصيلة",
+      "items": [
+        {
+          "title": "بنية البرومبت المثالية: subject + style + lighting + mood",
+          "useCase": "نصيحة تقنية",
+          "prompt": "البرومبت الاحترافي يتكون دائماً من أربعة محاور متسلسلة: أولاً الموضوع الرئيسي (subject) وهو من أو ماذا تصوّر، ثانياً الأسلوب البصري (style) وهل تريد صورة واقعية أم فنية أم تجارية، ثالثاً الإضاءة (lighting) التي تحدد المزاج بأكمله، ورابعاً المزاج العام (mood) الذي يوحّد الصورة. في النهاية أضف معاملات التقنية مثل --ar 16:9 --v 8.1 لضبط النسبة والإصدار. هذا الترتيب يجعل الأداة تفهم أولوياتك بدقة.",
+          "output": "البرومبت العادي 'رجل سعودي' ينتج وجهاً عشوائياً بخلفية رمادية، بينما البرومبت المبني على البنية الرباعية ينتج رجل أعمال سعودي بثوب أبيض في إضاءة استوديو احترافية بمزاج واثق ومهيب.",
+          "guidance": "طبّق هذه البنية في كل برومبت تكتبه بدون استثناء. إذا نسيت عنصراً واحداً تتدهور جودة الصورة بشكل ملحوظ. ابدأ دائماً بكتابة الموضوع، ثم أضف العناصر الثلاثة الأخرى تباعاً."
+        },
+        {
+          "title": "Negative Prompts: استبعاد ما لا تريده",
+          "useCase": "نصيحة تقنية",
+          "prompt": "الـ negative prompts هي قائمة الكلمات التي تخبر الأداة بما يجب تجنبه في الصورة الناتجة. في Midjourney تكتبها بعد معامل --no مثل: --no western clothing, deformed hands, blurry, low quality. في Leonardo وFirefly تكتبها في حقل منفصل اسمه Negative Prompt. للمحتوى الخليجي تحتاج دائماً إلى استبعاد: western casual clothes, uncovered hair (للنساء المحجبات)، skin exposure, inappropriate clothing, distorted faces. هذه الخطوة تحمي صورتك من النتائج غير المناسبة ثقافياً.",
+          "output": "بدون negative prompts: امرأة محجبة قد تظهر بملابس غربية أو شعر ظاهر. مع negative prompts الصحيحة: تظهر بعباءة أو حجاب أنيق تماماً كما طلبت.",
+          "guidance": "أضف دائماً negative prompts عند رسم شخصيات خليجية. اصنع قائمتك المخصصة وأضفها لكل برومبت. للمحتوى التجاري أضف: watermark, text, logo لتجنب ظهور نصوص عشوائية."
+        },
+        {
+          "title": "أوزان الكلمات بمعامل ::2 للتركيز",
+          "useCase": "نصيحة تقنية",
+          "prompt": "في Midjourney يمكنك إعطاء أي كلمة وزناً أعلى باستخدام علامة النقطتين المضاعفة والرقم مثل: thobe::2 أو Gulf features::3. هذا يخبر الأداة أن هذا العنصر أهم من غيره ويجب إبرازه بقوة في الصورة. يمكنك أيضاً إضعاف عنصر باستخدام رقم أقل من 1 مثل background::0.5. هذا المعامل مفيد جداً حين تريد ضمان ظهور ملابس خليجية تقليدية أو ملامح وجه عربية بوضوح لا لبس فيه.",
+          "output": "البرومبت بدون أوزان: 'Saudi man in thobe' قد ينتج رجلاً بملامح غربية وثوب خفيف. مع 'Saudi man::2 traditional thobe::2 Gulf facial features::2' تحصل على شخصية خليجية واضحة وأصيلة.",
+          "guidance": "استخدم الأوزان حين تلاحظ أن الأداة تتجاهل عنصراً مهماً في صورتك. لا تبالغ في الأوزان العالية (فوق 3) لأنها قد تشوّه باقي الصورة."
+        },
+        {
+          "title": "كلمات التحكم الثقافي الخليجية الأساسية",
+          "useCase": "نصيحة تقنية",
+          "prompt": "هناك مجموعة من الكلمات الإنجليزية التي تضمن لك مظهراً خليجياً أصيلاً عند إضافتها: 'Gulf Arab' أدق من 'Arab' وحدها، 'Saudi' أو 'Emirati' أو 'Kuwaiti' لتحديد الجنسية، 'traditional Gulf attire' للملابس التقليدية، 'modest fashion' للمظهر المحتشم، 'Middle Eastern complexion' للبشرة العربية، 'dark expressive eyes' للعيون، 'warm olive skin tone' لبشرة عربية طبيعية. هذه الكلمات تشكّل أساس كل برومبت خليجي ناجح.",
+          "output": "برومبت بكلمة 'Arab man' ينتج أحياناً شخصاً من شمال أفريقيا أو المشرق بملامح مختلطة. إضافة 'Gulf Arab, Saudi features, traditional thobe' تنتج شخصية خليجية واضحة وموثوقة.",
+          "guidance": "احتفظ بهذه القائمة في ملاحظاتك وأضف منها حسب الموضوع. كلما كنت أكثر تحديداً في الوصف الثقافي كانت الصورة أقرب لما تتخيله."
+        },
+        {
+          "title": "الفرق بين Midjourney و Leonardo و Firefly",
+          "useCase": "نصيحة تقنية",
+          "prompt": "كل أداة لها نقاط قوة مختلفة: Midjourney متفوق في الصور الفنية والبورتريهات ذات الجودة الاستثنائية، ويدعم معاملات متقدمة مثل --stylize و--chaos و--weird. Leonardo AI متفوق في الصور الواقعية والمنتجات التجارية ويوفر نماذج متخصصة مثل Realistic Vision وPhoenix. Adobe Firefly الأفضل للمحتوى التجاري الآمن وهو مدرب على صور مرخصة مما يجعله آمناً قانونياً، كما يفهم واجهات المستخدم العربية بشكل أفضل من غيره.\n\n⚠️ الإصدارات الحالية (2026): Midjourney --v 8.1 ✓ | Leonardo: Lucid Realism أو Lucid Origin ✓ | Firefly: Image 5 ✓ — إذا صدر إصدار أحدث، استبدل رقم المعامل مباشرةً.",
+          "output": "بورتريه احترافي: Midjourney ينتج أفضل نتيجة فنية. صورة منتج تجاري: Leonardo أكثر واقعية. محتوى للنشر التجاري: Firefly الأأمن قانونياً والأنسب للمحتوى المحتشم.",
+          "guidance": "اختر الأداة بناءً على الهدف النهائي للصورة. للمشاريع التجارية الكبيرة ابدأ بـ Firefly. للمحتوى الإبداعي والسوشيال ميديا استخدم Midjourney."
+        },
+        {
+          "title": "التحكم في الجنسية: كن دقيقاً في التحديد",
+          "useCase": "نصيحة تقنية",
+          "prompt": "تحديد الجنسية بدقة يغير الصورة جذرياً. بدلاً من كتابة 'Arab person' اكتب 'Saudi Arabian man' أو 'Emirati woman' أو 'Kuwaiti family'. لتحديد الملامح أكثر أضف: 'Gulf Arab facial structure, high cheekbones, dark expressive eyes'. للمملكة العربية السعودية تحديداً أضف 'Najdi features' أو 'Hijazi features' حسب المنطقة. هذا المستوى من التحديد ينتج شخصيات يتعرف عليها الجمهور الخليجي فوراً.",
+          "output": "كلمة 'Arab' وحدها تنتج صوراً متذبذبة بين شمال أفريقيا والشام والخليج. 'Saudi Gulf Arab with traditional Najdi features' تنتج شخصية محددة وأصيلة يراها المستخدم السعودي كصورة من بيئته مباشرة.",
+          "guidance": "استخدم هذا المستوى من التحديد في أي مشروع تسويقي مستهدف لجمهور خليجي. للمحتوى العام يكفي 'Gulf Arab'، للمحتوى المحلي المحدد أضف الجنسية والمنطقة."
+        },
+        {
+          "title": "التحكم في اللباس المحتشم: الملابس الخليجية بالتفصيل",
+          "useCase": "نصيحة تقنية",
+          "prompt": "لضمان لباس محتشم ومناسب ثقافياً استخدم مصطلحات محددة: للرجال 'white thobe, Saudi bisht, keffiyeh with agal, traditional Saudi dress'. للنساء 'black abaya, hijab, modest Islamic fashion, full coverage elegant dress, conservative Gulf style'. أضف دائماً في negative prompts: 'revealing clothing, tight clothes, short skirts, bare arms, uncovered hair' للتأكيد المزدوج. يمكنك أيضاً تحديد المناسبة: 'formal thobe for wedding' أو 'casual abaya for shopping'.",
+          "output": "بدون تحديد: امرأة عربية قد تظهر بملابس غربية عصرية. مع 'black abaya, Gulf modest fashion --no revealing clothing, bare skin' تحصل على مظهر محتشم وأنيق تماماً كما هو معتاد في الخليج.",
+          "guidance": "لا تعتمد على كلمة 'modest' وحدها — أضف دائماً الوصف التفصيلي للملابس وعزّزه بـ negative prompts. هذه أهم نصيحة في المحتوى الخليجي."
+        },
+        {
+          "title": "الإضاءة الخليجية: دافئة وذهبية",
+          "useCase": "نصيحة تقنية",
+          "prompt": "الإضاءة الأكثر جاذبية للجمهور الخليجي هي الإضاءة الدافئة الذهبية التي تستحضر أجواء الغروب الصحراوي والمجالس الفاخرة. استخدم: 'warm golden hour lighting, soft ambient Arabic interior lighting, candle-lit majlis atmosphere, soft diffused light' للأجواء الداخلية. للإضاءة الاحترافية التجارية: 'professional studio lighting, three-point lighting setup'. تجنب 'cold blue lighting' أو 'harsh white lighting' في المشاهد الثقافية لأنها تفقد الصورة دفء الهوية الخليجية.",
+          "output": "نفس المشهد بإضاءة باردة يبدو أوروبياً أو آسيوياً. بإضاءة 'warm golden, soft amber tones, rich interior lighting' يبدو المشهد خليجياً أصيلاً وجذاباً للعين العربية.",
+          "guidance": "حدد نوع الإضاءة في كل برومبت. للمنتجات التجارية استخدم الإضاءة الاستوديو. للمشاهد الثقافية والاجتماعية استخدم الإضاءة الدافئة الذهبية دائماً."
+        },
+        {
+          "title": "الألوان الدافئة لبشرة عربية طبيعية",
+          "useCase": "نصيحة تقنية",
+          "prompt": "البشرة العربية الخليجية تتراوح بين درجات الدافئة والزيتونية. لتمثيلها بدقة استخدم: 'warm olive complexion, golden-brown skin tone, medium tan Middle Eastern skin, rich caramel complexion'. تجنب 'pale white skin' أو 'very dark skin' إلا إذا كان ذلك هو التنوع المطلوب. أضف 'sun-kissed warm glow' للبشرة الطبيعية الخليجية. للعيون: 'dark deep-set eyes, warm brown eyes, expressive dark eyes'. هذه التفاصيل تجعل الشخصية تبدو من المنطقة لا مجرد صورة عشوائية.",
+          "output": "بدون تحديد البشرة: قد تظهر الشخصية بملامح آسيوية أو أوروبية. مع 'warm olive complexion, Gulf Arab features, dark expressive eyes' تحصل على شخصية تمثل الجمهور الخليجي بصدق وجمال.",
+          "guidance": "استخدم هذه المصطلحات مع كل برومبت يتضمن شخصية بشرية. يمكنك دمجها بحرية: 'warm olive skin, caramel complexion, sun-kissed glow'."
+        },
+        {
+          "title": "قاموس المصطلحات الإنجليزية الضرورية للمظهر الخليجي",
+          "useCase": "نصيحة تقنية",
+          "prompt": "هذه القائمة هي مرجعك الدائم عند كتابة أي برومبت خليجي — احفظها أو احتفظ بها قريباً: thobe (الثوب السعودي)، abaya (العباءة)، keffiyeh (الغترة)، agal (العقال)، bisht (البشت)، hijab (الحجاب)، modest (محتشم)، Gulf features (ملامح خليجية)، Middle Eastern (شرق أوسطي)، Saudi Arabian (سعودي)، Emirati (إماراتي)، traditional Gulf attire (ملابس خليجية تقليدية)، warm olive skin (بشرة زيتونية دافئة)، dark expressive eyes (عيون داكنة معبّرة)، majlis (مجلس)، dallah (دلّة قهوة عربية)، Arabian architecture (معمار عربي)، desert landscape (منظر صحراوي)، Arabic calligraphy (خط عربي).",
+          "output": "استخدام هذه المصطلحات بدلاً من الوصف العام يختصر عليك عشرات المحاولات. 'man in thobe with agal' أدق وأسرع من محاولة وصف الثوب والعقال بجمل طويلة.",
+          "guidance": "ضع هذه القائمة في ملف نصي وارجع إليها كلما كتبت برومبتاً. الثروة الحقيقية في المصطلحات الصحيحة لا في طول البرومبت."
+        }
+      ]
+    },
+    {
+      "title": "الشخصيات والوجوه الخليجية",
+      "description": "15 برومبت جاهز للشخصيات الخليجية الأكثر طلباً في التصميم والتسويق",
+      "items": [
+        {
+          "title": "رجل الأعمال بالثوب",
+          "useCase": "إعلانات الشركات، المحتوى المؤسسي، منشورات لينكد إن",
+          "prompt": "رجل أعمال سعودي بثوب أبيض أنيق في قاعة اجتماعات فاخرة، ينظر بثقة نحو الكاميرا\nProfessional Saudi businessman in crisp white thobe and agal, modern boardroom setting, confident posture, direct eye contact, warm studio lighting, photorealistic corporate portrait --ar 16:9 --v 8.1",
+          "output": "البرومبت العادي 'Arab businessman' ينتج رجلاً بدلة غربية. هذا البرومبت ينتج شخصية خليجية مميزة تعكس هوية رجل الأعمال السعودي الأصيل.",
+          "guidance": "غيّر 'white thobe' إلى 'grey thobe' أو 'bisht over thobe' حسب رسمية المناسبة. أضف 'outdoor cityscape background' لإضفاء طابع حضري. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "سيدة الأعمال المحجبة",
+          "useCase": "إعلانات الشركات، محتوى تمكين المرأة، بروشورات الشركات",
+          "prompt": "سيدة أعمال خليجية بحجاب أنيق وعباءة معاصرة، تجلس أمام لابتوب في بيئة عمل فاخرة بتعبير واثق\nConfident Gulf businesswoman in elegant hijab and modern abaya, sitting at executive desk with laptop, warm professional lighting, determined expression, photorealistic --ar 16:9 --v 8.1 --no bare hair, revealing clothing",
+          "output": "البرومبت العادي 'Arab businesswoman' قد ينتج امرأة بلا حجاب. هذا البرومبت يضمن مظهراً محتشماً وأنيقاً يناسب السياق الخليجي تماماً.",
+          "guidance": "أضف 'navy abaya' أو 'pastel hijab' لتحديد اللون. غيّر الخلفية إلى 'conference room' أو 'modern office lobby' حسب الاستخدام."
+        },
+        {
+          "title": "العائلة الخليجية",
+          "useCase": "إعلانات العقارات، البنوك، التأمين، المنتجات الأسرية",
+          "prompt": "عائلة خليجية سعيدة — أب بثوب وأم بعباءة وثلاثة أطفال — في غرفة معيشة فاخرة معاصرة بإضاءة دافئة\nHappy Gulf Arab family, father in white thobe, mother in elegant abaya, three children, modern luxury living room, warm golden lighting, candid natural moment, photorealistic --ar 16:9 --v 8.1 --no western clothing, bare skin",
+          "output": "البرومبت العادي 'happy family' ينتج عائلة غربية. هذا البرومبت ينتج عائلة خليجية أصيلة يتعرف إليها الجمهور السعودي فوراً.",
+          "guidance": "عدّل عدد الأطفال وأعمارهم حسب الحملة. استبدل 'living room' بـ 'garden' أو 'dining table' لمشاهد مختلفة. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "الشاب السعودي العصري",
+          "useCase": "إعلانات الإلكترونيات، السوشيال ميديا، منتجات الشباب",
+          "prompt": "شاب سعودي عصري في الثلاثينيات، يرتدي ثوباً كاجوال وكاب، يمسك هاتفاً ذكياً بابتسامة عفوية في كافيه رياض\nYoung modern Saudi man in casual thobe and cap, holding smartphone, relaxed café setting in Riyadh, natural candid smile, soft daylight, lifestyle photography style --ar 4:5 --v 8.1",
+          "output": "بدون تحديد: شاب عربي بملابس غربية كاملة. مع هذا البرومبت: شاب سعودي يجمع بين الأصالة والعصرية بشكل طبيعي.",
+          "guidance": "استبدل 'cap' بـ 'keffiyeh' لمظهر أكثر تقليدية. أضف 'coffee cup' أو 'laptop' لتغيير السياق."
+        },
+        {
+          "title": "الطفل الخليجي المبتسم",
+          "useCase": "إعلانات المدارس، منتجات الأطفال، حملات الصحة والتعليم",
+          "prompt": "طفل خليجي في السابعة من العمر بثوب أبيض صغير وعقال، يبتسم بفرح وبين يديه كتاب\nHappy Gulf Arab boy aged 7 wearing miniature white thobe and agal, holding colorful book, bright school setting, warm natural lighting, joyful expression, photorealistic --ar 4:5 --v 8.1",
+          "output": "البرومبت العادي 'happy child' ينتج طفلاً غربياً. هذا البرومبت ينتج طفلاً خليجياً محبباً يناسب أي حملة تعليمية أو أسرية في السوق السعودية.",
+          "guidance": "غيّر 'thobe and agal' إلى 'school uniform' لبيئة مدرسية. للطفلة أضف 'little girl in abaya and hijab' بدلاً من ذلك."
+        },
+        {
+          "title": "كبير السن بالعقال",
+          "useCase": "إعلانات البنوك، التراث، الثقة والمصداقية، منتجات التأمين",
+          "prompt": "رجل خليجي في الستينيات بوجه مهيب وذو تجاعيد حكمة، يرتدي ثوباً وبشتاً وعقالاً، في مجلس تقليدي مع دلة قهوة عربية\nDignified Gulf Arab elder in his 60s, wearing thobe with bisht and agal, wise expressive face, traditional majlis setting, dallah coffee pot nearby, warm amber lighting, photorealistic portrait --ar 3:4 --v 8.1",
+          "output": "هذا النوع من الصور يستحضر الثقة والأصالة والتراث. يُستخدم في حملات تبني على قيمة الخبرة والجذور الخليجية.",
+          "guidance": "أضف 'prayer beads in hand' لإضفاء طابع روحاني. استخدم 'outdoor palm tree background' لمشهد خارجي. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "فريق موظفين متنوع",
+          "useCase": "إعلانات الشركات الكبرى، الموارد البشرية، التقارير السنوية",
+          "prompt": "فريق عمل سعودي متنوع — ثلاثة رجال بأثواب وامرأتان محجبتان — يتحلقون حول طاولة اجتماعات حديثة بتعبيرات إيجابية\nDiverse Saudi work team, three men in thobes and two women in hijab and abaya, gathered around modern meeting table, collaborative discussion, bright modern office, professional lighting --ar 16:9 --v 8.1 --no western clothing",
+          "output": "صور الفرق التجارية العادية لا تعكس بيئة العمل الخليجية. هذا البرومبت ينتج صورة تعكس واقع الشركات السعودية بدقة.",
+          "guidance": "عدّل نسبة الجنسين وعدد الأفراد حسب احتياج الحملة. أضف 'laptop screens and documents' لإضفاء طابع عملي."
+        },
+        {
+          "title": "الطالبة الجامعية",
+          "useCase": "إعلانات الجامعات، البعثات الدراسية، التعليم الإلكتروني",
+          "prompt": "طالبة جامعية سعودية بحجاب أنيق وعباءة، تحمل كتباً وتبتسم أمام مبنى جامعي حديث\nYoung Saudi female university student in stylish hijab and abaya, carrying textbooks, smiling confidently in front of modern campus building, bright natural daylight, photorealistic --ar 4:5 --v 8.1 --no bare hair, tight clothing",
+          "output": "صور الطلاب الجامعيين العادية لا تناسب الواقع الخليجي. هذا البرومبت يُنتج صورة تمثل الطالبة السعودية كما تريد الجامعات والمؤسسات التعليمية.",
+          "guidance": "استبدل 'campus building' بـ 'library interior' أو 'online learning setup at home' لسياقات مختلفة."
+        },
+        {
+          "title": "الطبيب السعودي",
+          "useCase": "إعلانات المستشفيات، التأمين الصحي، شركات الأدوية",
+          "prompt": "طبيب سعودي بمعطف أبيض فوق ثوبه، يحمل ملف طبياً ويبتسم بثقة في ممر مستشفى حديث\nSaudi doctor wearing white medical coat over traditional thobe, holding patient file, confident smile, modern hospital corridor, clinical lighting, professional medical portrait --ar 3:4 --v 8.1",
+          "output": "صور الأطباء العادية تُنتج أشخاصاً غربيين. هذا البرومبت ينتج طبيباً سعودياً أصيلاً يجمع بين المهنية والهوية الوطنية.",
+          "guidance": "للطبيبة أضف 'female Saudi doctor in hijab under medical cap'. استبدل 'hospital corridor' بـ 'examination room' أو 'operating theater background'."
+        },
+        {
+          "title": "المعلم في الفصل",
+          "useCase": "إعلانات المدارس، وزارة التعليم، التطبيقات التعليمية",
+          "prompt": "معلم سعودي بثوب وعقال يشرح على سبورة تفاعلية لطلاب منتبهين في فصل دراسي حديث\nSaudi male teacher in thobe and agal explaining on smart interactive board, attentive students in modern classroom, warm educational environment, natural lighting --ar 16:9 --v 8.1",
+          "output": "صور المعلمين العادية تُنتج أشخاصاً بملابس غربية في فصول غربية. هذا البرومبت ينتج مشهداً تعليمياً سعودياً أصيلاً.",
+          "guidance": "للمعلمة استخدم 'Saudi female teacher in hijab'. أضف 'STEM classroom' أو 'art class' لتخصيص المادة."
+        },
+        {
+          "title": "فريق كرة القدم الخليجي",
+          "useCase": "إعلانات الرياضة، الرعاية، منتجات اللياقة البدنية",
+          "prompt": "فريق شباب سعودي لكرة القدم بملابس رياضية خضراء يحتفلون بهدف في ملعب حديث مضاء بإضاءة ملعبية\nSaudi youth football team in green sports uniforms celebrating goal, modern illuminated stadium, dynamic action, photorealistic sports photography --ar 16:9 --v 8.1",
+          "output": "صور الرياضة العادية تُنتج لاعبين غربيين. هذا البرومبت ينتج شباباً عربياً بملامح خليجية في بيئة رياضية سعودية حقيقية.",
+          "guidance": "غيّر لون الزي حسب الفريق المستهدف. أضف 'Saudi national team green and white jersey' لصور المنتخب."
+        },
+        {
+          "title": "الفتاة المحجبة مع اللابتوب",
+          "useCase": "إعلانات التقنية، العمل عن بُعد، البرامج والتطبيقات",
+          "prompt": "فتاة خليجية شابة بحجاب وردي أنيق تعمل على لابتوب في مقهى عصري، تعبيرها منتبه ومركّز\nYoung Gulf Arab woman in elegant pink hijab working on laptop in modern café, focused expression, warm natural light from window, contemporary lifestyle, photorealistic --ar 4:5 --v 8.1 --no bare hair, revealing clothing",
+          "output": "صور العمل التقني العادية تُنتج أشخاصاً غربيين. هذا البرومبت ينتج صورة تعكس الواقع الرقمي للمرأة السعودية الحديثة.",
+          "guidance": "أضف 'code on screen' لإعلانات التقنية أو 'design software' لإعلانات الإبداع. غيّر لون الحجاب حسب هوية العلامة."
+        },
+        {
+          "title": "الرجل المتقاعد في الحديقة",
+          "useCase": "إعلانات التقاعد، الأدوية، منتجات الصحة لكبار السن",
+          "prompt": "رجل خليجي متقاعد في الستينيات بثوب أبيض يجلس في حديقة منزلية خضراء ويشرب قهوة عربية بهدوء وسعادة\nRetired Gulf Arab man in his 60s in white thobe, sitting peacefully in lush home garden with Arabic coffee cup, gentle morning light, serene contentment, photorealistic --ar 4:5 --v 8.1",
+          "output": "صور كبار السن العادية تُنتج شخصيات غربية. هذا البرومبت ينتج صورة دافئة تعكس حياة المتقاعد الخليجي.",
+          "guidance": "أضف 'grandchildren playing nearby' لمشهد أسري. استبدل 'garden' بـ 'home majlis' لمشهد داخلي تقليدي."
+        },
+        {
+          "title": "الأم مع أطفالها",
+          "useCase": "إعلانات الأسرة، منتجات الأمومة، التعليم، الطعام",
+          "prompt": "أم خليجية محجبة بعباءة زرقاء فاتحة تجلس مع طفلين صغيرين على أريكة منزل دافئ يتشاركون القراءة بفرح\nGulf Arab mother in light blue abaya and hijab sitting with two young children on couch, sharing a storybook, warm home interior, soft natural light, genuine family warmth, photorealistic --ar 16:9 --v 8.1 --no bare hair",
+          "output": "صور الأمهات العادية لا تعكس هوية الأم الخليجية. هذا البرومبت ينتج صورة أسرية دافئة وأصيلة تناسب السوق الخليجية.",
+          "guidance": "أضف 'kitchen background' لإعلانات الطعام أو 'educational toys' للمنتجات التعليمية."
+        },
+        {
+          "title": "الرجل في البيئة الرياضية",
+          "useCase": "إعلانات اللياقة، صالات الجيم، ملابس الرياضة",
+          "prompt": "شاب سعودي في الثلاثينيات بزي رياضي أنيق يتمرن في صالة جيم فاخرة حديثة بتعبير مركّز وحيوي\nFit young Saudi man in premium sportswear working out in modern luxury gym, focused determined expression, dramatic gym lighting, motivational atmosphere, sports photography style --ar 4:5 --v 8.1",
+          "output": "صور الرياضة العادية تُنتج أشخاصاً غربيين. هذا البرومبت ينتج شاباً سعودياً رياضياً بملامح خليجية واضحة.",
+          "guidance": "أضف 'Saudi flag colors in gym logo' لتأكيد الهوية الوطنية. استخدم 'outdoor running in Riyadh' لمشهد خارجي."
+        }
+      ]
+    },
+    {
+      "title": "البيئات والمشاهد المحلية",
+      "description": "15 برومبت للمشاهد والبيئات الخليجية الأكثر استخداماً في التصميم والإعلان",
+      "items": [
+        {
+          "title": "مكتب فاخر في الرياض",
+          "useCase": "إعلانات الشركات، المحتوى المؤسسي، العقارات التجارية",
+          "prompt": "مكتب تنفيذي فاخر في الرياض بإطلالة على أفق المدينة، طاولة كبيرة، إضاءة ذهبية دافئة وعناصر عربية في الديكور\nLuxury executive office in Riyadh with panoramic city skyline view, large mahogany desk, warm golden ambient lighting, Arabic architectural details, Kingdom Tower visible outside, photorealistic interior design --ar 16:9 --v 8.1",
+          "output": "المكتب العادي يبدو أوروبياً أو أمريكياً. هذا البرومبت ينتج مكتباً خليجياً فاخراً يعكس الطموح السعودي الحديث.",
+          "guidance": "أضف 'Vision 2030 poster on wall' لتعزيز الهوية الوطنية. استبدل 'mahogany desk' بـ 'glass desk' لمظهر أكثر حداثة. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "واجهة محل خليجي",
+          "useCase": "إعلانات التجزئة، هوية المحلات، قطاع التسوق",
+          "prompt": "واجهة متجر خليجي فاخر في شارع تجاري، بإضاءة دافئة وزجاج أنيق ونافذة عرض مصممة بذوق ولافتة عربية\nElegant Gulf retail store front on commercial street, warm inviting interior lighting visible through glass, tasteful Arabic signage, premium display window, golden hour warm exterior light, photorealistic --ar 16:9 --v 8.1",
+          "output": "واجهة المحل العادية تبدو غربية أو آسيوية. هذا البرومبت ينتج واجهة تجارية ذات هوية خليجية راقية.",
+          "guidance": "أضف نوع المتجر: 'perfume shop front' أو 'abaya boutique display'. غيّر اللافتة حسب العلامة التجارية."
+        },
+        {
+          "title": "شارع جدة ليلاً",
+          "useCase": "إعلانات السياحة، مطاعم جدة، الفعاليات الليلية",
+          "prompt": "شارع تاريخي في جدة القديمة ليلاً مع إضاءة ذهبية تنعكس على الرشاشيات الخشبية التقليدية، مشاة ومطاعم مضيئة\nHistoric Jeddah Al-Balad street at night, golden lantern lighting reflecting on traditional wooden Roshan balconies, pedestrians in thobes and abayas, glowing restaurants, warm atmospheric photography --ar 16:9 --v 8.1",
+          "output": "شارع ليلي عادي يبدو من أي مدينة عالمية. هذا البرومبت ينتج مشهداً جدّاوياً أصيلاً فريداً لا يُخطئه أحد.",
+          "guidance": "استبدل 'Al-Balad' بـ 'Corniche' لشارع حديث. أضف 'Eid decorations' لأجواء موسمية. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "مطعم عربي فاخر",
+          "useCase": "إعلانات المطاعم، السياحة الغذائية، تصوير الفعاليات",
+          "prompt": "مطعم عربي فاخر بديكور إسلامي كلاسيكي، أقواس مزخرفة وإضاءة نحاسية دافئة وطاولات بمفارش بيضاء وزهور طازجة\nOpulent Arabic fine dining restaurant, ornate Islamic arch decor, warm copper lantern lighting, white linen tablecloths, fresh flowers, rich wood paneling, elegant and inviting atmosphere --ar 16:9 --v 8.1",
+          "output": "صورة مطعم عادية تبدو غربية أو آسيوية. هذا البرومبت ينتج مطعماً عربياً فاخراً يستحضر الضيافة الأصيلة.",
+          "guidance": "أضف 'Arabic mezze spread on table' لمشهد طعام. استبدل 'Islamic arch' بـ 'contemporary Arabic interior' لمظهر حديث."
+        },
+        {
+          "title": "جلسة رمضانية",
+          "useCase": "إعلانات رمضان، المطاعم، العروض الموسمية",
+          "prompt": "مجلس رمضاني دافئ ومضاء بفوانيس ذهبية، مائدة إفطار خليجية وفيرة، أجواء أسرية مميزة\nWarm Ramadan gathering scene, traditional Gulf iftar table with dates and Arabic dishes, golden fanoos lanterns, family sitting together in traditional attire, warm amber atmospheric lighting, festive spiritual mood --ar 16:9 --v 8.1",
+          "output": "مشهد رمضاني عادي لا يعكس خصوصية الرمضان الخليجي. هذا البرومبت ينتج أجواء رمضانية خليجية أصيلة ودافئة.",
+          "guidance": "أضف 'mosque silhouette in background' للطابع الروحاني. استخدم هذا البرومبت مطلع رمضان لجميع حملاتك الموسمية."
+        },
+        {
+          "title": "فعالية اليوم الوطني",
+          "useCase": "إعلانات اليوم الوطني، الحملات الوطنية، المشاعر الوطنية",
+          "prompt": "حشد يحتفل باليوم الوطني السعودي، أعلام خضراء وأضواء ترفيهية، أناس بأثواب وأعلام على وجوههم\nSaudi National Day celebration crowd, green Saudi flags and fireworks, people in thobes with flag face paint, festive outdoor event, night sky with colorful lights, patriotic energy --ar 16:9 --v 8.1",
+          "output": "مشهد احتفالي عادي يبدو عالمياً. هذا البرومبت ينتج مشهداً وطنياً سعودياً مميزاً لحملات اليوم الوطني.",
+          "guidance": "أضف 'Vision 2030 light installation' لربط الاحتفال بمسيرة التطوير. استخدم --ar 9:16 لقصص الإنستغرام."
+        },
+        {
+          "title": "السوق الشعبي التقليدي",
+          "useCase": "إعلانات السياحة، المنتجات اليدوية، الهوية الثقافية",
+          "prompt": "سوق تقليدي خليجي بتوابل ملونة وعطور ومنتجات يدوية، ضيق الأزقة وإضاءة طبيعية تتسرب من الأسقف\nTraditional Gulf souq with colorful spice stalls, perfume bottles, handcraft displays, narrow alley with filtered sunlight from above, traditional merchants in thobes, warm dusty golden atmosphere --ar 16:9 --v 8.1",
+          "output": "سوق عادي يبدو من أي دولة. هذا البرومبت ينتج سوقاً خليجياً تقليدياً أصيلاً يستحضر عراقة المنطقة.",
+          "guidance": "أضف 'oud and incense prominent display' للتأكيد على العطارة الخليجية. استبدل بـ 'Riyadh Dira souq' أو 'Jeddah old market' للتحديد. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "المنزل الخليجي العصري",
+          "useCase": "إعلانات العقارات، الأثاث، التصميم الداخلي",
+          "prompt": "غرفة معيشة في منزل خليجي فاخر حديث تجمع بين العمارة العربية المعاصرة والأثاث الفاخر والإضاءة الذهبية الدافئة\nModern luxury Gulf villa interior living room, contemporary Arabic architecture with geometric patterns, high ceilings, plush Arabic-inspired furnishings, warm golden ambient lighting, natural stone floor --ar 16:9 --v 8.1",
+          "output": "غرفة معيشة عادية تبدو أوروبية أو آسيوية. هذا البرومبت ينتج مشهداً خليجياً راقياً يعكس الذوق السعودي الحديث.",
+          "guidance": "أضف 'date palm visible through window' لتأكيد البيئة. استبدل بـ 'majlis room' لغرفة استقبال تقليدية."
+        },
+        {
+          "title": "كافيه الرياض",
+          "useCase": "إعلانات المقاهي، السوشيال ميديا، المشروبات والمطاعم",
+          "prompt": "كافيه عصري في الرياض بتصميم مزيج بين التراث والحداثة، إضاءة نباتية وطاولات خشبية وزبائن شباب سعوديون\nModern Riyadh café with contemporary Arabic design elements, warm plant-lined interior, wooden tables, young Saudi customers in casual thobes and abayas, golden warm lighting, lifestyle photography --ar 4:5 --v 8.1",
+          "output": "كافيه عادي يبدو من أي مدينة غربية. هذا البرومبت ينتج كافيه رياضي عصري بهوية سعودية واضحة.",
+          "guidance": "أضف 'Arabic calligraphy mural on wall' للطابع الثقافي. استبدل بـ 'Jeddah beachside café' لموقع مختلف."
+        },
+        {
+          "title": "الصحراء مع الخيمة الفاخرة",
+          "useCase": "إعلانات السياحة الفاخرة، الضيافة الصحراوية، الفنادق",
+          "prompt": "خيمة صحراوية فاخرة في الربع الخالي عند الغروب، كثبان ذهبية، فانوس نحاسي وسط ديكور عربي راقٍ\nLuxury desert camp tent in Empty Quarter at golden sunset, towering sand dunes, ornate brass lanterns, premium Arabian carpets visible inside, warm desert glow, cinematic wide shot --ar 21:9 --v 8.1",
+          "output": "صورة صحراء عادية تبدو جافة وفارغة. هذا البرومبت ينتج مشهداً صحراوياً خليجياً فاخراً يستحضر تجربة الضيافة الملكية.",
+          "guidance": "أضف 'camel silhouette' للطابع الكلاسيكي. استخدم --ar 21:9 للغلافات الواسعة وللمشاهد الدرامية."
+        },
+        {
+          "title": "مركز تجاري حديث",
+          "useCase": "إعلانات التجزئة، العروض والتخفيضات، التسوق الموسمي",
+          "prompt": "ردهة مركز تجاري خليجي فاخر، سقف زجاجي عالٍ وإضاءة بيضاء ناصعة، حشد من المتسوقين الخليجيين\nLuxury Gulf shopping mall grand atrium, soaring glass ceiling, bright premium white lighting, well-dressed Saudi shoppers, high-end brand stores, modern clean architecture, busy elegant atmosphere --ar 16:9 --v 8.1",
+          "output": "صورة مول عادية تبدو من دبي مول أو مول أمريكي. هذا البرومبت ينتج مشهداً خليجياً تسوقياً حيوياً وأنيقاً.",
+          "guidance": "أضف 'Eid sale banners' أو 'National Day decorations' للمواسم. استبدل بـ 'outdoor shopping promenade' للأسواق الخارجية."
+        },
+        {
+          "title": "الحديقة العامة",
+          "useCase": "إعلانات المشاريع العقارية، الصحة العامة، المجتمعات السكنية",
+          "prompt": "حديقة عامة خضراء فسيحة في مدينة خليجية حديثة مع ممرات مضاءة وعائلات تمشي ونافورة مركزية وأشجار نخيل\nLush public park in modern Saudi city, wide palm-lined walking paths, families strolling in thobes and abayas, central fountain, warm evening golden light, peaceful community atmosphere --ar 16:9 --v 8.1",
+          "output": "حديقة عامة عادية تبدو أوروبية. هذا البرومبت ينتج فضاء عاماً خليجياً يعكس حياة المجتمع السعودي الحديث.",
+          "guidance": "أضف 'children playground area' للمشاريع الأسرية. استبدل بـ 'Riyadh Al-Ula park' أو 'Jeddah Corniche park' للتحديد."
+        },
+        {
+          "title": "المستشفى الحديث",
+          "useCase": "إعلانات المستشفيات، التأمين الصحي، المعدات الطبية",
+          "prompt": "ردهة استقبال مستشفى خاص حديث في السعودية، ديكور أبيض نظيف وإضاءة طبية وطاقم طبي سعودي يرحب بالمرضى\nModern private Saudi hospital reception lobby, bright clean white interior, warm welcoming medical staff in white coats over thobes, professional healthcare atmosphere, state-of-the-art equipment visible --ar 16:9 --v 8.1",
+          "output": "صورة مستشفى عادية تبدو أجنبية. هذا البرومبت ينتج مشهداً طبياً سعودياً احترافياً يعزز الثقة بالمنشآت الصحية المحلية.",
+          "guidance": "أضف 'Saudi MOH logo visible' لمستشفيات حكومية. استخدم 'pediatric ward with Arabic parents' لأقسام الأطفال."
+        },
+        {
+          "title": "مطار سعودي حديث",
+          "useCase": "إعلانات الطيران، السياحة، خدمات السفر",
+          "prompt": "صالة مطار سعودي حديث بمعمار مستوحى من الثقافة العربية، مسافرون بأثواب وحقائب سفر فاخرة وإضاءة دافئة\nModern Saudi international airport terminal with contemporary Arabic architectural motifs, travellers in thobes carrying luggage, warm sophisticated lighting, duty-free shops, flight information boards --ar 16:9 --v 8.1",
+          "output": "صورة مطار عادية تبدو من أي مطار عالمي. هذا البرومبت ينتج مشهداً مطارياً يعكس الهوية السعودية الحضارية الحديثة.",
+          "guidance": "أضف 'Hajj and Umrah departure area' لخدمات الحج. استخدم 'King Abdulaziz International Airport Jeddah' للتحديد."
+        },
+        {
+          "title": "الشاطئ الخليجي",
+          "useCase": "إعلانات السياحة، الفنادق الساحلية، المناطق الترفيهية",
+          "prompt": "شاطئ خليجي خلّاب عند الغروب، ماء دافئ بلون الفيروز، أسرة شاطئية فاخرة وعائلات خليجية ترتاح بملابس محتشمة\nBeautiful Gulf coast beach at sunset, warm turquoise waters, luxury beach cabanas, Gulf families relaxing in modest summer attire, golden hour reflections on water, cinematic travel photography --ar 16:9 --v 8.1 --no revealing swimwear, bikini",
+          "output": "صورة شاطئ عادية تبدو من أوروبا أو جنوب شرق آسيا. هذا البرومبت ينتج مشهداً ساحلياً خليجياً محتشماً وجميلاً.",
+          "guidance": "أضف 'Khobar or Qatif coastline' للخليج السعودي. استخدم --no bikini, revealing swimwear دائماً في المشاهد الساحلية الخليجية."
+        }
+      ]
+    },
+    {
+      "title": "الهوية البصرية والعلامات التجارية",
+      "description": "12 برومبت لتصاميم العلامات التجارية والمواد التسويقية ذات الهوية العربية",
+      "items": [
+        {
+          "title": "شعار مطعم عربي",
+          "useCase": "تأسيس هوية بصرية لمطاعم ومقاهي خليجية",
+          "prompt": "شعار مطعم عربي فاخر يجمع بين الخط العربي والزخارف الإسلامية بألوان ذهبية وعميقة\nElegant Arabic restaurant logo design, Arabic calligraphy integrated with Islamic geometric ornaments, deep burgundy and gold color palette, sophisticated luxury feel, vector style, white background, clean professional branding --ar 1:1 --v 8.1",
+          "output": "شعار عادي لمطعم يبدو غربياً أو آسيوياً. هذا البرومبت ينتج شعاراً يستحضر الهوية العربية الفاخرة بأسلوب تجاري احترافي.",
+          "guidance": "غيّر 'burgundy and gold' إلى 'navy and copper' أو 'emerald and gold' لشخصيات بصرية مختلفة. أضف 'minimalist modern style' للحصول على تصميم أكثر معاصرة. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "بوستر رمضاني",
+          "useCase": "إعلانات الشركات في رمضان، عروض رمضان، منصات التواصل",
+          "prompt": "بوستر رمضاني فاخر — هلال ذهبي وفانوس وخلفية زرقاء نجمية داكنة، مساحة فارغة أنيقة في المنتصف لإضافة الخط العربي لاحقاً\nLuxury Ramadan poster design, golden crescent moon and ornate lantern, deep starry blue background, elegant empty space in center for Arabic calligraphy overlay, no embedded text, photorealistic --ar 4:5 --v 8.1",
+          "output": "بوستر رمضاني عادي يبدو مشابهاً لآلاف البوسترات. هذا البرومبت ينتج تصميماً رمضانياً راقياً يتميز بعمق بصري.",
+          "guidance": "لا تطلب كتابة 'رمضان كريم' أو أي نص عربي داخل الصورة — أدوات AI تفشل في النصوص العربية الصحيحة. بدلاً من ذلك اطلب مساحة فارغة وأضف النص في Canva أو Photoshop. بدّل [ألوان العلامة التجارية] لتناسب هويتك البصرية."
+        },
+        {
+          "title": "غلاف كتاب عربي",
+          "useCase": "نشر الكتب، الدورات الإلكترونية، المنتجات الرقمية",
+          "prompt": "غلاف كتاب عربي احترافي بتصميم مفاهيمي مجرد وألوان غنية تعكس [موضوع الكتاب]، مساحة فارغة في الأعلى والأسفل لإضافة العنوان والمؤلف لاحقاً\nProfessional Arabic book cover design, conceptual abstract imagery reflecting [book theme], rich layered colors, clean empty banner space at top and bottom for title typography overlay, no embedded text --ar 2:3 --v 8.1",
+          "output": "غلاف كتاب عادي يبدو هاوياً. هذا البرومبت ينتج غلافاً احترافياً يضاهي إصدارات دور النشر الكبرى.",
+          "guidance": "أضف عنوان الكتاب واسم المؤلف بعد التصدير في Canva أو Adobe. بدّل [موضوع الكتاب] بكلمات وصفية: رواية تاريخية، كتاب تطوير ذات، رواية خيال علمي."
+        },
+        {
+          "title": "لافتة محل",
+          "useCase": "هوية بصرية للمحلات التجارية والمطاعم والخدمات",
+          "prompt": "واجهة [نوع المحل] خليجي أنيق بتصميم نظيف، لوحة معدنية مصقولة مع إضاءة خلفية ذهبية، مساحة مستطيلة فارغة بارزة في وسط اللوحة لوضع اسم المحل لاحقاً\nElegant [store type] Gulf retail storefront, polished steel signage panel with warm golden backlight, prominent blank rectangular space in center for store name overlay, clean minimalist design --ar 16:9 --v 8.1",
+          "output": "لافتة عادية تبدو اعتيادية. هذا البرومبت ينتج لافتة راقية تعكس هوية تجارية احترافية تشد الانتباه.",
+          "guidance": "الواجهة التجارية تحتاج اسم المحل فعلياً — اطلب من الأداة مساحة فارغة وضع الاسم في Canva. بدّل [نوع المحل]: كافيه، صيدلية، مكتبة، استوديو تصوير."
+        },
+        {
+          "title": "هوية بصرية كافيه",
+          "useCase": "بناء هوية متكاملة للمقاهي الخليجية",
+          "prompt": "هوية بصرية متكاملة لكافيه خليجي عصري — شعار وألوان وأنماط تجمع بين التراث والحداثة بأسلوب مميز\nComplete brand identity mockup for modern Gulf café, logo design with Arabic coffee motif, warm terracotta and cream color palette, Arabic pattern integration, displayed on cups and packaging, cohesive premium brand feel --ar 4:3 --v 8.1",
+          "output": "هوية عادية لكافيه تبدو مألوفة وغير مميزة. هذا البرومبت ينتج هوية بصرية خليجية متكاملة وذات شخصية واضحة.",
+          "guidance": "غيّر 'terracotta and cream' إلى 'deep teal and gold' أو 'black and rose gold' لشخصيات مختلفة. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "بطاقة عمل عربية",
+          "useCase": "هوية الأفراد المهنية، الشركات الصغيرة، المستشارون",
+          "prompt": "بطاقة عمل احترافية بتصميم عربي أنيق، اسم بالعربية والإنجليزية وزخارف خفية وألوان غامقة فاخرة\nProfessional Arabic business card design, bilingual Arabic and English name typography, subtle Islamic geometric pattern border, dark navy with gold accent color, premium matte finish feel, laid flat mockup --ar 16:9 --v 8.1",
+          "output": "بطاقة عمل عادية تبدو مطبوعة من أي محل. هذا البرومبت ينتج بطاقة عمل راقية ذات هوية عربية مميزة.",
+          "guidance": "غيّر 'navy and gold' إلى 'white and emerald' أو 'black and copper' لخيارات تصميمية مختلفة."
+        },
+        {
+          "title": "بنر إعلاني",
+          "useCase": "الإعلانات الرقمية، المواقع الإلكترونية، حملات جوجل",
+          "prompt": "بنر إعلاني رقمي لعرض [نوع المنتج أو الخدمة] السعودي، صورة [المنتج] جودة عالية وألوان [هوية العلامة التجارية]، مساحة نصية واضحة في يمين البنر لإضافة العنوان لاحقاً\nDigital advertising banner for [product/service] Saudi offer, high-quality [product] hero shot, [brand colors] color scheme, clean empty text zone on right side for headline overlay, no embedded text --ar 16:9 --v 8.1",
+          "output": "بنر عادي يبدو مزدحماً وغير منظم. هذا البرومبت ينتج بنراً إعلانياً نظيفاً ومرتباً يجذب النقرات.",
+          "guidance": "البنرات الإعلانية تحتاج دائماً تعديل النصوص — اطلب مساحة فارغة وأضف في Canva. بدّل [نوع المنتج] و[هوية العلامة]: عطور / ذهبي وأسود، عيادة / أبيض وأزرق."
+        },
+        {
+          "title": "كفر منتج",
+          "useCase": "تغليف المنتجات، العلامات التجارية للمنتجات الاستهلاكية",
+          "prompt": "تصميم كفر تغليف منتج خليجي فاخر — عطر أو تمر أو قهوة — بزخارف عربية ذهبية وخط أنيق وحضور راقٍ\nLuxury Gulf product packaging design for premium Arabic product, ornate gold Arabic geometric patterns, elegant bilingual typography, rich dark background with metallic gold details, premium unboxing feel --ar 2:3 --v 8.1",
+          "output": "كفر منتج عادي يبدو محلي الصنع. هذا البرومبت ينتج تغليفاً فاخراً يضاهي منتجات العلامات العالمية.",
+          "guidance": "حدد المنتج: 'oud perfume packaging' أو 'premium dates gift box' أو 'Arabic coffee tin' لنتائج أدق. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "منيو مطعم",
+          "useCase": "قوائم الطعام للمطاعم والكافيهات",
+          "prompt": "منيو مطعم عربي فاخر بتصميم عربي كلاسيكي، أسماء الأطباق بالعربية ووصف أنيق وصور طعام احترافية وألوان غنية\nLuxury Arabic restaurant menu design, classical Arabic ornamental layout, Arabic dish names with elegant descriptions, professional food photography placeholders, rich burgundy and gold color scheme, premium printed menu feel --ar 2:3 --v 8.1",
+          "output": "منيو عادي يبدو رخيصاً وغير مميز. هذا البرومبت ينتج تصميم منيو احترافي يعكس مستوى المطعم الراقي.",
+          "guidance": "أضف 'folded leather menu cover' لمنيو متميز. استبدل 'burgundy and gold' بألوان هوية مطعمك."
+        },
+        {
+          "title": "بوستر عروض تجارية",
+          "useCase": "إعلانات التخفيضات والعروض الموسمية والخصومات",
+          "prompt": "بوستر عروض تجاري جذاب بعنوان عربي كبير وأرقام خصم بارزة وألوان جريئة دافئة تستحضر العجلة والإثارة\nEye-catching Arabic promotional sale poster, bold large Arabic headline, prominent percentage discount numbers, warm energetic red and gold colors, dynamic composition, urgency and excitement, commercial poster design --ar 9:16 --v 8.1",
+          "output": "بوستر عرض عادي يضيع بين الآلاف. هذا البرومبت ينتج بوستراً جذاباً يستوقف العين ويحرك الشراء.",
+          "guidance": "استخدم --ar 1:1 للمنشورات المربعة و--ar 9:16 للقصص. أضف 'countdown clock graphic' لتعزيز الإلحاحية. بدّل العناصر الوصفية في البرومبت حسب احتياجك: [نوع الشخصية/البيئة/النشاط]."
+        },
+        {
+          "title": "غلاف سوشيال ميديا",
+          "useCase": "ملفات الشركات على إنستغرام وتويتر وسناب شات",
+          "prompt": "غلاف سوشيال ميديا لعلامة تجارية خليجية، شعار في المنتصف وزخارف عربية وألوان هوية البراند وتصميم نظيف مهني\nProfessional Gulf brand social media cover, centered brand logo, Arabic geometric ornamental border elements, brand identity colors, clean minimalist professional design, high resolution banner --ar 16:9 --v 8.1",
+          "output": "غلاف سوشيال ميديا عادي يبدو فارغاً أو مزدحماً. هذا البرومبت ينتج غلافاً احترافياً يعكس هوية العلامة بقوة.",
+          "guidance": "حدد المنصة لتعديل الأبعاد: Twitter/X cover --ar 3:1، Instagram profile --ar 1:1."
+        },
+        {
+          "title": "تصميم تطبيق موبايل",
+          "useCase": "واجهات التطبيقات، عروض التقديم، شركات التقنية",
+          "prompt": "واجهة تطبيق موبايل عربي بتصميم RTL أنيق، لوحة ألوان داكنة فاخرة مع تفاصيل ذهبية وأيقونات عربية وقراءة سلسة\nArabic mobile app UI design, right-to-left RTL interface, dark luxury color scheme with gold accents, clean Arabic typography, intuitive navigation, Arabic iconography, premium fintech or lifestyle app aesthetic --ar 9:19.5 --v 8.1",
+          "output": "واجهة تطبيق عادية مبنية للـ LTR تبدو مقلوبة للمستخدم العربي. هذا البرومبت ينتج واجهة RTL سلسة ومريحة للعين العربية.",
+          "guidance": "أضف نوع التطبيق: 'Islamic banking app' أو 'Arabic food delivery' أو 'Quran reading app' للتخصيص."
+        }
+      ]
+    },
+    {
+      "title": "أدوات محددة — Midjourney و Leonardo و Firefly",
+      "description": "13 برومبت مخصص لكل أداة يُظهر نقاط قوتها ومعاملاتها الأمثل",
+      "items": [
+        {
+          "title": "بورتريه شخصي احترافي",
+          "useCase": "صور البروفايل، اللينكد إن، الهوية المهنية",
+          "prompt": "Midjourney: Saudi professional portrait, warm studio lighting, bokeh background --v 8.1 --stylize 750 --ar 4:5\nLeonardo AI: نموذج Realistic Vision / PhotoReal — Saudi professional portrait, clean studio setup, neutral background, sharp focus\nAdobe Firefly: Professional headshot portrait, Gulf professional attire, clean background — آمن تجارياً ومحتشم",
+          "output": "Midjourney ينتج أعمق جمالاً فنياً وإضاءة درامية. Leonardo ينتج أعلى واقعية تصويرية. Firefly يضمن السلامة القانونية التجارية.",
+          "guidance": "للنشر التجاري المرخّص استخدم Firefly. للسوشيال ميديا والمحتوى الإبداعي استخدم Midjourney. للمنتجات الواقعية استخدم Leonardo."
+        },
+        {
+          "title": "منتج تجاري على خلفية نظيفة",
+          "useCase": "متاجر إلكترونية، إعلانات المنتجات، كتالوجات",
+          "prompt": "Midjourney: [product name] product shot, pure white background, dramatic studio lighting --v 8.1 --stylize 500 --ar 1:1\nLeonardo AI: [product name], white infinity background, professional product photography, soft box lighting, ultra sharp detail — نموذج Product Photography\nAdobe Firefly: [product name] product photo, clean white background, commercial use safe",
+          "output": "Leonardo يتفوق في صور المنتجات لدقة التفاصيل والواقعية. Midjourney يُنتج صوراً بجمال فني أعلى لكن أقل دقة في التفاصيل الصغيرة.",
+          "guidance": "لمتاجر أمازون وسلة استخدم Leonardo لأقرب صورة للمنتج الحقيقي. للمحتوى الإعلاني الإبداعي استخدم Midjourney."
+        },
+        {
+          "title": "مبنى معماري خليجي",
+          "useCase": "إعلانات العقارات، المعماريون، المقاولون",
+          "prompt": "Midjourney: Modern Gulf architecture building exterior, Islamic geometric facade, golden hour light --v 8.1 --stylize 750 --ar 16:9\nLeonardo AI: Modern Saudi architecture, photorealistic render, architectural visualization style, blue sky background\nAdobe Firefly: Contemporary Gulf building, Arabic architectural elements, realistic exterior",
+          "output": "Midjourney ينتج صوراً معمارية ذات جمال فني استثنائي. Leonardo أقرب للتصوير المعماري الحقيقي. Firefly آمن للعروض التقديمية للعملاء.",
+          "guidance": "للعروض التقديمية للعملاء استخدم Leonardo أو Firefly. للمحتوى التسويقي الإبداعي استخدم Midjourney."
+        },
+        {
+          "title": "شعار تجاري",
+          "useCase": "هوية الشركات الناشئة، العلامات التجارية",
+          "prompt": "Midjourney: Minimalist Arabic brand logo, geometric abstraction, clean lines --v 8.1 --stylize 1000 --ar 1:1 --no text, letters\nLeonardo AI: Arabic logo concept, modern minimal design, vector style appearance, white background\nAdobe Firefly: Arabic brand logo design, Islamic geometric inspiration, professional clean style",
+          "output": "كلا الأداتين تنتجان مفاهيم لوجو لكن ليست ملفات vector. الناتج يُستخدم كمرجع بصري للمصمم الجرافيكي لا كملف نهائي.",
+          "guidance": "استخدم الصور المنتجة كإلهام ومرجع بصري وقدّمها للمصمم لإعادة رسمها كـ vector. لا تستخدمها كشعارات نهائية مباشرة."
+        },
+        {
+          "title": "إعلان سناب شات عمودي",
+          "useCase": "إعلانات سناب شات للسوق السعودي",
+          "prompt": "Midjourney: Saudi lifestyle vertical ad, young Saudi in casual thobe, product in hand, bold Arabic text space at top --ar 9:16 --v 8.1\nLeonardo AI: Vertical social media ad, Saudi youth, lifestyle product placement, space for text overlay, clean composition --ar 9:16\nAdobe Firefly: Vertical story ad, Gulf audience, modest styling, clean background for text, commercial safe --ar 9:16",
+          "output": "إعلان سناب شات بشخصية خليجية يحقق معدلات تفاعل أعلى بكثير من الإعلانات ذات الشخصيات الأجنبية في السوق السعودي.",
+          "guidance": "اترك فراغاً في الجزء العلوي للنص دائماً في إعلانات سناب شات. استخدم --ar 9:16 في كل الأدوات لهذا الغرض."
+        },
+        {
+          "title": "تصوير الطعام العربي",
+          "useCase": "إعلانات المطاعم، السوشيال ميديا للطعام، التوصيل",
+          "prompt": "Midjourney: Authentic Arabic mezze spread, overhead flat lay, warm golden lighting, rustic wooden table --v 8.1 --stylize 750 --ar 1:1\nLeonardo AI: Arabic food photography, professional food styling, warm ambient restaurant light, sharp detail mode, square format\nAdobe Firefly: Traditional Gulf meal, appetizing food photography, warm tones, clean composition",
+          "output": "Midjourney ينتج صوراً طعام ذات جمال فني وألوان غنية. Leonardo أكثر واقعية وأقرب للتصوير الاحترافي الفعلي.",
+          "guidance": "للمنيو والكتالوج استخدم Leonardo. للسوشيال ميديا والمحتوى الجذاب استخدم Midjourney. أضف دائماً اسم الطبق في البرومبت."
+        },
+        {
+          "title": "منظر طبيعي خليجي",
+          "useCase": "خلفيات إبداعية، إعلانات السياحة، المحتوى البصري",
+          "prompt": "Midjourney: Arabian desert landscape at golden sunset, dramatic sand dunes, lone camel silhouette, cinematic --v 8.1 --stylize 1000 --ar 21:9\nLeonardo AI: Saudi desert panorama, photorealistic landscape, warm sunset colors, vast empty quarter dunes\nAdobe Firefly: Gulf desert scenic view, Arabian landscape, golden hour, wide panoramic",
+          "output": "Midjourney ينتج مناظر طبيعية ذات جمال سينمائي استثنائي. Leonardo أكثر واقعية تصويرية. كلاهما ممتاز لاستخدامات مختلفة.",
+          "guidance": "للإعلانات السياحية استخدم Midjourney بـ --stylize 1000 للحصول على الجمال الدرامي الأقصى. للتقارير الجغرافية استخدم Leonardo."
+        },
+        {
+          "title": "غلاف كتاب رقمي",
+          "useCase": "منتجات رقمية، كتب إلكترونية، دورات تدريبية",
+          "prompt": "Midjourney: Premium Arabic ebook cover, dramatic typography space, rich dark background, gold elements --v 8.1 --stylize 750 --ar 2:3\nLeonardo AI: Arabic digital book cover, professional editorial design, bold color background, clear title area\nAdobe Firefly: Arabic ebook cover design, professional publishing look, clean layout",
+          "output": "Midjourney ينتج غلافاً بجماليات فنية عالية. Leonardo ينتج غلافاً أكثر قرباً من التصميم التجاري المباشر.",
+          "guidance": "اترك مساحة واضحة للعنوان والمؤلف في أعلى الغلاف. أضف 'space for Arabic title text at top' في البرومبت."
+        },
+        {
+          "title": "صورة بورتريه نسائي محتشم",
+          "useCase": "إعلانات المنتجات النسائية، العباءات، مستحضرات التجميل",
+          "prompt": "Midjourney: Elegant Gulf woman in abaya portrait, soft beauty lighting, natural confident expression --v 8.1 --stylize 750 --ar 4:5 --no bare hair, revealing clothing\nLeonardo AI: Gulf Arab woman beauty portrait, hijab style, soft studio lighting, natural makeup look --no bare hair\nAdobe Firefly: Modest Arab woman portrait, elegant hijab, natural beauty, commercial safe --no revealing",
+          "output": "Firefly هو الأأمن لهذا النوع من المحتوى لأنه مدرب على صور مرخصة ومُصنّف محتشم تلقائياً. Midjourney يحتاج negative prompts دقيقة.",
+          "guidance": "لإعلانات العباءات والمنتجات النسائية ابدأ بـ Firefly أولاً لضمان المحتوى المناسب. عزّز دائماً بـ negative prompts في Midjourney."
+        },
+        {
+          "title": "مشهد ليلي حضري خليجي",
+          "useCase": "إعلانات العقارات الليلية، السياحة، الحياة الليلية الخليجية",
+          "prompt": "Midjourney: Riyadh skyline at night, Kingdom Tower lit up, city lights reflection, cinematic --v 8.1 --stylize 1000 --ar 21:9\nLeonardo AI: Saudi city night photography, urban skyline, warm city lights, photorealistic long exposure style\nAdobe Firefly: Gulf city night view, modern skyline, light trails, architectural photography",
+          "output": "Midjourney ينتج مشاهد ليلية درامية ذات طابع سينمائي استثنائي. Leonardo ينتج صوراً أكثر واقعية كأنها صور طويلة التعريض الضوئي.",
+          "guidance": "أضف 'light trails from cars' لمشهد أكثر حيوية. استخدم --ar 21:9 للخلفيات الواسعة وغلافات المواقع."
+        },
+        {
+          "title": "هوية بصرية متكاملة",
+          "useCase": "عروض تقديمية للعملاء، تأسيس علامات تجارية جديدة",
+          "prompt": "Midjourney: Brand identity mockup spread, Arabic branding, stationery and packaging, cohesive visual system --v 8.1 --stylize 750 --ar 16:9\nLeonardo AI: Brand identity presentation board, Arabic brand elements, business cards and packaging mockup\nAdobe Firefly: Complete brand identity layout, Arabic typography, corporate stationery mockup",
+          "output": "هذا النوع من الصور مثالي لعروض تقديمية الأفكار. يساعد العميل على تخيّل هويته البصرية قبل البدء الفعلي في التصميم.",
+          "guidance": "استخدم هذه الصور كـ mood board في عروض تقديمية العملاء. أضف ألوان علامتهم التجارية في البرومبت للتخصيص."
+        },
+        {
+          "title": "منتج عطور خليجية",
+          "useCase": "إعلانات العطور، متاجر البيرفيوم، الهدايا الفاخرة",
+          "prompt": "Midjourney: Luxury Arabian oud perfume bottle, dramatic dark background, gold and smoke aesthetics, cinematic product shot --v 8.1 --stylize 1000 --ar 4:5\nLeonardo AI: Premium Arabic perfume bottle product photo, dark luxury background, sharp detail, professional studio\nAdobe Firefly: Luxury oud perfume product, dark elegant background, Arabic luxury branding",
+          "output": "صور العطور الخليجية تحتاج درامية بصرية عالية. Midjourney بـ --stylize 1000 يتفوق في هذه الفئة بفارق واضح على باقي الأدوات.",
+          "guidance": "أضف 'oud smoke wisps' أو 'rose petals scattered' للطابع الشرقي الأصيل. استخدم ألوان علامة العطر الفعلية في البرومبت."
+        },
+        {
+          "title": "تصميم ملابس خليجية",
+          "useCase": "تصميم أزياء، محلات العباءات، مصممو الأزياء",
+          "prompt": "Midjourney: Elegant abaya fashion design, modern Gulf modest fashion, flowing fabric, studio fashion photography --v 8.1 --stylize 750 --ar 4:5 --no bare skin\nLeonardo AI: Gulf fashion abaya design, elegant modest wear, professional fashion photography, clean white background --no revealing\nAdobe Firefly: Modern abaya fashion design, Gulf style, modest elegant, clean studio background",
+          "output": "Midjourney يتفوق في تصوير الأقمشة والتفاصيل الجمالية لتصميم الأزياء. Firefly آمن لنشر الصور مباشرة على المتاجر الإلكترونية.",
+          "guidance": "أضف 'fabric texture detail inset' للحصول على نظرة تفصيلية للقماش. للمتاجر الإلكترونية ابدأ بـ Firefly أو Leonardo."
+        }
+      ]
+    },
+    {
+      "title": "الأخطاء الشائعة وكيف تتجاوزها",
+      "description": "20 نصيحة عملية بأسلوب افعل/لا تفعل لتجنب أكثر الأخطاء التي تضيّع وقتك وجودة صورك",
+      "items": [
+        {
+          "title": "كتابة 'Arab' بدون أي تفصيل",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: استخدام كلمة 'Arab' وحدها دون تحديد الجنسية أو المنطقة أو الملامح. الأداة تفسّر 'Arab' بشكل مختلف في كل مرة وقد تنتج شخصيات من شمال أفريقيا أو المشرق أو حتى شخصيات لا تشبه العرب. ✅ الصح: 'Saudi Gulf Arab man with warm olive skin, dark expressive eyes, traditional Gulf features' — كلما زاد التحديد كلما كانت الصورة أقرب لما تريد.",
+          "output": "مع التحديد الكامل تحصل على شخصية خليجية أصيلة في أول محاولة بدلاً من ضياع 10-15 محاولة في البحث عن النتيجة الصحيحة.",
+          "guidance": "تطبّق هذه القاعدة في كل برومبت تكتبه يتضمن شخصية بشرية عربية. لا تستعجل واكتب الوصف الكامل."
+        },
+        {
+          "title": "نسيان تحديد الإضاءة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة البرومبت دون ذكر الإضاءة. الأداة ستختار إضاءة افتراضية عشوائية قد تكون باردة أو قاسية أو لا تناسب الموضوع. ✅ الصح: حدد دائماً نوع الإضاءة — 'warm golden hour lighting' للمشاهد الخارجية، 'soft studio lighting' للبورتريهات، 'warm ambient interior light' للمشاهد الداخلية، 'dramatic Rembrandt lighting' للبورتريهات المهيبة.",
+          "output": "إضافة وصف الإضاءة تحوّل صورة عادية إلى صورة احترافية. الفرق بين 'harsh white light' و'warm golden studio light' هو الفرق بين صورة هاتف وصورة فوتوغرافي محترف.",
+          "guidance": "اجعل الإضاءة ثاني شيء تكتبه بعد وصف الموضوع. للمحتوى الخليجي تذكر دائماً: 'warm = خليجي، cold = غربي'."
+        },
+        {
+          "title": "عدم تحديد نسبة الصورة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: عدم إضافة معامل --ar (aspect ratio) فتنتج الصورة بنسبة 1:1 الافتراضية التي لا تناسب معظم الاستخدامات. ✅ الصح: حدد النسبة حسب الاستخدام — --ar 16:9 للبانرات والمواقع والشاشات العريضة، --ar 9:16 لقصص الإنستغرام وسناب شات، --ar 4:5 للمنشورات والبورتريهات، --ar 1:1 للصور المربعة، --ar 21:9 للخلفيات السينمائية.",
+          "output": "تحديد النسبة الصحيحة يوفّر عليك خطوة المحاصصة والقطع لاحقاً ويضمن ظهور الصورة بشكل مثالي في موضعها.",
+          "guidance": "قبل كتابة أي برومبت اسأل: أين ستُستخدم هذه الصورة؟ واختر النسبة المناسبة فوراً."
+        },
+        {
+          "title": "طلب محتوى محتشم بدون negative prompts",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة 'modest woman' أو 'covered woman' فقط والاعتماد على الوصف الإيجابي وحده. الأدوات قد تُنتج شخصية بملابس شبه كاشفة حتى مع كلمة modest. ✅ الصح: اجمع الوصف الإيجابي الكامل (full hijab, abaya, covered arms) مع negative prompts صريحة: --no bare hair, revealing clothing, tight clothes, short skirts, uncovered arms, western casual wear.",
+          "output": "بدون negative prompts: 30% من المحاولات ستُنتج محتوى غير مناسب ثقافياً. مع negative prompts: نسبة النجاح ترتفع إلى 90%+ من أول محاولة.",
+          "guidance": "اصنع قالب negative prompts جاهزاً للمحتوى الخليجي المحتشم واستخدمه تلقائياً في كل برومبت يتضمن شخصية أنثى."
+        },
+        {
+          "title": "عدم استخدام seed للثبات بين الصور",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: توليد صور متعددة لنفس الشخصية أو المشهد دون تثبيت الـ seed فتظهر الشخصية مختلفة في كل صورة. ✅ الصح: في Midjourney استخدم --seed [رقم] لتثبيت عشوائية الأداة وإنتاج صور متسقة. في Leonardo AI استخدم خيار 'Init Image' أو 'Image Guidance'. الثبات ضروري لبناء شخصية متكررة في سلسلة محتوى.",
+          "output": "بدون seed: شخصية مختلفة في كل صورة لا يمكن بناء هوية بصرية متسقة. مع seed ثابت: نفس الشخصية في كل الصور مع تنويع المشاهد.",
+          "guidance": "سجّل رقم الـ seed الناجح فوراً حين تحصل على صورة تعجبك. ستحتاجه لكل الصور اللاحقة في نفس السلسلة."
+        },
+        {
+          "title": "نسيان أن الأداة تعمل بالإنجليزية فقط",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة البرومبت بالعربية في Midjourney أو Leonardo. هذه الأدوات مدرّبة أساساً على الإنجليزية وتفهمه بشكل أدق وأقوى. النص العربي يُنتج نتائج أضعف وأحياناً غير متوقعة. ✅ الصح: اكتب برومبتاتك بالإنجليزية دائماً. ابدأ بالعربية للفهم والتخطيط ثم ترجم إلى إنجليزية احترافية للإدخال في الأداة.",
+          "output": "البرومبت العربي قد ينتج صورة بمستوى 60-70% من الجودة الممكنة. البرومبت الإنجليزي الدقيق ينتج الجودة الكاملة التي تقدر عليها الأداة.",
+          "guidance": "استخدم الدليل هذا بالضبط: اقرأ الوصف العربي للفهم ثم انسخ النص الإنجليزي للأداة. هذا هو الغرض الأساسي من تنسيق هذا الدليل."
+        },
+        {
+          "title": "إهمال رقم إصدار --v في Midjourney",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة البرومبت دون تحديد إصدار Midjourney. الأداة قد تستخدم إصداراً قديماً بجودة أقل. ✅ الصح: أضف --v 8.1 أو --v 8.1 في نهاية كل برومبت. الإصدار 6.1 هو الأحدث والأفضل في فهم الشخصيات الإنسانية واللغة التفصيلية. استخدم --v 5.2 فقط للأسلوب الفني المختلف حين تريد مظهراً مرسوماً أكثر.",
+          "output": "الفرق بين --v 5 و--v 8.1 يعادل الفرق بين كاميرا 2018 وكاميرا 2024. الإصدار الجديد أفضل في الملامح البشرية وفهم البرومبت المعقد.",
+          "guidance": "اجعل --v 8.1 جزءاً دائماً من نهاية كل برومبت تكتبه في Midjourney. لا تتركه للافتراضي أبداً."
+        },
+        {
+          "title": "عدم تحديد الملابس الثقافية للشخصيات",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: وصف 'Saudi man' أو 'Gulf woman' دون ذكر الملابس. الأداة ستُلبس الشخصية ملابس غربية افتراضياً في معظم الأحيان. ✅ الصح: حدد دائماً الملابس بدقة — 'wearing white thobe and agal' للرجل، 'wearing black abaya and hijab' للمرأة. للملابس العصرية: 'casual thobe in [color]' أو 'modern modest dress with hijab in [color]'.",
+          "output": "تحديد الملابس يحول الشخصية من أجنبي الملبس إلى خليجي أصيل في كل صورة. هذه النقطة مسؤولة عن 40% من فشل البرومبتس الخليجية.",
+          "guidance": "اجعل وصف الملابس العنصر الثالث في بنية برومبتك بعد الموضوع والجنسية. لا تفترض أن الأداة ستختار الصح."
+        },
+        {
+          "title": "إهمال وصف خلفية المشهد",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: وصف الشخصية دون وصف خلفية المشهد أو البيئة. الأداة ستختار خلفية عشوائية لا تناسب الهوية الخليجية. ✅ الصح: أضف دائماً وصفاً للبيئة — 'modern Riyadh office background', 'traditional Gulf majlis interior', 'busy Saudi shopping mall', 'desert landscape at sunset'. الخلفية تكمّل قصة الصورة وتُحكم هويتها الثقافية.",
+          "output": "شخصية خليجية أصيلة أمام خلفية غربية تفسد انطباع الصورة كلها. الخلفية الصحيحة تجعل الصورة قصة متكاملة وذات هوية واضحة.",
+          "guidance": "فكّر دائماً: أين تجري هذه الصورة؟ وأضف الإجابة للبرومبت. جملة قصيرة واحدة تكفي لتحديد البيئة."
+        },
+        {
+          "title": "تجاهل الأسلوب البصري artistic style",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة برومبت وصفي دون تحديد الأسلوب البصري المطلوب. الأداة ستختار أسلوباً عشوائياً قد لا يناسب الغرض. ✅ الصح: حدد الأسلوب دائماً — 'photorealistic' للصور الشبيهة بالتصوير الفعلي، 'editorial photography style' للمحتوى المجلّاتي، 'commercial product photography' للمنتجات، 'cinematic film still' للمشاهد الدرامية، 'lifestyle photography' للمحتوى اليومي الطبيعي.",
+          "output": "نفس الوصف بأسلوب مختلف ينتج صور مختلفة كلياً. 'photorealistic' ينتج صورة واقعية. 'cinematic' ينتج مشهداً درامياً. 'editorial' ينتج صورة مجلة راقية.",
+          "guidance": "قرر الأسلوب البصري قبل كتابة أي برومبت. السؤال الدائم: هل تريد صورة واقعية أم فنية أم تجارية أم درامية؟"
+        },
+        {
+          "title": "كتابة نص عربي في الصورة وتوقع دقته",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: طلب كتابة نص عربي داخل الصورة مثل 'اكتب عبارة رمضان كريم في الصورة'. أدوات الذكاء الاصطناعي لا تزال ضعيفة جداً في كتابة النصوص العربية الصحيحة وتُنتج نصاً مشوهاً وغير قابل للقراءة. ✅ الصح: اطلب مساحة فارغة للنص: 'leave clean space for Arabic text overlay at top' ثم أضف النص يدوياً في Canva أو Photoshop.",
+          "output": "النص العربي المنتج بالذكاء الاصطناعي يبدو خطأً إملائياً في معظم الأحيان. المساحة الفارغة + إضافة النص يدوياً تُنتج نتيجة احترافية 100%.",
+          "guidance": "قاعدة ثابتة: أي صورة تحتاج نصاً عربياً اطلب مساحة فارغة وأضف النص خارج الأداة. وفّر على نفسك عشرات المحاولات الفاشلة."
+        },
+        {
+          "title": "المبالغة في طول البرومبت",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: كتابة برومبت بـ 200 كلمة ظناً أن الطول = الجودة. الأدوات لها حد لاستيعاب المعلومات وتُهمل معظم الكلمات الزائدة أو تتضارب التعليمات. ✅ الصح: البرومبت المثالي بين 30-80 كلمة. ركّز على العناصر الأربعة الأساسية: الموضوع + الأسلوب + الإضاءة + المزاج. أي معلومة لا تؤثر على الصورة مباشرة احذفها.",
+          "output": "برومبت 30 كلمة دقيقة يتفوق على برومبت 150 كلمة عشوائية في 80% من الحالات. الدقة أهم من الطول.",
+          "guidance": "اقرأ برومبتك واسأل: هل تؤثر هذه الجملة على الصورة؟ إذا كانت الإجابة لا، احذفها. الوضوح يسبق الكمال."
+        },
+        {
+          "title": "عدم اختبار variations قبل الاستخدام النهائي",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: أخذ أول صورة تنتجها الأداة واستخدامها مباشرة دون مقارنة البدائل. ✅ الصح: في Midjourney توليد 4 صور افتراضياً — قيّمها جميعاً. في Leonardo ولّد 4-6 صور في batch واحد. في Firefly استخدم خاصية Variations. من بين 4 صور دائماً ستجد واحدة أفضل بكثير من الأولى.",
+          "output": "تقييم 4 صور بدلاً من الأولى وحدها يرفع جودة ناتجك النهائي بشكل ملموس. الأداة تعطيك خيارات لا يجب إهمالها.",
+          "guidance": "اجعل مراجعة الـ variations خطوة إلزامية في سير عملك. لا تستعجل القبول بالأولى."
+        },
+        {
+          "title": "نسيان --stylize في Midjourney",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: عدم استخدام --stylize وترك القيمة الافتراضية 100 التي تُنتج صوراً 'حرفية' وأقل جمالاً فنياً. ✅ الصح: تحكّم في --stylize حسب الهدف — --stylize 200-400 لصور واقعية تجارية، --stylize 500-750 للتوازن بين الواقعية والجمال، --stylize 1000 للصور الفنية الجمالية العالية. القيم العالية تجعل الصورة أجمل لكن أقل التزاماً بالبرومبت.",
+          "output": "نفس البرومبت بـ --stylize 100 يُنتج صورة عادية. بـ --stylize 750 يُنتج صورة احترافية تستحق النشر. الفرق واضح في أول نظرة.",
+          "guidance": "للمحتوى التجاري الواقعي ابقَ بين 300-500. للمحتوى الإبداعي والسوشيال ميديا استخدم 750-1000."
+        },
+        {
+          "title": "إهمال نوع الكاميرا والعدسة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: عدم ذكر نوع الكاميرا أو العدسة للبورتريهات والصور الاحترافية. ✅ الصح: إضافة مصطلحات الكاميرا ترفع جودة البورتريه بشكل ملحوظ — 'shot on Sony A7IV', '85mm portrait lens', 'f/1.8 bokeh background', 'Canon 5D Mark IV commercial photography'. هذه الكلمات تُخبر الأداة بأسلوب التصوير المطلوب وتُنتج صوراً بعمق ميدان احترافي.",
+          "output": "برومبت بدون مواصفات كاميرا ينتج صورة تبدو 'رقمية'. برومبت مع 'Sony A7IV, 85mm f/1.8, shallow depth of field' ينتج صورة تبدو من مصوّر محترف.",
+          "guidance": "أضف مواصفات الكاميرا لكل صورة بورتريه أو منتج تجاري. لا حاجة لهذا في التصاميم الجرافيكية أو الشعارات."
+        },
+        {
+          "title": "طلب وجوه متعددة في صورة واحدة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: طلب صورة لمجموعة كبيرة من الناس (5+ أشخاص) وتوقع أن تكون الوجوه جميعها واضحة وصحيحة. الأدوات تضعف في رسم الوجوه المتعددة وتُنتج تشوهات. ✅ الصح: للمجموعات ابقَ بـ 2-3 أشخاص كحد أقصى في البورتريه. للمجموعات الكبيرة اطلب 'crowd in background, blurred' وركّز الوضوح على شخص واحد أو اثنين في المقدمة.",
+          "output": "صورة لخمسة أشخاص في غالب الأحيان تُنتج وجوهاً مشوهة أو يداً بست أصابع. صورة لشخصين واضحين تُنتج نتيجة احترافية.",
+          "guidance": "قاعدة الإبهام: أقل من 3 أشخاص في المقدمة = جودة عالية. أكثر من 3 = خطر التشويه. للحشود اجعلهم في الخلفية مع bokeh."
+        },
+        {
+          "title": "استخدام الأداة الخاطئة للمهمة الخاطئة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: استخدام Midjourney لكل شيء أو اعتقاد أنه الأفضل دائماً. لكل أداة مهمتها الأمثل. ✅ الصح: Midjourney للفن والإبداع والجماليات العالية وبورتريهات السوشيال ميديا. Leonardo للواقعية التصويرية وصور المنتجات والبورتريهات التجارية. Firefly للمحتوى التجاري الآمن قانونياً والمحتوى المحتشم وواجهات المستخدم العربية. استخدم الأداة الصحيحة يوفر 70% من وقتك.",
+          "output": "استخدام الأداة المناسبة من البداية يوفر عليك 5-10 محاولات فاشلة ويُنتج نتيجة أفضل في أقل وقت.",
+          "guidance": "قبل كل مشروع اسأل: ما هو الهدف النهائي؟ تجاري آمن = Firefly أولاً. واقعي دقيق = Leonardo. فني إبداعي = Midjourney."
+        },
+        {
+          "title": "عدم حفظ البرومبتس الناجحة",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: توليد صورة ممتازة ثم نسيان البرومبت الذي أنتجها ومحاولة إعادة بنائه من الذاكرة لاحقاً. ✅ الصح: أنشئ ملف نصي أو مستنداً لحفظ كل برومبت ناجح مع: نص البرومبت الكامل، اسم الأداة والإصدار، رقم الـ seed إن وُجد، والاستخدام المقصود. هذا 'بنك البرومبتس' الخاص بك يصبح أصلاً قيّماً مع الوقت.",
+          "output": "بعد 3 أشهر من العمل: من لا يحفظ برومبتاته يبدأ من الصفر في كل مشروع. من يحفظها لديه مكتبة جاهزة توفّر 80% من وقته.",
+          "guidance": "ابدأ بنك برومبتاتك اليوم. ملف نصي بسيط يكفي. رتّب البرومبتس بالفئة: شخصيات، مشاهد، تصاميم، أدوات."
+        },
+        {
+          "title": "إهمال التكرار والتجريب",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: محاولة واحدة ثم الاستسلام حين لا تعجبك النتيجة. ✅ الصح: كل برومبت عادة يحتاج 3-5 جولات تحسين قبل الوصول لنتيجة مثالية. التحسين التدريجي هو: توليد أولي، تقييم ما نجح وما فشل، تعديل عنصر واحد فقط في كل جولة، توليد مرة أخرى. تغيير عنصر واحد في كل مرة يُعلّمك تأثير كل مكوّن على النتيجة.",
+          "output": "المحترفون في مجال الذكاء الاصطناعي البصري يعرفون أن الصورة المثالية هي ناتج عملية تكرارية. التوقع بالكمال من أول محاولة غير واقعي.",
+          "guidance": "اعتبر كل جولة تعلماً لا فشلاً. دوّن ملاحظاتك بعد كل جولة: 'الإضاءة صحيحة لكن الملابس غلط' — ثم عدّل فقط الملابس في الجولة التالية."
+        },
+        {
+          "title": "نسيان التحقق من الأيدي والأصابع",
+          "useCase": "نصيحة تقنية",
+          "prompt": "❌ الخطأ: الموافقة على صورة دون فحص الأيدي والأصابع. أدوات الذكاء الاصطناعي لا تزال تُنتج أحياناً أيدي بستة أصابع أو أصابع ملتوية بشكل غير طبيعي. ✅ الصح: افحص دائماً الأيدي قبل استخدام الصورة. إذا كانت الأيدي مشوهة: أضف --no distorted hands, extra fingers إلى negative prompts. في Midjourney استخدم خاصية Vary Region لإصلاح منطقة اليدين فقط.",
+          "output": "صورة رائعة بأيدي مشوهة تُفقد احترافيتها فوراً عند أي متفرج منتبه. فحص الأيدي خطوة إلزامية قبل النشر.",
+          "guidance": "اجعل فحص الأيدي والأصابع آخر خطوة قبل الموافقة على أي صورة تتضمن أيدي ظاهرة. هذا يوفر عليك إحراج النشر."
+        }
+      ]
+    }
+  ]
+}

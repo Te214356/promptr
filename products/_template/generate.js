@@ -65,6 +65,7 @@ function card(item, idx) {
   </div>
   <div class="card-title">${esc(item.title)}</div>
 
+  <div class="prompt-copy-label">📋 انسخ البرومبت</div>
   <div class="prompt-box">${esc(item.prompt)}</div>
 
   ${item.output ? `
@@ -101,7 +102,7 @@ function section(sec, i) {
   ${sec.items.map((item, j) => card(item, j)).join('\n')}
 
   <div class="pg-footer">
-    <span>promptrsa.com</span>
+    <a href="https://promptrsa.com" style="color:inherit;text-decoration:none;">promptrsa.com</a>
     <span class="footer-sep">·</span>
     <span>© Promptr ${new Date().getFullYear()}</span>
   </div>
@@ -310,6 +311,23 @@ body {
 .purple      { color: var(--purple); }
 .box-body    { font-size: 8.5pt; color: var(--muted); line-height: 1.65; }
 
+.style-key-box {
+  margin-top: 20px; padding: 14px 16px;
+  background: rgba(0,207,255,0.04); border: 1px solid rgba(0,207,255,0.15);
+  border-radius: 8px;
+}
+.style-key-title { font-size: 9pt; font-weight: 800; color: var(--cyan); margin-bottom: 5px; }
+.style-key-desc  { font-size: 8.5pt; color: var(--muted); margin-bottom: 10px; }
+.style-key-examples { display: flex; flex-direction: column; gap: 5px; }
+.style-ex { display: flex; gap: 10px; align-items: flex-start; }
+.style-ex-label { font-size: 7.5pt; font-weight: 700; color: var(--purple); white-space: nowrap; min-width: 60px; padding-top: 1px; }
+.style-ex-text  { font-size: 8.5pt; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+.prompt-copy-label {
+  font-size: 7pt; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--purple); margin-bottom: 5px; opacity: 0.8;
+}
+
 /* ── Page footer ─────────────────────────────────────────────────────────── */
 .pg-footer {
   position: absolute; bottom: 9mm; left: 0; right: 0;
@@ -359,7 +377,7 @@ body {
       </div>
     </div>
   </div>
-  <div class="cover-footer">promptrsa.com · ${esc(d.whatsapp || 'واتساب')}</div>
+  <div class="cover-footer"><a href="https://promptrsa.com" style="color:inherit;text-decoration:none;">promptrsa.com</a> · <a href="https://wa.me/${esc(d.whatsapp || '966551859849')}" style="color:inherit;text-decoration:none;">واتساب</a></div>
 </div>
 
 <!-- ══ TOC ════════════════════════════════════════════════════════════════════ -->
@@ -375,8 +393,20 @@ body {
     <div class="toc-note-title">كيف تستخدم هذه الحزمة؟</div>
     <div class="toc-note-body">${esc(d.usage_note || 'انسخ أي برومبت، عدّل القيم المكتوبة بين [أقواس] حسب نشاطك، والصق في ChatGPT. كل برومبت مُجرَّب ومرفق بمثال مخرجات حقيقي.')}</div>
   </div>
+  ${d.style_key ? `
+  <div class="style-key-box">
+    <div class="style-key-title">🎛 ${esc(d.style_key.title)}</div>
+    <div class="style-key-desc">${esc(d.style_key.description)}</div>
+    <div class="style-key-examples">
+      ${d.style_key.examples.map(ex => `
+      <div class="style-ex">
+        <span class="style-ex-label">${esc(ex.label)}</span>
+        <span class="style-ex-text">${esc(ex.text)}</span>
+      </div>`).join('')}
+    </div>
+  </div>` : ''}
   <div class="pg-footer">
-    <span>promptrsa.com</span>
+    <a href="https://promptrsa.com" style="color:inherit;text-decoration:none;">promptrsa.com</a>
     <span class="footer-sep">·</span>
     <span>جميع الحقوق محفوظة © Promptr ${new Date().getFullYear()}</span>
   </div>
@@ -394,8 +424,8 @@ ${d.sections.map((s, i) => section(s, i)).join('\n')}
     <div class="closing-title">شكراً على ثقتك بـ Promptr ✦</div>
     <div class="closing-sub">هذه الحزمة مُحدَّثة باستمرار. أي ملاحظة أو طلب تخصيص — تواصل معنا مباشرة عبر واتساب.</div>
     <div class="closing-btns">
-      <div class="btn-primary">promptrsa.com</div>
-      <div class="btn-secondary">واتساب · ${esc(d.whatsapp || '')}</div>
+      <a href="https://promptrsa.com" class="btn-primary" style="text-decoration:none;">promptrsa.com</a>
+      <a href="https://wa.me/${esc(d.whatsapp || '966551859849')}" class="btn-secondary" style="text-decoration:none;">واتساب · ${esc(d.whatsapp || '966551859849')}</a>
     </div>
   </div>
 </div>
