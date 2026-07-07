@@ -8,6 +8,8 @@ import OrderDetails from "@modules/order/components/order-details"
 import ShippingDetails from "@modules/order/components/shipping-details"
 import PaymentDetails from "@modules/order/components/payment-details"
 import { OrderCompletedHeading, OrderSummaryHeading } from "@modules/order/components/order-completed-heading"
+import DownloadLinks from "@modules/order/components/download-links"
+import { getOrderDownloads } from "@lib/data/downloads"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderCompletedTemplateProps = {
@@ -20,6 +22,7 @@ export default async function OrderCompletedTemplate({
   const cookies = await nextCookies()
 
   const isOnboarding = cookies.get("_medusa_onboarding")?.value === "true"
+  const downloads = await getOrderDownloads(order.id)
 
   return (
     <div className="py-6 min-h-[calc(100vh-64px)] bg-[#080810]" dir="rtl">
@@ -31,6 +34,7 @@ export default async function OrderCompletedTemplate({
         >
           <OrderCompletedHeading />
           <OrderDetails order={order} />
+          <DownloadLinks downloads={downloads} />
           <OrderSummaryHeading />
           <Items order={order} />
           <CartTotals totals={order} />
