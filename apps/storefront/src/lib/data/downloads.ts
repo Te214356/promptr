@@ -7,13 +7,16 @@ export type OrderDownload = {
   download_url: string
 }
 
-export const getOrderDownloads = async (orderId: string): Promise<OrderDownload[]> => {
+export const getOrderDownloads = async (
+  orderId: string,
+  email: string
+): Promise<OrderDownload[]> => {
   try {
     const result = await sdk.client.fetch<{ downloads: OrderDownload[] }>(
       `/store/order-downloads`,
       {
         method: "GET",
-        query: { order_id: orderId },
+        query: { order_id: orderId, email },
         cache: "no-store",
       }
     )

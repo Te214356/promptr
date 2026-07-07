@@ -1,8 +1,8 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { MedusaStoreRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { generateSignedUrl } from "../../../utils/signed-url"
 
-export async function GET(req: MedusaRequest, res: MedusaResponse) {
+export async function GET(req: MedusaStoreRequest, res: MedusaResponse) {
   const orderId = req.query.order_id as string | undefined
 
   if (!orderId) {
@@ -13,14 +13,43 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const { data: orders } = await query.graph({
     entity: "order",
-    fields: ["id", "items.id", "items.title", "items.product_id"],
+    fields: [
+      "id",
+      "email",
+      "customer_id",
+      "items.id",
+      "items.title",
+      "items.product_id",
+    ],
     filters: { id: orderId },
   })
 
   const order = orders[0]
+
+  // ── Ownership check ────────────────────────────────────────────────────────
+  // Always 403 (never 404) so we don't leak whether an order ID exists.
   if (!order) {
-    return res.status(404).json({ error: "Order not found" })
+    return res.status(403).json({ message: "unauthorized" })
   }
+
+  const authCtx = req.auth_context
+  const isLoggedIn = authCtx?.actor_type === "customer" && !!authCtx.actor_id
+
+  if (isLoggedIn) {
+    // Registered customer: verify they own this order
+    if ((order as any).customer_id !== authCtx!.actor_id) {
+      return res.status(403).json({ message: "unauthorized" })
+    }
+  } else {
+    // Guest (no session): require email query param, compare case-insensitively
+    const emailParam = (req.query.email as string | undefined)?.toLowerCase().trim()
+    const orderEmail = ((order as any).email as string | undefined)?.toLowerCase().trim()
+
+    if (!emailParam || !orderEmail || emailParam !== orderEmail) {
+      return res.status(403).json({ message: "unauthorized" })
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────────
 
   const productIds = [
     ...new Set(

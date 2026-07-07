@@ -22,7 +22,7 @@ export default async function OrderCompletedTemplate({
   const cookies = await nextCookies()
 
   const isOnboarding = cookies.get("_medusa_onboarding")?.value === "true"
-  const downloads = await getOrderDownloads(order.id)
+  const downloads = await getOrderDownloads(order.id, order.email ?? "")
 
   return (
     <div className="py-6 min-h-[calc(100vh-64px)] bg-[#080810]" dir="rtl">
