@@ -1,6 +1,10 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { Resend } from "resend"
 import { generateSignedUrl } from "../utils/signed-url"
+import { buildOrderConfirmationEmail } from "../utils/email-templates"
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export default async function orderPlacedHandler({
   event: { data },
@@ -11,7 +15,14 @@ export default async function orderPlacedHandler({
 
   const { data: orders } = await query.graph({
     entity: "order",
-    fields: ["id", "email", "items.id", "items.title", "items.product_id"],
+    fields: [
+      "id",
+      "display_id",
+      "email",
+      "items.id",
+      "items.title",
+      "items.product_id",
+    ],
     filters: { id: orderId },
   })
 
@@ -49,9 +60,36 @@ export default async function orderPlacedHandler({
 
   if (!links.length) return
 
+  // Log for monitoring
   console.log(`[order-placed] Order ${orderId} | ${order.email}`)
   for (const link of links) {
     console.log(`  ↳ ${link.title}: ${link.url}`)
+  }
+
+  // Send confirmation email — failure must not break order processing
+  try {
+    const displayId = (order as any).display_id ?? orderId.slice(-8)
+    const { subject, html } = buildOrderConfirmationEmail({
+      orderId,
+      displayId,
+      customerEmail: order.email as string,
+      links,
+    })
+
+    const { error } = await resend.emails.send({
+      from: `Promptr <${process.env.RESEND_FROM_EMAIL ?? "orders@promptrsa.com"}>`,
+      to: [order.email as string],
+      subject,
+      html,
+    })
+
+    if (error) {
+      console.error(`[order-placed] Resend error for ${orderId}:`, error)
+    } else {
+      console.log(`[order-placed] Email sent to ${order.email}`)
+    }
+  } catch (err: any) {
+    console.error(`[order-placed] Failed to send email for ${orderId}:`, err?.message ?? err)
   }
 }
 
