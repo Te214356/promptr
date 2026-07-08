@@ -202,9 +202,7 @@ body {
 }
 .cover-title {
   font-size: 30pt; font-weight: 900; line-height: 1.25;
-  background: linear-gradient(135deg, #fff 0%, var(--cyan) 55%, var(--purple) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; margin-bottom: 20px; max-width: 150mm;
+  color: #00CFFF; margin-bottom: 20px; max-width: 150mm;
 }
 .cover-subtitle {
   font-size: 12pt; color: var(--muted); line-height: 1.7;
