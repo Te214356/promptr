@@ -73,5 +73,119 @@ mutabi (status summary) → mustashar (strategic priorities)
 
 - **Promptr** (`promptrsa.com`) — Medusa v2 e-commerce backend + storefront. Primary stack: TypeScript, Medusa 2.x, Node.js. Payment: Moyasar (SAR). Deployed on Railway.
 - **سبعة أصفار** — Arabic YouTube channel. Brand: Dramatic Gold, entrepreneurship/wealth content, Gulf/Saudi audience.
-- **Monorepo layout:** `apps/backend` (Medusa), `.claude/agents/` (subagents), root `package.json` (npm workspaces).
+- **Monorepo layout:** `apps/backend` (Medusa), `apps/storefront` (Next.js 15), `.claude/agents/` (subagents), root `package.json` (npm workspaces).
 - **Build note:** `ts-node` and `typescript` are in `dependencies` (not devDependencies) — required for Railway production builds.
+
+---
+
+## Railway Deployment — Two Services, Two Methods
+
+Both services live in project **`zoological-hope`** (`b635b9d9-0241-4f5f-bbbd-1b6d2468d2c4`).
+
+| Service | ID | URL | Deploy method |
+|---|---|---|---|
+| `@dtc/backend` | `cfae7146-9e7b-4f07-8d9f-2f75bdcb7cd1` | `https://dtcbackend-production-32a2.up.railway.app` (also `api.promptrsa.com`) | **Auto** — triggers on every `git push origin main` |
+| `storefront` | `f7497b9a-c86b-4c81-ae08-bac368caa0ae` | `https://promptrsa.com` | **Manual** — must run `railway up` from repo root |
+
+**Storefront deploy command (always from repo root):**
+```bash
+railway up --project b635b9d9-0241-4f5f-bbbd-1b6d2468d2c4 \
+           --service  f7497b9a-c86b-4c81-ae08-bac368caa0ae \
+           --environment 168a8f3a-cbcc-4765-83f2-d376d3893289
+```
+Running `railway up` from `apps/storefront` fails — it uploads only the subdirectory and breaks the monorepo start command `cd apps/storefront && next start -p 8000`.
+
+There is also an old crashed service named `promptr` in a separate project (`881899a5`) — ignore it, it is not the live backend.
+
+---
+
+## Digital Product Delivery Pipeline
+
+### Cloudflare R2 Buckets
+| Bucket | Access | Purpose |
+|---|---|---|
+| `promptr-files` | Private (no public URL) | Downloadable PDFs for paying customers |
+| Public bucket (pub-8e6feaf…) | Public CDN | Product images / thumbnails |
+
+### Product ↔ R2 file mapping
+Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exact filename in `promptr-files`:
+
+| Medusa product handle | `file_key` value |
+|---|---|
+| `chatgpt-arabic-prompts` | `chatgpt-arabic-prompts.pdf` |
+| `chatgpt-prompts-pro-arabic` | `chatgpt-prompts-pro-arabic.pdf` |
+| `midjourney-arabic-prompts` | `midjourney-arabic-prompts.pdf` |
+
+### Signed URL generation
+`apps/backend/src/utils/signed-url.ts` — generates 7-day presigned GET URLs with `ResponseContentDisposition: attachment`. Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.
+
+### Download API
+`GET /store/order-downloads?order_id=xxx&email=customer@example.com`
+- Requires `x-publishable-api-key` header
+- Ownership check: logged-in customer → matches `auth_context.actor_id` vs `order.customer_id`; guest → matches `email` param vs `order.email` (case-insensitive)
+- Always returns `403 { message: "unauthorized" }` on failure — never 404 (avoids leaking order existence)
+- Returns `{ downloads: [{ product_title, download_url }] }`
+
+### Order confirmation email
+`apps/backend/src/subscribers/order-placed.ts` — on `order.placed`:
+1. Generates signed URLs for all items with `file_key` in product metadata
+2. Sends Arabic RTL email via Resend from `orders@promptrsa.com`
+3. Email failure is caught and logged — never breaks order processing
+Env vars required: `RESEND_API_KEY`, `RESEND_FROM_EMAIL=orders@promptrsa.com`
+
+### Storefront confirmation page
+`apps/storefront/src/modules/order/templates/order-completed-template.tsx` — calls `getOrderDownloads(order.id, order.email)` server-side and renders `<DownloadLinks>` component above order summary. Silent on empty/error.
+
+---
+
+## PDF Generation System
+
+Source: `products/_template/generate.js`
+Usage: `node _template/generate.js <product>/data.json <product>/<output>.pdf`
+
+**Active products and page counts:**
+| Product dir | PDF filename | Pages |
+|---|---|---|
+| `chatgpt-arabic-prompts` | `chatgpt-arabic-prompts.pdf` | 55 |
+| `midjourney-arabic-prompts` | `midjourney-arabic-prompts.pdf` | 42 |
+| `chatgpt-prompts-pro-arabic` | `chatgpt-prompts-pro-arabic.pdf` | 28 |
+
+**Known CSS rules (do not regress):**
+- `.card`, `.toc-note`, `.style-key-box` all have `page-break-inside: avoid; break-inside: avoid`
+- `.cover-title` uses `color: #00CFFF` — **not** `background-clip: text` (breaks iOS PDF viewer)
+- `chatgpt-arabic-prompts` has a standalone page 3 for "مفتاح الأسلوب" (style key), layout: cover → TOC → style-key page → sections
+
+---
+
+## Key Environment Variables
+
+### Backend (`@dtc/backend`)
+| Variable | Notes |
+|---|---|
+| `DATABASE_URL` | Railway Postgres |
+| `REDIS_URL` | Railway Redis |
+| `MOYASAR_PUBLISHABLE_KEY` / `MOYASAR_SECRET_KEY` | Payment |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` / `S3_ENDPOINT` / `S3_REGION` | Cloudflare R2 (shared bucket for images) |
+| `S3_BUCKET` | Public image bucket |
+| `S3_PRIVATE_BUCKET=promptr-files` | Private PDF bucket |
+| `RESEND_API_KEY` | Email delivery |
+| `RESEND_FROM_EMAIL=orders@promptrsa.com` | Verified sender (DKIM/SPF/DMARC on promptrsa.com) |
+
+### Storefront (`storefront`)
+| Variable | Notes |
+|---|---|
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Safe to commit — also set as Railway var |
+| `NEXT_PUBLIC_BASE_URL=https://promptrsa.com` | **Must** be set as Railway var (not only in `.env.production`) — used in `/api/order-complete` redirect; `request.url` in Railway is `http://localhost:PORT` not the public domain |
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` / `MEDUSA_BACKEND_URL` | Backend URL for SSR calls |
+
+---
+
+## Agreed Terminology
+
+| Term | Meaning |
+|---|---|
+| **منتج رقمي** | Any Medusa product with `metadata.file_key` set |
+| **رابط موقّع** | 7-day presigned R2 URL for PDF download |
+| **مفتاح الأسلوب** | Style-variable feature in `chatgpt-arabic-prompts`: `[الأسلوب: فصحى رسمية / فصحى مُيسَّرة / خليجية]` |
+| **railway up** | Manual storefront deploy — always from repo root with explicit IDs |
+| **صفحة التأكيد** | `/[countryCode]/order/[id]/confirmed` — shows download links post-payment |
