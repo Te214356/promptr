@@ -1,0 +1,14 @@
+{
+  "name": "book-template",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Standalone PDF generator for long-form Arabic digital books (Promptr brand). Independent of products/_template — do not merge.",
+  "main": "generate.js",
+  "scripts": {
+    "generate": "node generate.js"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "puppeteer-core": "^23.0.0"
+  }
+}
