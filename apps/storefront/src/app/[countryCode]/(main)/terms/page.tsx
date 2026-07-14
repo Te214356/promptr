@@ -14,7 +14,7 @@ const CONTENT = {
         title: '1. تعريفات',
         bullets: [
           '"المتجر" يقصد به منصة Promptr الإلكترونية على promptrsa.com.',
-          '"المنتجات الرقمية" تشمل الملفات القابلة للتنزيل، بطاقات الشحن، الاشتراكات، القوالب، والكتب الإلكترونية.',
+          '"المنتجات الرقمية" تشمل الملفات القابلة للتنزيل، القوالب، والكتب الإلكترونية.',
           '"المستخدم" أو "العميل" هو أي شخص يصل إلى المتجر أو يُجري عملية شراء.',
         ]
       },
@@ -38,7 +38,7 @@ const CONTENT = {
       {
         title: '4. الدفع والفوترة',
         bullets: [
-          'تُعالج المدفوعات عبر Moyasar المرخص من مؤسسة النقد العربي السعودي.',
+          'تُعالج المدفوعات عبر Moyasar المرخص من البنك المركزي السعودي (ساما).',
           'وسائل الدفع المقبولة: مدى، فيزا، ماستركارد، والمزيد.',
           'يُعدّ الدفع اكتمالاً للعقد بينك وبين المتجر وقبولاً للشروط.',
           'في حالة رفض البنك للمعاملة، يُعلَّق التسليم حتى اكتمال الدفع.',
@@ -124,7 +124,7 @@ const CONTENT = {
       {
         title: '4. Payment & Billing',
         bullets: [
-          'Payments are processed through Moyasar, licensed by the Saudi Arabian Monetary Authority (SAMA).',
+          'Payments are processed through Moyasar, licensed by the Saudi Central Bank (SAMA).',
           'Accepted payment methods: Mada, Visa, Mastercard, and more.',
           'Payment constitutes completion of a contract between you and the store and acceptance of these Terms.',
           'If your bank declines the transaction, delivery will be on hold until payment is completed.',

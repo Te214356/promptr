@@ -199,3 +199,9 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 | **مفتاح الأسلوب** | Style-variable feature in `chatgpt-arabic-prompts`: `[الأسلوب: فصحى رسمية / فصحى مُيسَّرة / خليجية]` |
 | **railway up** | Manual storefront deploy — always from repo root with explicit IDs |
 | **صفحة التأكيد** | `/[countryCode]/order/[id]/confirmed` — shows download links post-payment |
+
+---
+
+## ملاحظات مؤجلة
+
+- **صفحتان يتيمتان**: `/terms-of-use` و`/return-policy` — نسخ أقدم وأبسط من صفحتي الشروط وسياسة الاسترجاع الكاملتين (`/terms` و`/refund-policy`)، غير مرتبطتين من الفوتر ولا من أي مكان آخر في الكود (تحقّق فعلي في `apps/storefront/src`، تاريخ 2026-07-14). القرار المؤجل: حذفهما أو تحويلهما إلى redirect نحو `/terms` و`/refund-policy` على التوالي.
