@@ -49,7 +49,7 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
   const { lang } = useLanguage()
   const isAR = lang === "ar"
 
-  if (!product.type) {
+  if (!product.description && !product.type) {
     return (
       <div className="text-small-regular py-8">
         <p className="text-ui-fg-subtle">
@@ -62,10 +62,15 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
   return (
     <div className="text-small-regular py-8">
       <div className="flex flex-col gap-y-4">
-        <div>
-          <span className="font-semibold">{isAR ? "النوع" : "Type"}</span>
-          <p>{product.type.value}</p>
-        </div>
+        {product.description && (
+          <p className="whitespace-pre-line">{product.description}</p>
+        )}
+        {product.type && (
+          <div>
+            <span className="font-semibold">{isAR ? "النوع" : "Type"}</span>
+            <p>{product.type.value}</p>
+          </div>
+        )}
       </div>
     </div>
   )

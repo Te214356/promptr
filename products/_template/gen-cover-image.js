@@ -24,6 +24,15 @@ const CONFIGS = {
   'chatgpt-prompts-pro-arabic': { visual: 'chat', unit: 'برومبت' },
   'midjourney-arabic-prompts': { visual: 'lens', unit: 'عنصرًا' },
   'chatgpt-arabic-prompts': { visual: 'grid', unit: 'أمر' },
+  // No data.json for this product (it's a book, built from products/_book-template
+  // + book/*.md, not the prompt-pack schema) — title/subtitle/badge are given
+  // directly instead of being derived from a data source.
+  'ai-income-book': {
+    visual: 'book',
+    title: 'الذكاء الاصطناعي مصدر دخل',
+    subtitle: 'دليلك العملي لسبع طرق مثبتة لبناء دخل حقيقي',
+    badgeText: '7 طرق مثبتة',
+  },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -113,6 +122,39 @@ function visualLens() {
   </div>`
 }
 
+function visualBook() {
+  // Abstract open book: two page halves angled away from the viewer via a
+  // real perspective/rotateY tilt (not just flat rectangles), meeting at a
+  // glowing spine that radiates a few faint rising particles — "knowledge
+  // radiance" — echoing the orb glows used elsewhere, but as a cluster of
+  // small points instead of one big blur. No photorealistic illustration,
+  // no currency iconography (unlike the old AI-generated store-image.jpg
+  // this replaces).
+  const widths = [82, 60, 71, 44, 68]
+  const pageLines = (offset) => widths.map((w, i) => {
+    const width = ((w + i * offset) % 40) + 45
+    return `<div class="book-line" style="width:${width}%"></div>`
+  }).join('')
+  const particles = [
+    { left: 48, top: 6, size: 5, opacity: 0.9 },
+    { left: 56, top: -2, size: 4, opacity: 0.7 },
+    { left: 42, top: -8, size: 3, opacity: 0.55 },
+    { left: 60, top: -16, size: 3, opacity: 0.4 },
+    { left: 47, top: -24, size: 2, opacity: 0.3 },
+    { left: 53, top: -32, size: 2, opacity: 0.2 },
+  ].map(p => `<span class="book-particle" style="left:${p.left}%;top:${p.top}%;width:${p.size}px;height:${p.size}px;opacity:${p.opacity}"></span>`).join('')
+  return `
+  <div class="visual book-visual">
+    <div class="book-glow-beam"></div>
+    ${particles}
+    <div class="book-pages">
+      <div class="book-page book-page-left">${pageLines(3)}</div>
+      <div class="book-spine"></div>
+      <div class="book-page book-page-right">${pageLines(7)}</div>
+    </div>
+  </div>`
+}
+
 function visualGrid() {
   // Abstract grid of mini command cards — generic line + chevron glyphs,
   // no real app UI.
@@ -126,12 +168,15 @@ function visualGrid() {
   return `<div class="visual grid-visual">${cells}</div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid }
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
 function buildHTML(data, config, totalItems) {
-  const badgeText = `${totalItems} ${config.unit}`
+  // config.badgeText is used verbatim for products with no data.json-derived
+  // count (e.g. the book) — otherwise the badge is built from the verified
+  // item count + the product's unit word.
+  const badgeText = config.badgeText || `${totalItems} ${config.unit}`
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
@@ -250,6 +295,49 @@ body {
 .cmd-chevron { color: var(--cyan); font-weight: 900; font-size: 20px; }
 .cmd-line { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.28); }
 
+/* ── book visual ──────────────────────────────────────────────────────── */
+.book-visual { position: relative; width: 640px; height: 420px; display: flex; align-items: center; justify-content: center; }
+.book-pages {
+  display: flex; align-items: stretch; justify-content: center;
+  width: 100%; height: 340px;
+  perspective: 1000px;
+}
+.book-page {
+  flex: 1; max-width: 300px;
+  background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.22);
+  padding: 34px 30px; display: flex; flex-direction: column; gap: 17px;
+  justify-content: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+/* Real perspective tilt (not flat rectangles) — each page rotates away
+   from the viewer around its spine-side edge, the two mirrored so they
+   read as one open book rather than two flat cards. */
+.book-page-left  { border-radius: 22px 4px 4px 22px; transform: rotateY(22deg);  transform-origin: right center; }
+.book-page-right { border-radius: 4px 22px 22px 4px; transform: rotateY(-22deg); transform-origin: left center; }
+.book-line { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.38); }
+.book-spine {
+  width: 18px; margin: -1px 0;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  box-shadow: 0 0 60px 10px rgba(0,207,255,0.6);
+  z-index: 1;
+}
+
+/* "Knowledge radiance" — small points rising from the glowing spine,
+   echoing the page's big orb blurs but as a cluster of particles. */
+.book-glow-beam {
+  position: absolute; left: 50%; bottom: 55%; width: 60px; height: 260px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(0,207,255,0.28), rgba(0,207,255,0) 80%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+.book-particle {
+  position: absolute; border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px 3px rgba(0,207,255,0.8);
+  pointer-events: none;
+}
+
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
   display: inline-flex; align-items: center; gap: 10px;
@@ -292,14 +380,25 @@ async function main() {
     process.exit(1)
   }
 
-  const dataPath = path.resolve(__dirname, '..', productDir, 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
-  const totalItems = data.sections.reduce((sum, s) => sum + (s.items || []).length, 0)
+  let data, totalItems
+  if (config.title) {
+    // Config-driven product (no data.json backing it) — title/subtitle/badge
+    // all come from CONFIGS directly, verified by hand against the source
+    // material instead of a data file.
+    data = { title: config.title, subtitle: config.subtitle }
+    totalItems = null
+    console.log(`Product:     ${data.title} (config-driven, no data.json)`)
+    console.log(`Visual:      ${config.visual} | Badge: ${config.badgeText}`)
+  } else {
+    const dataPath = path.resolve(__dirname, '..', productDir, 'data.json')
+    data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+    totalItems = data.sections.reduce((sum, s) => sum + (s.items || []).length, 0)
 
-  console.log(`Product:     ${data.title}`)
-  console.log(`Price:       ${data.price}`)
-  console.log(`Total items: ${totalItems} (from data.json, ${data.sections.length} sections)`)
-  console.log(`Visual:      ${config.visual} | Badge: ${totalItems} ${config.unit}`)
+    console.log(`Product:     ${data.title}`)
+    console.log(`Price:       ${data.price}`)
+    console.log(`Total items: ${totalItems} (from data.json, ${data.sections.length} sections)`)
+    console.log(`Visual:      ${config.visual} | Badge: ${totalItems} ${config.unit}`)
+  }
 
   const html = buildHTML(data, config, totalItems)
   const resolvedOutput = path.resolve(outputFile)
