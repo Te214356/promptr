@@ -31,27 +31,103 @@
 
 const fs   = require('fs')
 const path = require('path')
-const { execSync } = require('child_process')
-const os   = require('os')
+const puppeteer = require('puppeteer-core')
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib')
 
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
+// ─── page margin architecture ───────────────────────────────────────────────
+// Ported from products/_book-template/generate.js: Chrome's headless
+// `--print-to-pdf` CLI (the old execSync-based approach here) has no way to
+// set a real per-physical-page margin at all — CSS `@page { margin }` only
+// applies to whichever physical page a `.page` div's box happens to *start*
+// on, not to every physical page a tall, multi-card section auto-paginates
+// across (confirmed here: a 5-section product renders as 28 pages, so
+// sections routinely span several physical pages each). Puppeteer's
+// `page.pdf({ margin })` is the only mechanism that reserves space on every
+// physical page uniformly. That reserved margin is blank/unpainted by
+// Chromium by default (same fact discovered in the book template), so pdf-lib
+// paints it dark afterward.
+const MARGIN_MM = 16
+const MARGIN = `${MARGIN_MM}mm`
+const PAGE_HEIGHT_MM = 297
+const PAGE_CONTENT_HEIGHT_MM = PAGE_HEIGHT_MM - MARGIN_MM * 2
+const PAGE_HEIGHT_PT = (PAGE_HEIGHT_MM / 25.4) * 72
+const MARGIN_PT = (MARGIN_MM / 25.4) * 72
+
+// Page-number bar — ported from products/_book-template/generate.js: same
+// 8.5mm cyan bar drawn via pdf-lib within the reserved bottom margin, same
+// font/size/vertical-centering math (the -0.225pt nudge was measured
+// empirically there against HelveticaBold at size 10 specifically, so it
+// carries over exactly since both templates use the identical font/size).
+const BAR_HEIGHT_MM = 8.5
+const BAR_HEIGHT_PT = (BAR_HEIGHT_MM / 25.4) * 72
+
 // ─── helpers ─────────────────────────────────────────────────────────────────
+
+// Chromium's bidi algorithm was found (in the book template) to visibly
+// garble Latin words embedded in RTL Arabic text when there's no wrapping
+// isolation — e.g. a Latin word directly adjacent to an Arabic character.
+// Wrapping every Latin run in dir="ltr" fixes the ordering unconditionally.
+// Must run *before* any other tag-inserting step (the variable-highlight
+// below, in this file) so its regex never reaches into an already-inserted
+// tag's own attribute/class text. The entity alternative keeps it from ever
+// matching into the middle of &amp;/&lt;/&gt;/&quot; (which contain Latin
+// letters too) — a real corruption bug hit and fixed in the book template.
+function wrapLatinRuns(escapedText) {
+  return escapedText.replace(/&[a-zA-Z]+;|[A-Za-z][A-Za-z0-9.+#%/_-]*/g, (m) =>
+    m.startsWith('&') ? m : `<span dir="ltr">${m}</span>`
+  )
+}
+
+// Cairo webfont + Chromium shaping bug, found live in this file's own output
+// (midjourney-arabic-prompts.pdf cover and its "أدوات محددة" section
+// heading): a standalone Arabic waw ("و", the conjunction "and") sitting
+// next to a Latin-script run gets shaped into a glyph that reads as a Latin
+// "g" instead of و. Swapping in the Unicode presentation-form isolated waw
+// (U+FEED) sidesteps the font's contextual substitution and renders
+// identically to a normal isolated waw in the all-Arabic case.
+//
+// Matches a standalone و preceded by whitespace/start-of-string and
+// followed by a Latin letter, whitespace, or end-of-string. That lookahead
+// is what keeps this from ever touching a genuine Arabic prefix or root
+// letter: "والكتاب" (و + الكتاب) and "قوة" (root waw) are both followed by
+// another Arabic letter, so neither matches. A و glued directly to a
+// following Latin word with no space ("وMidjourney") is still the standalone
+// conjunction, just missing its space — this also inserts that space.
+// Must run *before* wrapLatinRuns: once a Latin run is wrapped in
+// <span dir="ltr">, a glued waw no longer has a Latin letter immediately
+// after it to match against — the next character would be "<" instead.
+function normalizeIsolatedWaw(text) {
+  return text.replace(/(^|\s)و(?=([A-Za-z])|\s|$)/gu, (_, pre, latin) => pre + 'ﻭ' + (latin ? ' ' : ''))
+}
 
 function esc(str) {
   if (!str) return ''
-  return String(str)
+  const escaped = String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    // Highlight [variables] in cyan
-    .replace(/\[([^\]]+)\]/g, '<span class="var">[$1]</span>')
+  const ltrWrapped = wrapLatinRuns(normalizeIsolatedWaw(escaped))
+  // Highlight [variables] in cyan — after Latin-wrapping, so this step's own
+  // inserted <span class="var"> tags are never seen by that regex.
+  return ltrWrapped.replace(/\[([^\]]+)\]/g, '<span class="var">[$1]</span>')
 }
 
 function sectionNum(n) {
   const nums = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١','١٢']
   return nums[n] || String(n + 1)
+}
+
+// Arabic numeral-noun agreement: counts of 3-10 take the plural noun form
+// ("٥ أقسام"); both small counts (1-2) and 11+ take the singular form
+// ("٥٠ عنصر" is correct Arabic, not "٥٠ عناصر" — only 3..10 pluralizes).
+// Covers the two cases this template actually renders (section count,
+// item count), not full declension (no accusative tanween handling needed
+// since neither count is ever spoken aloud/inflected here, only printed).
+function arabicCountLabel(n, singular, plural) {
+  return (n >= 3 && n <= 10) ? plural : singular
 }
 
 // ─── card builder ─────────────────────────────────────────────────────────────
@@ -121,10 +197,17 @@ function buildHTML(d) {
           ${s.description ? `<div class="toc-sub">${esc(s.description)}</div>` : ''}
         </div>
       </div>
-      <div class="toc-count">${s.items ? s.items.length + ' عنصر' : ''}</div>
+      <div class="toc-count">${s.items ? s.items.length + ' ' + arabicCountLabel(s.items.length, d.item_label || 'عنصر', d.item_label_plural || 'عناصر') : ''}</div>
     </div>`).join('')
 
-  const totalItems = d.sections.reduce((sum, s) => sum + (s.items ? s.items.length : 0), 0)
+  // `bonus: true` on a section (e.g. a supplementary weekly-schedule page)
+  // excludes its items from the cover's headline count, so the cover badge
+  // matches the product's own advertised total (e.g. "60 قالب") instead of
+  // silently including extra planning content that isn't one of the 60
+  // sold templates. Both this flag and `item_label` below are optional and
+  // default to the original behavior — the three existing prompt-pack
+  // products have neither key, so their output is unchanged.
+  const totalItems = d.sections.reduce((sum, s) => sum + (s.bonus ? 0 : (s.items ? s.items.length : 0)), 0)
 
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -135,7 +218,12 @@ function buildHTML(d) {
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap');
 
 /* ── Page setup ─────────────────────────────────────────────────────────────── */
-@page { size: A4; margin: 0; }
+/* No @page margin here deliberately — combining a CSS @page margin with
+   Puppeteer's own page.pdf({ margin }) option was found (in the book
+   template) to make Chromium paginate as if the full page were available,
+   then inset the margin separately on top of that, cutting content off.
+   Puppeteer's margin option is the single source of truth for page bounds. */
+@page { size: A4; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -160,7 +248,7 @@ body {
 
 .page {
   width: 210mm;
-  min-height: 297mm;
+  min-height: ${PAGE_CONTENT_HEIGHT_MM}mm;
   page-break-after: always;
   break-after: page;
   position: relative;
@@ -238,7 +326,13 @@ body {
 }
 .brand-dot  { font-size: 8pt; font-weight: 700; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; }
 .header-sep { color: var(--border); }
-.header-sub { font-size: 8.5pt; color: var(--dim); }
+/* font-weight matches every other small-label element in this file
+   (.brand-dot, .sec-num, toc labels — all 700). Left at the CSS default
+   (400) before, this specific weight made Cairo's Arabic-Indic "٥" render
+   as a thin hollow ring at 8.5pt instead of its normal filled dot —
+   legible as "0" at a glance. Confirmed by comparing it against the same
+   digit in .sec-num (bold, renders correctly) on the same page. */
+.header-sub { font-size: 8.5pt; font-weight: 700; color: var(--dim); }
 
 .toc-title { font-size: 20pt; font-weight: 800; margin-bottom: 24px; }
 
@@ -272,10 +366,15 @@ body {
 .sec-header {
   margin-bottom: 20px; padding-bottom: 14px;
   border-bottom: 2px solid var(--purple);
+  /* Section heading block — the analog of the book template's h2/h3 — must
+     not be stranded alone at the bottom of a page with its cards starting
+     on the next one. */
+  break-after: avoid; page-break-after: avoid;
+  break-inside: avoid; page-break-inside: avoid;
 }
 .sec-num   { font-size: 7.5pt; font-weight: 700; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; margin-bottom: 5px; }
 .sec-title { font-size: 17pt; font-weight: 800; }
-.sec-desc  { font-size: 9pt; color: var(--muted); margin-top: 5px; line-height: 1.6; }
+.sec-desc  { font-size: 9pt; color: var(--muted); margin-top: 5px; line-height: 1.6; orphans: 3; widows: 3; }
 
 /* ── Prompt card ──────────────────────────────────────────────────────────── */
 .card {
@@ -308,7 +407,7 @@ body {
 .box-label   { font-size: 7pt; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
 .cyan        { color: var(--cyan); }
 .purple      { color: var(--purple); }
-.box-body    { font-size: 8.5pt; color: var(--muted); line-height: 1.65; }
+.box-body    { font-size: 8.5pt; color: var(--muted); line-height: 1.65; orphans: 3; widows: 3; }
 
 .style-key-box {
   margin-top: 20px; padding: 14px 16px;
@@ -375,11 +474,11 @@ body {
     <div class="cover-stats">
       <div class="cover-stat">
         <div class="cover-stat-num">${d.sections.length}</div>
-        <div class="cover-stat-lbl">قسم</div>
+        <div class="cover-stat-lbl">${arabicCountLabel(d.sections.length, 'قسم', 'أقسام')}</div>
       </div>
       <div class="cover-stat">
         <div class="cover-stat-num">${totalItems}</div>
-        <div class="cover-stat-lbl">عنصر</div>
+        <div class="cover-stat-lbl">${esc(arabicCountLabel(totalItems, d.item_label || 'عنصر', d.item_label_plural || 'عناصر'))}</div>
       </div>
     </div>
   </div>
@@ -452,32 +551,85 @@ ${d.sections.map((s, i) => section(s, i)).join('\n')}
 
 // ─── main ────────────────────────────────────────────────────────────────────
 
-const [,, dataFile, outputFile] = process.argv
+async function main() {
+  const [, , dataFile, outputFile] = process.argv
 
-if (!dataFile || !outputFile) {
-  console.error('Usage: node generate.js <data.json> <output.pdf>')
+  if (!dataFile || !outputFile) {
+    console.error('Usage: node generate.js <data.json> <output.pdf>')
+    process.exit(1)
+  }
+
+  const data = JSON.parse(fs.readFileSync(path.resolve(dataFile), 'utf8'))
+  const html = buildHTML(data)
+  const resolvedOutput = path.resolve(outputFile)
+
+  console.log(`Rendering: ${data.title}`)
+  console.log(`Sections:  ${data.sections.length} | Items: ${data.sections.reduce((s, x) => s + x.items.length, 0)}`)
+
+  fs.mkdirSync(path.dirname(resolvedOutput), { recursive: true })
+
+  const browser = await puppeteer.launch({ executablePath: CHROME, headless: true })
+  let pdfBytes
+  try {
+    const page = await browser.newPage()
+    await page.setContent(html, { waitUntil: 'load', timeout: 60000 })
+    await page.evaluateHandle('document.fonts.ready')
+    pdfBytes = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      displayHeaderFooter: false,
+      margin: { top: MARGIN, bottom: MARGIN, left: '0mm', right: '0mm' },
+    })
+  } finally {
+    await browser.close()
+  }
+
+  // Puppeteer's reserved top/bottom margin is blank/unpainted by Chromium by
+  // default — paint it dark on every physical page so it reads as page
+  // background instead of a white strip (see the architecture note near
+  // MARGIN_MM above). A second, unrelated hairline (~0.5pt, confirmed in the
+  // book template on every page including ones with zero margin at all) was
+  // found at the true left edge specifically — patched the same way here
+  // defensively since it's a generic Chromium print quirk, not specific to
+  // any one template.
+  const pdfDoc = await PDFDocument.load(pdfBytes)
+  const DARK = rgb(8 / 255, 8 / 255, 15 / 255)
+  const CYAN = rgb(0, 207 / 255, 255 / 255)
+  const LEFT_EDGE_PATCH_PT = 3
+  const pageNumberFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+  const PAGE_NUMBER_SIZE = 10
+  const PAGE_NUMBER_Y_NUDGE_PT = -0.225 // measured against this exact font/size in the book template
+  const capHeight = pageNumberFont.heightAtSize(PAGE_NUMBER_SIZE, { descender: false })
+
+  const pages = pdfDoc.getPages()
+  pages.forEach((p, idx) => {
+    const { width, height } = p.getSize()
+    p.drawRectangle({ x: 0, y: 0, width, height: MARGIN_PT, color: DARK })
+    p.drawRectangle({ x: 0, y: height - MARGIN_PT, width, height: MARGIN_PT, color: DARK })
+    p.drawRectangle({ x: 0, y: 0, width: LEFT_EDGE_PATCH_PT, height, color: DARK })
+
+    // Page-number bar on every page except the cover (index 0) — numbering
+    // starts at 1 on the first page after the cover, matching the book
+    // template's convention.
+    if (idx > 0) {
+      p.drawRectangle({ x: 0, y: 0, width, height: BAR_HEIGHT_PT, color: CYAN })
+      const numberText = String(idx)
+      const textWidth = pageNumberFont.widthOfTextAtSize(numberText, PAGE_NUMBER_SIZE)
+      p.drawText(numberText, {
+        x: (width - textWidth) / 2,
+        y: (BAR_HEIGHT_PT - capHeight) / 2 + PAGE_NUMBER_Y_NUDGE_PT,
+        size: PAGE_NUMBER_SIZE,
+        font: pageNumberFont,
+        color: DARK,
+      })
+    }
+  })
+
+  fs.writeFileSync(resolvedOutput, await pdfDoc.save())
+  console.log(`✓ PDF saved: ${resolvedOutput}`)
+}
+
+main().catch((err) => {
+  console.error(err)
   process.exit(1)
-}
-
-const data = JSON.parse(fs.readFileSync(path.resolve(dataFile), 'utf8'))
-const html = buildHTML(data)
-
-const tmpHtml = path.join(os.tmpdir(), `promptr-render-${Date.now()}.html`)
-fs.writeFileSync(tmpHtml, html, 'utf8')
-
-console.log(`Rendering: ${data.title}`)
-console.log(`Sections:  ${data.sections.length} | Items: ${data.sections.reduce((s,x) => s + x.items.length, 0)}`)
-
-try {
-  execSync(
-    `"${CHROME}" --headless=new --disable-gpu --no-sandbox ` +
-    `--print-to-pdf="${path.resolve(outputFile)}" ` +
-    `--no-pdf-header-footer ` +
-    `--virtual-time-budget=8000 ` +
-    `"file://${tmpHtml}"`,
-    { stdio: 'pipe' }
-  )
-  console.log(`✓ PDF saved: ${path.resolve(outputFile)}`)
-} finally {
-  fs.unlinkSync(tmpHtml)
-}
+})
