@@ -319,19 +319,25 @@ body {
 /* ── TOC ──────────────────────────────────────────────────────────────────── */
 .toc-page { padding: 16mm 18mm 14mm; }
 
+/* break-after: avoid — without this, a section's tiny pg-header breadcrumb
+   can end up alone at the top of a physical page while the much taller
+   .sec-header right after it (which itself has break-after: avoid, unable
+   to fit before the first card) gets pushed to the *next* page — leaving a
+   near-blank page behind with nothing but this breadcrumb on it. Found live
+   in cv-guide-graduates.pdf (section 5 landed on its own almost-empty
+   page). Keeping pg-header glued to whatever follows it forces both to
+   move together instead. */
 .pg-header {
   display: flex; align-items: center; gap: 10px;
   padding-bottom: 14px; margin-bottom: 28px;
   border-bottom: 1px solid var(--border);
+  break-after: avoid; page-break-after: avoid;
 }
 .brand-dot  { font-size: 8pt; font-weight: 700; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; }
 .header-sep { color: var(--border); }
 /* font-weight matches every other small-label element in this file
-   (.brand-dot, .sec-num, toc labels — all 700). Left at the CSS default
-   (400) before, this specific weight made Cairo's Arabic-Indic "٥" render
-   as a thin hollow ring at 8.5pt instead of its normal filled dot —
-   legible as "0" at a glance. Confirmed by comparing it against the same
-   digit in .sec-num (bold, renders correctly) on the same page. */
+   (.brand-dot, .sec-num, toc labels — all 700) — kept for visual
+   consistency across the small-label elements in this design system. */
 .header-sub { font-size: 8.5pt; font-weight: 700; color: var(--dim); }
 
 .toc-title { font-size: 20pt; font-weight: 800; margin-bottom: 24px; }

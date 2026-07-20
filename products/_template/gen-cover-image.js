@@ -33,6 +33,7 @@ const CONFIGS = {
     subtitle: 'دليلك العملي لسبع طرق مثبتة لبناء دخل حقيقي',
     badgeText: '7 طرق مثبتة',
   },
+  'cv-guide-graduates': { visual: 'cv', unit: 'نموذجًا جاهزًا' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -155,6 +156,38 @@ function visualBook() {
   </div>`
 }
 
+function visualCV() {
+  // Abstract CV/resume sheet: a header row (avatar dot + name/title lines),
+  // a divider, body lines of varying width (experience/education), and a
+  // row of skill-level rings at the bottom — no real photo, no logos.
+  const bodyLines = [78, 55, 68, 40, 60].map((w) =>
+    `<div class="cv-line" style="width:${w}%"></div>`
+  ).join('')
+  const skillRings = [0.85, 0.65, 0.9, 0.5, 0.7].map((level) => `
+    <div class="cv-skill">
+      <svg viewBox="0 0 36 36" class="cv-skill-ring">
+        <circle cx="18" cy="18" r="15.5" class="cv-skill-track"/>
+        <circle cx="18" cy="18" r="15.5" class="cv-skill-fill" style="stroke-dasharray:${level * 97.4} 97.4"/>
+      </svg>
+    </div>`
+  ).join('')
+  return `
+  <div class="visual cv-visual">
+    <div class="cv-sheet">
+      <div class="cv-header-row">
+        <div class="cv-avatar"></div>
+        <div class="cv-header-lines">
+          <div class="cv-line cv-line-name"></div>
+          <div class="cv-line cv-line-title"></div>
+        </div>
+      </div>
+      <div class="cv-divider"></div>
+      ${bodyLines}
+      <div class="cv-skills-row">${skillRings}</div>
+    </div>
+  </div>`
+}
+
 function visualGrid() {
   // Abstract grid of mini command cards — generic line + chevron glyphs,
   // no real app UI.
@@ -168,7 +201,7 @@ function visualGrid() {
   return `<div class="visual grid-visual">${cells}</div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook }
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
@@ -338,6 +371,30 @@ body {
   pointer-events: none;
 }
 
+/* ── cv visual ────────────────────────────────────────────────────────── */
+.cv-visual { width: 480px; }
+.cv-sheet {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 20px; padding: 34px 32px;
+  display: flex; flex-direction: column; gap: 18px;
+  box-shadow: 0 0 60px rgba(0,207,255,0.14);
+}
+.cv-header-row { display: flex; align-items: center; gap: 18px; }
+.cv-avatar {
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+}
+.cv-header-lines { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.cv-line { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.32); }
+.cv-line-name  { width: 62%; height: 14px; background: rgba(255,255,255,0.6); }
+.cv-line-title { width: 42%; }
+.cv-divider { height: 1px; background: var(--border); }
+.cv-skills-row { display: flex; justify-content: center; gap: 18px; margin-top: 6px; }
+.cv-skill { width: 46px; height: 46px; }
+.cv-skill-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.cv-skill-track { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 3; }
+.cv-skill-fill  { fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round; }
+
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
   display: inline-flex; align-items: center; gap: 10px;
@@ -392,7 +449,12 @@ async function main() {
   } else {
     const dataPath = path.resolve(__dirname, '..', productDir, 'data.json')
     data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
-    totalItems = data.sections.reduce((sum, s) => sum + (s.items || []).length, 0)
+    // Mirrors generate.js's cover-badge count exactly: a `bonus: true`
+    // section (e.g. a supplementary checklist) is excluded so the store
+    // cover's number always matches the PDF cover's number for the same
+    // product — first exercised here by cv-guide-graduates (45 total,
+    // 42 advertised after excluding its 3-item bonus section).
+    totalItems = data.sections.reduce((sum, s) => sum + (s.bonus ? 0 : (s.items || []).length), 0)
 
     console.log(`Product:     ${data.title}`)
     console.log(`Price:       ${data.price}`)
