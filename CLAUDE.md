@@ -115,6 +115,9 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 | `chatgpt-arabic-prompts` | `chatgpt-arabic-prompts.pdf` |
 | `chatgpt-prompts-pro-arabic` | `chatgpt-prompts-pro-arabic.pdf` |
 | `midjourney-arabic-prompts` | `midjourney-arabic-prompts.pdf` |
+| `cv-guide-graduates` | `cv-guide-graduates.pdf` |
+| `ai-income-book` | `ai-income-book.pdf` |
+| `social-media-templates` | `social-media-templates.pdf` |
 
 ### Signed URL generation
 `apps/backend/src/utils/signed-url.ts` — generates 7-day presigned GET URLs with `ResponseContentDisposition: attachment`. Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.
@@ -205,3 +208,7 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 ## ملاحظات مؤجلة
 
 - **صفحتان يتيمتان**: `/terms-of-use` و`/return-policy` — نسخ أقدم وأبسط من صفحتي الشروط وسياسة الاسترجاع الكاملتين (`/terms` و`/refund-policy`)، غير مرتبطتين من الفوتر ولا من أي مكان آخر في الكود (تحقّق فعلي في `apps/storefront/src`، تاريخ 2026-07-14). القرار المؤجل: حذفهما أو تحويلهما إلى redirect نحو `/terms` و`/refund-policy` على التوالي.
+
+- **كاش قائمة المنتجات في storefront دائم**: طلب `/store/products` في `apps/storefront/src/lib/data/products.ts` يستخدم `cache: "force-cache"` مع `next.tags` بدون أي `revalidate` زمني — بعكس طلب المناطق في `middleware.ts` الذي له `revalidate: 3600`. الـ tag نفسه مرتبط بكوكي `_medusa_cache_id` الخاص بكل زائر، لكن مفتاح الكاش الفعلي هو الـ URL المتطابق لكل الزوار المجهولين، فأي منتج جديد لن يظهر في `/store` حتى تُعاد تهيئة عملية Next.js. تحقّق فعلي بتاريخ 2026-07-17: منتج `social-media-templates` كان يُرجعه Store API بشكل صحيح (`count`, بيانات، سعر، sales channel — كلها سليمة) لكنه غاب عن HTML الصفحة الحيّة فعليًا حتى بعد تفريغ كوكيز المتصفح (private window)، لأن الكاش على مستوى الخادم وليس المتصفح.
+  **الحل المؤقت الموثق**: إعادة نشر الواجهة (`railway up`، الأمر في قسم *Railway Deployment* أعلاه) بعد كل إضافة منتج جديد — يعيد تشغيل العملية ويُفرغ الكاش في الذاكرة.
+  **الإصلاح الجذري المؤجل**: إضافة subscriber في الباك إند على أحداث `product.created` / `product.updated` يستدعي route جديد في الواجهة لتنفيذ `revalidateTag()` على تاغ المنتجات تلقائيًا، بدل انتظار نشر يدوي في كل مرة.
