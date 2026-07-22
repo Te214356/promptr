@@ -34,6 +34,7 @@ const CONFIGS = {
     badgeText: '7 طرق مثبتة',
   },
   'cv-guide-graduates': { visual: 'cv', unit: 'نموذجًا جاهزًا' },
+  'marketing-prompts-arabic': { visual: 'marketing', unit: 'برومبتًا' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -188,6 +189,28 @@ function visualCV() {
   </div>`
 }
 
+function visualMarketing() {
+  // Abstract marketing content: a small fanned stack of ad/post card
+  // previews (banner block + caption lines, no real photo/logo) with a
+  // glowing upward-growth sparkline badge overlapping the corner.
+  const card = (n) => `
+    <div class="mkt-card mkt-card-${n}">
+      <div class="mkt-card-banner"></div>
+      <div class="mkt-card-line" style="width:${68 - n * 6}%"></div>
+      <div class="mkt-card-line" style="width:${44 + n * 4}%"></div>
+    </div>`
+  return `
+  <div class="visual marketing-visual">
+    ${card(1)}${card(2)}${card(3)}
+    <div class="mkt-growth">
+      <svg viewBox="0 0 80 50" class="mkt-growth-svg">
+        <polyline points="2,42 22,30 42,34 62,14 78,6" class="mkt-growth-line"/>
+        <circle cx="78" cy="6" r="3.5" class="mkt-growth-dot"/>
+      </svg>
+    </div>
+  </div>`
+}
+
 function visualGrid() {
   // Abstract grid of mini command cards — generic line + chevron glyphs,
   // no real app UI.
@@ -201,7 +224,7 @@ function visualGrid() {
   return `<div class="visual grid-visual">${cells}</div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV }
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
@@ -394,6 +417,33 @@ body {
 .cv-skill-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
 .cv-skill-track { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 3; }
 .cv-skill-fill  { fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round; }
+
+/* ── marketing visual ────────────────────────────────────────────────── */
+.marketing-visual { position: relative; width: 480px; height: 380px; }
+.mkt-card {
+  position: absolute; width: 210px; height: 250px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+.mkt-card-1 { left: 4px;   top: 70px; transform: rotate(-8deg); z-index: 1; }
+.mkt-card-2 { left: 135px; top: 18px; transform: rotate(3deg);  z-index: 2; }
+.mkt-card-3 { left: 262px; top: 78px; transform: rotate(10deg); z-index: 1; }
+.mkt-card-banner {
+  height: 96px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--purple), var(--cyan)); opacity: 0.55;
+}
+.mkt-card-line { height: 9px; border-radius: 5px; background: rgba(255,255,255,0.32); }
+.mkt-growth {
+  position: absolute; right: -6px; bottom: 4px; width: 112px; height: 74px; z-index: 3;
+  background: rgba(0,207,255,0.08); border: 1px solid rgba(0,207,255,0.35);
+  border-radius: 16px; box-shadow: 0 0 40px rgba(0,207,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.mkt-growth-svg { width: 82px; height: 52px; }
+.mkt-growth-line { fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.mkt-growth-dot { fill: var(--cyan); }
 
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
