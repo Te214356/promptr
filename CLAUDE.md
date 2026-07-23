@@ -119,6 +119,7 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 | `ai-income-book` | `ai-income-book.pdf` |
 | `social-media-templates` | `social-media-templates.pdf` |
 | `marketing-prompts-arabic` | `marketing-prompts-arabic.pdf` |
+| `ecommerce-prompts-arabic` | `ecommerce-prompts-arabic.pdf` |
 
 ### Signed URL generation
 `apps/backend/src/utils/signed-url.ts` — generates 7-day presigned GET URLs with `ResponseContentDisposition: attachment`. Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.

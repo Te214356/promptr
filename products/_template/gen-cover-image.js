@@ -35,6 +35,7 @@ const CONFIGS = {
   },
   'cv-guide-graduates': { visual: 'cv', unit: 'نموذجًا جاهزًا' },
   'marketing-prompts-arabic': { visual: 'marketing', unit: 'برومبتًا' },
+  'ecommerce-prompts-arabic': { visual: 'cart', unit: 'برومبتًا' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -224,7 +225,32 @@ function visualGrid() {
   return `<div class="visual grid-visual">${cells}</div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing }
+function visualCart() {
+  // Abstract shopping cart: line-art basket + wheels with 3 product boxes
+  // "dropping in" from above, and a glowing price-tag badge overlapping the
+  // corner — no real store/brand iconography.
+  const boxes = [0, 1, 2].map((n) => `
+    <div class="cart-box cart-box-${n + 1}">
+      <div class="cart-box-line" style="width:${60 - n * 8}%"></div>
+    </div>`).join('')
+  return `
+  <div class="visual cart-visual">
+    ${boxes}
+    <svg viewBox="0 0 200 170" class="cart-svg">
+      <path d="M14 18 H36 L56 108 H160 L182 44 H50" class="cart-line"/>
+      <circle cx="74" cy="140" r="12" class="cart-wheel"/>
+      <circle cx="150" cy="140" r="12" class="cart-wheel"/>
+    </svg>
+    <div class="cart-tag">
+      <svg viewBox="0 0 60 60" class="cart-tag-svg">
+        <path d="M6 26 L30 6 L54 20 L34 50 Z" class="cart-tag-shape"/>
+        <circle cx="24" cy="20" r="4" class="cart-tag-dot"/>
+      </svg>
+    </div>
+  </div>`
+}
+
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing, cart: visualCart }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
@@ -444,6 +470,32 @@ body {
 .mkt-growth-svg { width: 82px; height: 52px; }
 .mkt-growth-line { fill: none; stroke: var(--cyan); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .mkt-growth-dot { fill: var(--cyan); }
+
+/* ── cart visual ──────────────────────────────────────────────────────── */
+.cart-visual { position: relative; width: 460px; height: 400px; display: flex; align-items: flex-end; justify-content: center; }
+.cart-svg { width: 300px; height: 255px; overflow: visible; }
+.cart-line { fill: none; stroke: rgba(0,207,255,0.7); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 18px rgba(0,207,255,0.35)); }
+.cart-wheel { fill: rgba(8,8,16,0.9); stroke: var(--white); stroke-width: 6; }
+.cart-box {
+  position: absolute; width: 96px; height: 76px;
+  background: rgba(255,255,255,0.07); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.3);
+}
+.cart-box-1 { left: 46px;  top: 10px;  transform: rotate(-9deg); }
+.cart-box-2 { left: 168px; top: -30px; transform: rotate(4deg); }
+.cart-box-3 { left: 290px; top: 6px;   transform: rotate(10deg); }
+.cart-box-line { height: 9px; border-radius: 5px; background: rgba(255,255,255,0.34); }
+.cart-tag {
+  position: absolute; right: 10px; top: 40px; width: 76px; height: 76px; z-index: 3;
+  background: rgba(0,207,255,0.08); border: 1px solid rgba(0,207,255,0.35);
+  border-radius: 20px; box-shadow: 0 0 40px rgba(0,207,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-tag-svg { width: 46px; height: 46px; }
+.cart-tag-shape { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linejoin: round; }
+.cart-tag-dot { fill: var(--cyan); }
 
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
