@@ -36,6 +36,7 @@ const CONFIGS = {
   'cv-guide-graduates': { visual: 'cv', unit: 'نموذجًا جاهزًا' },
   'marketing-prompts-arabic': { visual: 'marketing', unit: 'برومبتًا' },
   'ecommerce-prompts-arabic': { visual: 'cart', unit: 'برومبتًا' },
+  'ai-video-guide-arabic': { visual: 'video', unit: 'نموذجًا' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -250,7 +251,28 @@ function visualCart() {
   </div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing, cart: visualCart }
+function visualVideo() {
+  // Abstract video-production motif: a glowing play-screen at center, a
+  // filmstrip of small frames arcing above it, and an audio-waveform bar
+  // beneath — no real app UI or camera iconography.
+  const frames = [0, 1, 2, 3].map((n) => `<div class="vid-frame vid-frame-${n + 1}"></div>`).join('')
+  const bars = [22, 40, 30, 55, 38, 62, 34, 48, 26].map((h, i) =>
+    `<div class="vid-bar" style="height:${h}px; animation-delay:${i * 0.06}s"></div>`
+  ).join('')
+  return `
+  <div class="visual video-visual">
+    <div class="vid-filmstrip">${frames}</div>
+    <div class="vid-screen">
+      <svg viewBox="0 0 60 60" class="vid-play-svg">
+        <circle cx="30" cy="30" r="27" class="vid-play-ring"/>
+        <path d="M24 18 L44 30 L24 42 Z" class="vid-play-tri"/>
+      </svg>
+    </div>
+    <div class="vid-wave">${bars}</div>
+  </div>`
+}
+
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing, cart: visualCart, video: visualVideo }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
@@ -496,6 +518,35 @@ body {
 .cart-tag-svg { width: 46px; height: 46px; }
 .cart-tag-shape { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linejoin: round; }
 .cart-tag-dot { fill: var(--cyan); }
+
+/* ── video visual ─────────────────────────────────────────────────────── */
+.video-visual { position: relative; width: 460px; height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; }
+.vid-filmstrip { display: flex; gap: 14px; }
+.vid-frame {
+  width: 62px; height: 44px; border-radius: 8px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.3);
+}
+.vid-frame-1 { transform: rotate(-7deg) translateY(6px); }
+.vid-frame-2 { transform: rotate(3deg) translateY(-4px); }
+.vid-frame-3 { transform: rotate(-2deg) translateY(2px); }
+.vid-frame-4 { transform: rotate(8deg) translateY(6px); }
+.vid-screen {
+  width: 150px; height: 150px; border-radius: 30px;
+  background: radial-gradient(circle at 40% 35%, rgba(0,207,255,0.16), rgba(8,8,16,0.9) 72%);
+  border: 1px solid rgba(0,207,255,0.35);
+  box-shadow: 0 0 70px rgba(0,207,255,0.28), inset 0 0 30px rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.vid-play-svg { width: 92px; height: 92px; }
+.vid-play-ring { fill: none; stroke: rgba(0,207,255,0.45); stroke-width: 2; }
+.vid-play-tri { fill: var(--cyan); filter: drop-shadow(0 0 10px rgba(0,207,255,0.6)); }
+.vid-wave { display: flex; align-items: flex-end; gap: 7px; height: 62px; }
+.vid-bar {
+  width: 8px; border-radius: 4px;
+  background: linear-gradient(180deg, var(--cyan), var(--purple));
+  opacity: 0.85;
+}
 
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
