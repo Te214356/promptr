@@ -87,6 +87,8 @@ Both services live in project **`zoological-hope`** (`b635b9d9-0241-4f5f-bbbd-1b
 | `@dtc/backend` | `cfae7146-9e7b-4f07-8d9f-2f75bdcb7cd1` | `https://dtcbackend-production-32a2.up.railway.app` (also `api.promptrsa.com`) | **Auto** — triggers on every `git push origin main` |
 | `storefront` | `f7497b9a-c86b-4c81-ae08-bac368caa0ae` | `https://promptrsa.com` | **Manual** — must run `railway up` from repo root |
 
+> ⚠️ **لا تستخدم `railway up` المجرد** — الربط في هذا المجلد يشير للمشروع القديم المعطّل (`881899a5`). استخدم دائمًا الأمر بالمعرّفات الصريحة الموثّق أدناه.
+
 **Storefront deploy command (always from repo root):**
 ```bash
 railway up --project b635b9d9-0241-4f5f-bbbd-1b6d2468d2c4 \
