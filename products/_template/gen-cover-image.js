@@ -37,6 +37,7 @@ const CONFIGS = {
   'marketing-prompts-arabic': { visual: 'marketing', unit: 'برومبتًا' },
   'ecommerce-prompts-arabic': { visual: 'cart', unit: 'برومبتًا' },
   'ai-video-guide-arabic': { visual: 'video', unit: 'نموذجًا' },
+  'customer-service-prompts': { visual: 'chat', unit: 'ردًا' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
