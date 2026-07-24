@@ -101,7 +101,7 @@ There is also an old crashed service named `promptr` in a separate project (`881
 
 ## Digital Product Delivery Pipeline
 
-**Status (2026-07-24):** 10 products live (see mapping table below). 2 remaining to reach the 12-product catalog target — not yet started.
+**Status (2026-07-24):** 10 products live in Medusa (see mapping table below). `ai-basics-arabic` (11th) is content-complete — data.json, PDF, and cover image are built and uploaded to R2 — but not yet created as a product in Medusa Admin (no handle/file_key set there yet). 1 product remaining to reach the 12-product catalog target — not yet started.
 
 ### Cloudflare R2 Buckets
 | Bucket | Access | Purpose |
@@ -124,6 +124,9 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 | `ecommerce-prompts-arabic` | `ecommerce-prompts-arabic.pdf` |
 | `ai-video-guide-arabic` | `ai-video-guide-arabic.pdf` |
 | `customer-service-prompts` | `customer-service-prompts.pdf` |
+| `ai-basics-arabic` (11th, not yet created in Medusa) | `ai-basics-arabic.pdf` |
+
+`ai-basics-arabic`'s cover image is uploaded to the public bucket (`promptr-uploads`) as `ai-basics-arabic-cover.png` — public URL: `https://pub-896449c4f58a451cbf268d643d1dff28.r2.dev/ai-basics-arabic-cover.png`.
 
 ### Signed URL generation
 `apps/backend/src/utils/signed-url.ts` — generates 7-day presigned GET URLs with `ResponseContentDisposition: attachment`. Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.
