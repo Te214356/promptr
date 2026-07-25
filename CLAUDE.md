@@ -103,7 +103,9 @@ There is also an old crashed service named `promptr` in a separate project (`881
 
 ## Digital Product Delivery Pipeline
 
-**Status (2026-07-25):** 🎯 12-product catalog target reached in content — all 12 products now have data.json, PDF, and cover image built and uploaded to R2 (see mapping table below). Only 10 are actually live/purchasable in Medusa Admin, though: `ai-basics-arabic` (11th) and `ecommerce-success-guide` (12th) both still need Admin setup (handle, price, `file_key` in metadata) before they're purchasable — content-complete is not the same as published.
+**Status (2026-07-25):** 🎯 12-product catalog target reached and shipped — all 12 products published in Medusa (verified directly against the live store API: both `ai-basics-arabic` and `ecommerce-success-guide` return `status: "published"` with correct `metadata.file_key`). Golden-path test (full order → confirmation email → correct download link) passed for `ecommerce-success-guide` (12th), per team report — not independently re-verified here.
+
+**Remaining external blocker:** Moyasar live-payment account activation is pending required documentation (support ticket `94773`) — blocked until funds are available to complete it, expected at next payday. Until then the storefront can only take live payments once Moyasar approves the account; this is unrelated to the product catalog itself, which is fully built either way.
 
 ### Cloudflare R2 Buckets
 | Bucket | Access | Purpose |
@@ -126,8 +128,8 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 | `ecommerce-prompts-arabic` | `ecommerce-prompts-arabic.pdf` |
 | `ai-video-guide-arabic` | `ai-video-guide-arabic.pdf` |
 | `customer-service-prompts` | `customer-service-prompts.pdf` |
-| `ai-basics-arabic` (11th, not yet created in Medusa) | `ai-basics-arabic.pdf` |
-| `ecommerce-success-guide` (12th, not yet created in Medusa) | `ecommerce-success-guide.pdf` |
+| `ai-basics-arabic` (11th) | `ai-basics-arabic.pdf` |
+| `ecommerce-success-guide` (12th) | `ecommerce-success-guide.pdf` |
 
 `ai-basics-arabic`'s cover image is uploaded to the public bucket (`promptr-uploads`) as `ai-basics-arabic-cover.png` — public URL: `https://pub-896449c4f58a451cbf268d643d1dff28.r2.dev/ai-basics-arabic-cover.png`.
 
