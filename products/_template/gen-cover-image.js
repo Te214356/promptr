@@ -39,6 +39,11 @@ const CONFIGS = {
   'ai-video-guide-arabic': { visual: 'video', unit: 'نموذجًا' },
   'customer-service-prompts': { visual: 'chat', unit: 'ردًا' },
   'ai-basics-arabic': { visual: 'grid', unit: 'درسًا' },
+  // badgeText overrides the auto-computed "{itemCount} {unit}" badge — used
+  // here because the item total (42) visually clashes with the "100" goal
+  // figure already in the title/journey visual; "7 مراحل" (section count,
+  // including the bonus tools section) reads cleaner for a beginner.
+  'ecommerce-success-guide': { visual: 'journey', badgeText: '7 مراحل' },
 }
 
 // ─── bidi + escaping — ported verbatim from generate.js ────────────────────
@@ -274,7 +279,26 @@ function visualVideo() {
   </div>`
 }
 
-const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing, cart: visualCart, video: visualVideo }
+function visualJourney() {
+  // Abstract growth path: a winding route from a hollow "start" ring
+  // through waypoint dots to a glowing "100" milestone badge — a full
+  // start-to-goal journey (idea → first 100 orders), distinct from the
+  // plain uptrend sparkline in visualMarketing. No real map/road iconography.
+  return `
+  <div class="visual journey-visual">
+    <svg viewBox="0 0 480 300" class="journey-svg">
+      <path d="M14 270 C 90 270, 110 195, 175 180 S 255 110, 315 95 S 400 55, 452 40" class="journey-path"/>
+      <circle cx="14" cy="270" r="10" class="journey-start"/>
+      <circle cx="175" cy="180" r="6" class="journey-waypoint"/>
+      <circle cx="315" cy="95" r="6" class="journey-waypoint"/>
+    </svg>
+    <div class="journey-goal">
+      <span class="journey-goal-label">100</span>
+    </div>
+  </div>`
+}
+
+const VISUALS = { chat: visualChat, lens: visualLens, grid: visualGrid, book: visualBook, cv: visualCV, marketing: visualMarketing, cart: visualCart, video: visualVideo, journey: visualJourney }
 
 // ─── HTML ────────────────────────────────────────────────────────────────
 
@@ -549,6 +573,22 @@ body {
   background: linear-gradient(180deg, var(--cyan), var(--purple));
   opacity: 0.85;
 }
+
+/* ── journey visual ──────────────────────────────────────────────────── */
+.journey-visual { position: relative; width: 480px; height: 310px; }
+.journey-svg { width: 480px; height: 300px; overflow: visible; }
+.journey-path { fill: none; stroke: rgba(255,255,255,0.32); stroke-width: 4; stroke-linecap: round; }
+.journey-start { fill: rgba(8,8,16,0.9); stroke: var(--white); stroke-width: 4; }
+.journey-waypoint { fill: var(--white); opacity: 0.55; }
+.journey-goal {
+  position: absolute; top: 4px; left: 416px;
+  width: 72px; height: 72px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(0,207,255,0.55), rgba(108,43,255,0.4) 75%);
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 34px rgba(0,207,255,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.journey-goal-label { font-size: 22px; font-weight: 900; color: var(--white); }
 
 /* ── badge pill ───────────────────────────────────────────────────────── */
 .badge {
