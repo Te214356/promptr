@@ -221,6 +221,28 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 
 ---
 
+## Security — Admin Credential Incident (resolved 2026-07-27)
+
+**ما حدث:** مراجعة أمنية شاملة (git history secrets scan) اكتشفت أن `scripts/reupload-product-images.py` كان يحتوي على بيانات دخول أدمن حقيقية بنص صريح لحساب `admin@promptr.com` على الباكند الحي (`api.promptrsa.com`) — أخطر ثغرة وُجدت في تلك المراجعة.
+
+**المعالجة** (كما أبلغ الفريق — لم تُتحقق برمجيًا من جانب Claude في هذه الجلسة):
+- أُنشئ حساب أدمن جديد بإيميل حقيقي `team.promptr@gmail.com` عبر **Railway Console** (تبويب Console في لوحة الخدمة)
+- حُذف `admin@promptr.com` القديم نهائيًا (كان إيميلًا وهميًا بكلمة مرور مكشوفة)
+- أُزيل `scripts/reupload-product-images.py` من شجرة الريبو — commit `c3f4f00` (تحقّق مباشر: Claude نفّذ هذا الكوميت)
+
+**ملاحظة تقنية لأي محاولة مستقبلية مشابهة:** لا تستخدم `railway ssh` + `npx medusa user` كأول خيار لإدارة مستخدمي الأدمن على الباكند الحي. واجهنا فشلين متتاليين بهذا المسار: (1) مفتاح SSH/ثقة المضيف غير مُعدَّين افتراضيًا محليًا، (2) بعد حلّها، فشل CLI بخطأ "must be run inside a Medusa project" لأن جلسة SSH تهبط في جذر المونوريبو `/app` لا `apps/backend` (يحتاج `cd apps/backend &&` قبل أي أمر `medusa`) — ولم نتحقق أبدًا من نجاح المحاولة بعد هذا التصحيح. **المسار الذي نجح فعليًا: تبويب Console في لوحة خدمة Railway مباشرة.** ابدأ به أولًا في المرة القادمة.
+
+### قبل تفعيل Moyasar الحي — قائمة تحقق إلزامية
+
+لا يجوز تفعيل حساب Moyasar للدفع الحي قبل إتمام كل ما يلي:
+1. **تنظيف git history من كلمة المرور القديمة** — لا تزال قابلة للاسترجاع الكامل من commit `754c9a1` رغم حذف الملف من HEAD (`git rm --cached` لا يمس التاريخ)
+2. **إضافة `**/.env.production` إلى `.gitignore`** — الفجوة الحالية مؤكدة عبر `git check-ignore`: لا القاعدة الجذرية ولا `apps/backend/.gitignore` ولا `apps/storefront/.gitignore` تُغطي هذا النمط تحديدًا (المحتوى الحالي للملفين المتتبَّعين آمن اليوم، لكن الفجوة نفسها خطر كامن)
+3. **تحقق يدوي من إعدادات Cloudflare R2**: تأكيد أن `Public Development URL` مُعطَّل (Disabled) لـ bucket `promptr-files` — لم يمكن التحقق من هذا برمجيًا (لا يوجد Cloudflare API token متاح في بيئة العمل، فقط مفاتيح S3-compatible)
+4. **إصلاح تحقق توقيع Moyasar webhook (HMAC)** — لا يوجد أي تحقق توقيع حاليًا في `apps/backend/src/modules/moyasar/service.ts`. يعمل حاليًا "آمنًا بالصدفة" فقط بسبب علة برمجية منفصلة (`getWebhookActionAndData` يقرأ `payload.id`/`payload.status` بدل الشكل الفعلي `payload.data.id`/`payload.data.status`)، فيتجاهل كل الطلبات الحقيقية والمزوّرة على حد سواء. إصلاح هذه العلة وحدها بدون إضافة تحقق توقيع حقيقي في نفس الوقت سيفتح مسار ثقة بـwebhook غير موثّق — يجب إصلاح الاثنين معًا. (تدفق الدفع الفعلي نفسه سليم ومنفصل عن هذا: الباكند يتحقق من Moyasar server-to-server مباشرة بمفتاحه السري قبل قبول أي دفع، بغض النظر عن الـwebhook.)
+5. **مراجعة أمنية من مختص بشري** قبل تفعيل الدفع الحي
+
+---
+
 ## ملاحظات مؤجلة
 
 - **صفحتان يتيمتان**: `/terms-of-use` و`/return-policy` — نسخ أقدم وأبسط من صفحتي الشروط وسياسة الاسترجاع الكاملتين (`/terms` و`/refund-policy`)، غير مرتبطتين من الفوتر ولا من أي مكان آخر في الكود (تحقّق فعلي في `apps/storefront/src`، تاريخ 2026-07-14). القرار المؤجل: حذفهما أو تحويلهما إلى redirect نحو `/terms` و`/refund-policy` على التوالي.
