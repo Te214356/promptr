@@ -12,54 +12,34 @@ type PostCardProps = {
   variant?: "default" | "featured"
 }
 
+/**
+ * Only rendered when the post actually has a cover. Cover-less posts show no
+ * placeholder at all — their text simply takes the full card width.
+ */
 const CoverArt = ({
   post,
   className,
   sizes,
 }: {
-  post: BlogPostMeta
+  post: BlogPostMeta & { cover: string }
   className: string
   sizes: string
-}) =>
-  post.cover ? (
-    <div className={clx("relative overflow-hidden bg-promptr-bg", className)}>
-      <Image
-        src={post.cover}
-        alt={post.title}
-        fill
-        sizes={sizes}
-        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-promptr-card/80 to-transparent" />
-    </div>
-  ) : (
-    // Cover-less posts get a generated gradient plate so the grid stays even.
-    // Purely graphical — no text, which would clip at narrow card widths.
-    <div
-      aria-hidden="true"
-      className={clx(
-        "relative overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(108,43,255,0.35),transparent_60%),radial-gradient(circle_at_75%_80%,rgba(0,207,255,0.22),transparent_55%)]",
-        className
-      )}
-    >
-      <div className="absolute inset-0 flex items-center justify-center">
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          className="h-12 w-12 text-white/[0.13] transition-transform duration-500 group-hover:scale-110"
-        >
-          <path
-            d="M24 4l4.6 12.1L41 20.7l-12.4 4.6L24 37.4l-4.6-12.1L7 20.7l12.4-4.6z"
-            fill="currentColor"
-          />
-          <circle cx="38" cy="38" r="3.5" fill="currentColor" />
-        </svg>
-      </div>
-    </div>
-  )
+}) => (
+  <div className={clx("relative overflow-hidden bg-promptr-bg", className)}>
+    <Image
+      src={post.cover}
+      alt={post.title}
+      fill
+      sizes={sizes}
+      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-promptr-card/80 to-transparent" />
+  </div>
+)
 
 const PostCard = ({ post, variant = "default" }: PostCardProps) => {
   const featured = variant === "featured"
+  const hasCover = Boolean(post.cover)
 
   return (
     <LocalizedClientLink
@@ -68,24 +48,33 @@ const PostCard = ({ post, variant = "default" }: PostCardProps) => {
         "group flex overflow-hidden rounded-large border border-promptr-border bg-promptr-card",
         "transition-all duration-200 hover:-translate-y-1 hover:border-promptr-purple/40",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-promptr-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-promptr-bg",
-        featured ? "flex-col small:flex-row" : "flex-col"
+        // The side-by-side split only makes sense when there is an image to
+        // sit beside; without one the text column runs the full card width.
+        featured && hasCover ? "flex-col small:flex-row" : "flex-col"
       )}
       data-testid={`blog-card-${post.slug}`}
     >
-      <CoverArt
-        post={post}
-        className={clx(
-          featured
-            ? "h-56 w-full shrink-0 small:h-auto small:w-[46%]"
-            : "h-44 w-full"
-        )}
-        sizes={featured ? "(max-width: 1024px) 100vw, 46vw" : "(max-width: 1024px) 100vw, 33vw"}
-      />
+      {hasCover && (
+        <CoverArt
+          post={post as BlogPostMeta & { cover: string }}
+          className={clx(
+            featured
+              ? "h-56 w-full shrink-0 small:h-auto small:w-[46%]"
+              : "h-44 w-full"
+          )}
+          sizes={
+            featured
+              ? "(max-width: 1024px) 100vw, 46vw"
+              : "(max-width: 1024px) 100vw, 33vw"
+          }
+        />
+      )}
 
       <div
         className={clx(
           "flex flex-1 flex-col",
-          featured ? "gap-y-4 p-8" : "gap-y-3 p-6"
+          featured ? "gap-y-4" : "gap-y-3",
+          featured && !hasCover ? "p-8 small:p-10" : featured ? "p-8" : "p-6"
         )}
       >
         {post.tags.length > 0 && (
