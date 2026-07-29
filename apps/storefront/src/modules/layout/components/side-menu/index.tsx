@@ -14,6 +14,7 @@ import { useLanguage } from "@lib/context/language-context"
 const MENU_ITEMS = [
   { labelAr: "الرئيسية", labelEn: "Home", href: "/" },
   { labelAr: "المتجر",   labelEn: "Store",   href: "/store" },
+  { labelAr: "المدونة",  labelEn: "Blog",    href: "/blog" },
   { labelAr: "الحساب",  labelEn: "Account", href: "/account" },
   { labelAr: "السلة",   labelEn: "Cart",    href: "/cart" },
 ]

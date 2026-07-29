@@ -128,3 +128,263 @@ input, select, textarea {
     @apply text-[32px] leading-[44px] font-semibold;
   }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Blog article body — styles the HTML produced by src/lib/blog/markdown.ts.
+   Scoped to .prose-promptr so nothing here can leak into store pages.
+   Logical properties (inline-start/end) keep it correct in RTL and LTR.
+   ────────────────────────────────────────────────────────────── */
+
+.prose-promptr {
+  color: #e8e8f0;
+  font-size: 17px;
+  line-height: 1.9;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 1024px) {
+  .prose-promptr {
+    font-size: 18px;
+  }
+}
+
+.prose-promptr > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Headings — extra space above, tight space below, on an 8px rhythm */
+.prose-promptr h2,
+.prose-promptr h3,
+.prose-promptr h4 {
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.4;
+  scroll-margin-top: 6rem; /* clears the sticky header on anchor jumps */
+}
+
+.prose-promptr h2 {
+  font-size: 1.6em;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.prose-promptr h3 {
+  font-size: 1.25em;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-promptr h4 {
+  font-size: 1.05em;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-promptr h2 + *,
+.prose-promptr h3 + *,
+.prose-promptr h4 + * {
+  margin-top: 0;
+}
+
+.prose-promptr strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.prose-promptr a {
+  color: var(--promptr-cyan);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.2s ease;
+}
+
+.prose-promptr a:hover {
+  opacity: 0.75;
+}
+
+.prose-promptr a:focus-visible {
+  outline: 2px solid var(--promptr-cyan);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Lists */
+.prose-promptr ul,
+.prose-promptr ol {
+  padding-inline-start: 1.5rem;
+}
+
+.prose-promptr ul {
+  list-style: disc;
+}
+
+.prose-promptr ol {
+  list-style: decimal;
+}
+
+.prose-promptr li {
+  margin-top: 0.5rem;
+}
+
+.prose-promptr li::marker {
+  color: var(--promptr-purple);
+}
+
+.prose-promptr ul ul,
+.prose-promptr ol ol,
+.prose-promptr ul ol,
+.prose-promptr ol ul {
+  margin-top: 0.5rem;
+}
+
+/* Quotes — accent bar on the reading-start edge */
+.prose-promptr blockquote {
+  border-inline-start: 3px solid var(--promptr-purple);
+  padding-inline-start: 1.25rem;
+  color: #ffffffb3;
+  font-style: normal;
+}
+
+.prose-promptr blockquote p {
+  margin-top: 0;
+}
+
+.prose-promptr blockquote p + p {
+  margin-top: 0.75rem;
+}
+
+/* Callouts — `> [!NOTE]` / `> [!TIP]` / `> [!WARNING]` in Markdown */
+.prose-promptr .callout {
+  border: 1px solid;
+  border-inline-start-width: 3px;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.prose-promptr .callout__label {
+  margin: 0 0 0.5rem;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.prose-promptr .callout__body > * {
+  margin-top: 0;
+}
+
+.prose-promptr .callout__body > * + * {
+  margin-top: 0.75rem;
+}
+
+.prose-promptr .callout--note {
+  background-color: rgba(0, 207, 255, 0.06);
+  border-color: rgba(0, 207, 255, 0.35);
+}
+
+.prose-promptr .callout--note .callout__label {
+  color: var(--promptr-cyan);
+}
+
+.prose-promptr .callout--tip {
+  background-color: rgba(108, 43, 255, 0.08);
+  border-color: rgba(108, 43, 255, 0.4);
+}
+
+.prose-promptr .callout--tip .callout__label {
+  color: #a97bff;
+}
+
+.prose-promptr .callout--warning {
+  background-color: rgba(255, 176, 32, 0.07);
+  border-color: rgba(255, 176, 32, 0.4);
+}
+
+.prose-promptr .callout--warning .callout__label {
+  color: #ffb020;
+}
+
+/* Tables — scroll inside their own box, never the page */
+.prose-promptr .prose-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--promptr-border);
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose-promptr table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  text-align: start;
+}
+
+.prose-promptr thead {
+  background-color: rgba(108, 43, 255, 0.12);
+}
+
+.prose-promptr th {
+  padding: 0.875rem 1rem;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.prose-promptr td {
+  padding: 0.875rem 1rem;
+  border-top: 1px solid var(--promptr-border);
+  vertical-align: top;
+}
+
+.prose-promptr tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Code */
+.prose-promptr code {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.88em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.prose-promptr pre {
+  background-color: var(--promptr-card);
+  border: 1px solid var(--promptr-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose-promptr pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.7;
+}
+
+/* Media and rules */
+.prose-promptr img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.prose-promptr hr {
+  border: 0;
+  height: 1px;
+  margin: 3rem 0;
+  background: linear-gradient(
+    to left,
+    transparent,
+    var(--promptr-border),
+    transparent
+  );
+}

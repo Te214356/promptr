@@ -24,6 +24,7 @@ const CONTENT = {
     collectionsTitle: 'المجموعات',
     storeTitle: 'المتجر',
     allProducts: 'جميع المنتجات',
+    blog: 'المدونة',
     account: 'حسابي',
     cart: 'السلة',
     legalLinks: [
@@ -48,6 +49,7 @@ const CONTENT = {
     collectionsTitle: 'Collections',
     storeTitle: 'Store',
     allProducts: 'All Products',
+    blog: 'Blog',
     account: 'Account',
     cart: 'Cart',
     legalLinks: [
@@ -176,6 +178,11 @@ export default function FooterClient({ collections, categories }: FooterClientPr
                 <li>
                   <LocalizedClientLink className="text-white/40 hover:text-white text-sm transition-colors" href="/store">
                     {t.allProducts}
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink className="text-white/40 hover:text-white text-sm transition-colors" href="/blog">
+                    {t.blog}
                   </LocalizedClientLink>
                 </li>
                 <li>
