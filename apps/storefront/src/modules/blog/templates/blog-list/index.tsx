@@ -1,3 +1,5 @@
+import { clx } from "@medusajs/ui"
+
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import type { BlogPostMeta } from "@lib/blog/types"
 import PostCard from "@modules/blog/components/post-card"
@@ -82,7 +84,14 @@ const BlogListTemplate = ({ posts, tags }: BlogListTemplateProps) => {
           <PostCard post={featured} variant="featured" />
 
           {rest.length > 0 && (
-            <div className="grid gap-6 small:grid-cols-2 medium:grid-cols-3">
+            <div
+              className={clx(
+                "grid gap-6",
+                // A lone remaining card would otherwise sit at a third of the
+                // row with dead space beside it — let it run the full width.
+                rest.length > 1 && "small:grid-cols-2 medium:grid-cols-3"
+              )}
+            >
               {rest.map((post) => (
                 <PostCard key={post.slug} post={post} />
               ))}

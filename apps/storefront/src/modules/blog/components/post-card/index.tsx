@@ -85,12 +85,13 @@ const PostCard = ({ post, variant = "default" }: PostCardProps) => {
           </div>
         )}
 
-        <h2
-          className={clx(
-            "font-bold leading-snug text-white transition-colors duration-200 group-hover:text-promptr-cyan",
-            featured ? "text-2xl small:text-[28px]" : "text-lg"
-          )}
-        >
+        {/*
+          Title size is deliberately identical across variants: the newest post
+          is signalled by its position at the top, not by a larger heading.
+          Once featured and grid cards share a width, a size gap reads as a
+          rendering glitch rather than emphasis.
+        */}
+        <h2 className="text-xl font-bold leading-snug text-white transition-colors duration-200 small:text-2xl group-hover:text-promptr-cyan">
           {post.title}
         </h2>
 
