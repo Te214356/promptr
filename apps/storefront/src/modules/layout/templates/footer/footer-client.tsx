@@ -21,7 +21,6 @@ const CONTENT = {
     securePayments: 'وسائل الدفع الآمنة',
     protectedMsg: 'مدفوعاتك محمية ومشفرة',
     categoriesTitle: 'التصنيفات',
-    collectionsTitle: 'المجموعات',
     storeTitle: 'المتجر',
     allProducts: 'جميع المنتجات',
     blog: 'المدونة',
@@ -46,7 +45,6 @@ const CONTENT = {
     securePayments: 'Secure Payments',
     protectedMsg: 'Your payments are protected & encrypted',
     categoriesTitle: 'Categories',
-    collectionsTitle: 'Collections',
     storeTitle: 'Store',
     allProducts: 'All Products',
     blog: 'Blog',
@@ -64,11 +62,10 @@ const CONTENT = {
 
 
 interface FooterClientProps {
-  collections: HttpTypes.StoreCollection[]
   categories: HttpTypes.StoreProductCategory[]
 }
 
-export default function FooterClient({ collections, categories }: FooterClientProps) {
+export default function FooterClient({ categories }: FooterClientProps) {
   const { lang } = useLanguage()
   const t = CONTENT[lang]
   const isRTL = lang === 'ar'
@@ -131,7 +128,8 @@ export default function FooterClient({ collections, categories }: FooterClientPr
           </div>
 
           {/* Links columns */}
-          <div className="text-sm gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
+          {/* Two link columns since the collections column was removed */}
+          <div className="text-sm gap-10 md:gap-x-16 grid grid-cols-2">
             {categories && categories.length > 0 && (
               <div className="flex flex-col gap-y-3">
                 <span className="text-white/50 text-xs uppercase tracking-widest font-medium">{t.categoriesTitle}</span>
@@ -150,24 +148,6 @@ export default function FooterClient({ collections, categories }: FooterClientPr
                       </li>
                     )
                   })}
-                </ul>
-              </div>
-            )}
-
-            {collections && collections.length > 0 && (
-              <div className="flex flex-col gap-y-3">
-                <span className="text-white/50 text-xs uppercase tracking-widest font-medium">{t.collectionsTitle}</span>
-                <ul className="grid grid-cols-1 gap-2">
-                  {collections.slice(0, 6).map((c) => (
-                    <li key={c.id}>
-                      <LocalizedClientLink
-                        className="text-white/40 hover:text-white text-sm transition-colors duration-200"
-                        href={`/collections/${c.handle}`}
-                      >
-                        {c.title}
-                      </LocalizedClientLink>
-                    </li>
-                  ))}
                 </ul>
               </div>
             )}
