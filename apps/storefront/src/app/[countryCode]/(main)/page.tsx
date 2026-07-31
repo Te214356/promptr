@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 
 import Hero from "@modules/home/components/hero"
+import PromoBanners from "@modules/home/components/promo-banners"
 import CollectionCards from "@modules/home/components/collection-cards"
 import { getRegion } from "@lib/data/regions"
 
@@ -25,6 +26,7 @@ export default async function Home(props: {
   return (
     <div className="bg-[#080810]">
       <Hero />
+      <PromoBanners />
       <CollectionCards />
     </div>
   )
