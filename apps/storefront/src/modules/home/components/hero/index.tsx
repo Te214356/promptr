@@ -8,14 +8,14 @@ const CONTENT = {
     subheadline: "منصة متكاملة للمنتجات الرقمية في السعودية",
     body: "منتجات رقمية مختارة للعالم العربي الحديث — قوالب، كتب، وأدوات AI",
     cta: "استكشف المتجر",
-    ctaSecondary: "جميع المنتجات",
+    ctaSecondary: "المدونة",
   },
   en: {
     headline: "Your Complete Digital Marketplace",
     subheadline: "The premium platform for digital products in Saudi Arabia",
     body: "Curated digital products for the modern Arab world — templates, books, and AI tools",
     cta: "Explore Store",
-    ctaSecondary: "All Products",
+    ctaSecondary: "Blog",
   },
 }
 
@@ -67,7 +67,7 @@ const Hero = () => {
             {t.cta}
           </LocalizedClientLink>
           <LocalizedClientLink
-            href="/store"
+            href="/blog"
             className="px-8 py-3 border border-white/15 hover:border-[#6C2BFF]/70 text-white/80 hover:text-white rounded-full font-medium text-sm transition-all duration-200"
           >
             {t.ctaSecondary}
