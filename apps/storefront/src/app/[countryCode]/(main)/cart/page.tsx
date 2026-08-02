@@ -2,7 +2,6 @@ import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
 import CartTemplate from "@modules/cart/templates"
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Cart",
@@ -18,7 +17,9 @@ export default async function Cart() {
     retrieveCustomer(),
   ])
 
-  if (!cart) return notFound()
-
+  // Having no cart is the normal state for anyone who has not added a product
+  // yet, and CartTemplate already renders the empty state for it. This used to
+  // call notFound(), which showed a 404 to every first-time visitor who opened
+  // the cart from the menu.
   return <CartTemplate cart={cart} customer={customer} />
 }
