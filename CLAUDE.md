@@ -99,6 +99,34 @@ Running `railway up` from `apps/storefront` fails — it uploads only the subdir
 
 > ⚠️ **تصحيح موثّق بدليل (2026-07-30): الستورفرنت يُنشر تلقائيًا عند الدفع إلى `main` أيضًا** — خلافًا لما كان مكتوبًا أعلاه من أنه «يدوي فقط». الدليل: آخر نشر ناجح للخدمة كان `de49d4a1` وبيانات مصدره `reason: "deploy"`، `branch: main`، `repo: Te214356/promptr`، و`commitHash: 783cead` — أي كوميت دُفع بلا أي `railway up` بعده. لا يزال `railway up` مفيدًا لنشر تغييرات غير مكوميتة أو لإجبار إعادة بناء (لتفريغ كاش قائمة المنتجات مثلًا)، لكنه **ليس شرطًا** لظهور ما دُفع إلى `main`. لم أفحص إعدادات الخدمة في لوحة Railway للتأكد من متى فُعِّل هذا الربط.
 
+### ⚠️ النشر التلقائي قد يفشل بسبب npm 429 — تحقّق دائمًا من الإنتاج بعد الدفع
+
+الدفع إلى `main` يُطلق البناء، **لكن نجاح الدفع ليس نجاح النشر**. حالة موثّقة (2026-08-02، كوميت `c98d925`): فشل البناء بخطأ من سجل npm لا من الكود:
+
+```
+npm error code E429
+npm error 429 Too Many Requests - GET https://registry.npmjs.org/@medusajs%2fmodules-sdk
+Build Failed: process "npm install" did not complete successfully: exit code: 1
+```
+
+**الحل:** إعادة النشر بنفس الكوميت بلا أي تعديل على الكود:
+
+```bash
+railway redeploy --from-source --yes \
+  --project b635b9d9-0241-4f5f-bbbd-1b6d2468d2c4 \
+  --service f7497b9a-c86b-4c81-ae08-bac368caa0ae \
+  --environment 168a8f3a-cbcc-4765-83f2-d376d3893289
+```
+
+**قاعدة عمل:** بعد كل دفع، تحقّق من الإنتاج فعليًا (استطلاع الصفحة الحيّة بحثًا عن نصّ أو صنف يميّز التغيير) ولا تفترض أن النشر التلقائي نجح. ولمعرفة حالة البناء مباشرة:
+
+```bash
+railway deployment list --project … --service … --environment … --json   # الحالة + commitHash
+railway logs --build <DEPLOYMENT_ID>                                      # سبب الفشل
+```
+
+> تنبيه على شكل الأمر: `railway logs --build <ID>` — لا يقبل `--deployment` مع `--build` معًا.
+
 There is also an old crashed service named `promptr` in a separate project (`881899a5`) — ignore it, it is not the live backend.
 
 ---
