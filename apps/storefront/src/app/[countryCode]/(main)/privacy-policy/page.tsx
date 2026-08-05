@@ -62,7 +62,11 @@ const CONTENT = {
         content: 'نستخدم cookies ضرورية لتشغيل الموقع (مثل جلسة تسجيل الدخول وسلة التسوق) وأخرى تحليلية لفهم سلوك المستخدمين. يمكنك تعطيل الـ cookies من إعدادات متصفحك مع العلم بأن ذلك قد يؤثر على بعض وظائف الموقع.'
       },
       {
-        title: 'ثامناً: التعديلات على السياسة',
+        title: 'ثامناً: الإعلانات ومعلنو الطرف الثالث',
+        content: 'قد نعرض إعلانات من شبكات إعلانية خارجية، ومنها Google. تستخدم هذه الشبكات — بصفتها طرفاً ثالثاً — ملفات الارتباط (Cookies) ومعرّفات مشابهة لعرض إعلانات مبنية على زياراتك لهذا الموقع ولمواقع أخرى. لا نمنح المعلنين أي وصول إلى بيانات حسابك أو طلباتك أو بيانات الدفع. يمكنك تعطيل الإعلانات المخصصة من إعدادات إعلانات Google على الرابط adssettings.google.com، أو تعطيل ملفات الارتباط من إعدادات متصفحك.'
+      },
+      {
+        title: 'تاسعاً: التعديلات على السياسة',
         content: 'نحتفظ بالحق في تعديل هذه السياسة في أي وقت. سيُخطَر المستخدمون المسجلون بالتغييرات الجوهرية عبر البريد الإلكتروني. الاستمرار في استخدام المتجر بعد نشر التعديلات يعني قبولها.'
       },
       {
@@ -130,7 +134,11 @@ const CONTENT = {
         content: 'We use essential cookies for site operation (login sessions, shopping cart) and analytical cookies to understand user behavior. You can disable cookies in your browser settings, though this may affect some site functions.'
       },
       {
-        title: '8. Policy Updates',
+        title: '8. Advertising and Third-Party Advertisers',
+        content: 'We may display advertising served by external ad networks, including Google. As third-party vendors, these networks use cookies and similar identifiers to serve ads based on your visits to this site and other sites. Advertisers are given no access to your account, order, or payment data. You can opt out of personalised advertising through Google Ads Settings at adssettings.google.com, or disable cookies in your browser settings.'
+      },
+      {
+        title: '9. Policy Updates',
         content: 'We reserve the right to update this policy at any time. Registered users will be notified of material changes via email. Continued use of the store after changes are published constitutes acceptance.'
       },
       {

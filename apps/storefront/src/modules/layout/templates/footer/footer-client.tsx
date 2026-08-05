@@ -21,6 +21,9 @@ const CONTENT = {
     securePayments: 'وسائل الدفع الآمنة',
     protectedMsg: 'مدفوعاتك محمية ومشفرة',
     categoriesTitle: 'التصنيفات',
+    companyTitle: 'الشركة',
+    about: 'من نحن',
+    contact: 'اتصل بنا',
     storeTitle: 'المتجر',
     allProducts: 'جميع المنتجات',
     blog: 'المدونة',
@@ -45,6 +48,9 @@ const CONTENT = {
     securePayments: 'Secure Payments',
     protectedMsg: 'Your payments are protected & encrypted',
     categoriesTitle: 'Categories',
+    companyTitle: 'Company',
+    about: 'About Us',
+    contact: 'Contact Us',
     storeTitle: 'Store',
     allProducts: 'All Products',
     blog: 'Blog',
@@ -128,8 +134,7 @@ export default function FooterClient({ categories }: FooterClientProps) {
           </div>
 
           {/* Links columns */}
-          {/* Two link columns since the collections column was removed */}
-          <div className="text-sm gap-10 md:gap-x-16 grid grid-cols-2">
+          <div className="text-sm gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
             {categories && categories.length > 0 && (
               <div className="flex flex-col gap-y-3">
                 <span className="text-white/50 text-xs uppercase tracking-widest font-medium">{t.categoriesTitle}</span>
@@ -151,6 +156,22 @@ export default function FooterClient({ categories }: FooterClientProps) {
                 </ul>
               </div>
             )}
+
+            <div className="flex flex-col gap-y-3">
+              <span className="text-white/50 text-xs uppercase tracking-widest font-medium">{t.companyTitle}</span>
+              <ul className="grid grid-cols-1 gap-2">
+                <li>
+                  <LocalizedClientLink className="text-white/40 hover:text-white text-sm transition-colors" href="/about">
+                    {t.about}
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink className="text-white/40 hover:text-white text-sm transition-colors" href="/contact">
+                    {t.contact}
+                  </LocalizedClientLink>
+                </li>
+              </ul>
+            </div>
 
             <div className="flex flex-col gap-y-3">
               <span className="text-white/50 text-xs uppercase tracking-widest font-medium">{t.storeTitle}</span>
