@@ -169,6 +169,28 @@ export async function middleware(request: NextRequest) {
 
   const queryString = request.nextUrl.search ? request.nextUrl.search : ""
 
+  // The bare root is rewritten, not redirected: Google verifies the exact
+  // hostname, so `/` itself has to answer 200 with the verification meta tag
+  // rather than pointing at /sa. A rewrite serves the default region's page on
+  // the original URL, so the crawler reads it where it looked.
+  //
+  // Deeper paths keep the redirect — rewriting each of them would serve every
+  // page under two URLs, and the sitemap and canonicals already name the
+  // /:countryCode form.
+  if (!urlHasCountryCode && countryCode && request.nextUrl.pathname === "/") {
+    const rewritten = NextResponse.rewrite(
+      new URL(`/${countryCode}${queryString}`, request.url)
+    )
+
+    if (!cacheIdCookie) {
+      rewritten.cookies.set("_medusa_cache_id", cacheId, {
+        maxAge: 60 * 60 * 24,
+      })
+    }
+
+    return rewritten
+  }
+
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
     redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
