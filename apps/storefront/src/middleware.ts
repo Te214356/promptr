@@ -141,13 +141,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
+  // Country code present but no cache id yet: set the cookie and serve the page
+  // in the same response.
+  //
+  // This used to 307 back to the very same URL, which only terminates for a
+  // client that stores the cookie and resends it. Crawlers do not, so every
+  // Google fetcher looped until it gave up and saw no HTML at all — the reason
+  // three AdSense ownership verifications failed while robots.txt, sitemap.xml
+  // and ads.txt (dotted paths, which skip this middleware) all read fine.
   if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
+    const nextResponse = NextResponse.next()
+
+    nextResponse.cookies.set("_medusa_cache_id", cacheId, {
       maxAge: 60 * 60 * 24,
     })
 
-    return response
+    return nextResponse
   }
 
   // check if the url is a static asset
