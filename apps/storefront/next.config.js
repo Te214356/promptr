@@ -24,6 +24,32 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  /**
+   * The superseded policy pages. Their content lived on as older, conflicting
+   * copies of /terms and /refund-policy, so the pages are gone — but the URLs
+   * answer with a permanent redirect rather than a 404, since anything already
+   * indexed or linked should land on the current policy.
+   *
+   * Both the bare and region-prefixed forms are listed: the bare path is
+   * normally rewritten to the default region by middleware first, but a direct
+   * hit must not depend on that.
+   */
+  async redirects() {
+    return [
+      { source: "/terms-of-use", destination: "/terms", permanent: true },
+      {
+        source: "/:countryCode/terms-of-use",
+        destination: "/:countryCode/terms",
+        permanent: true,
+      },
+      { source: "/return-policy", destination: "/refund-policy", permanent: true },
+      {
+        source: "/:countryCode/return-policy",
+        destination: "/:countryCode/refund-policy",
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {
