@@ -2,12 +2,18 @@ import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
 import "styles/globals.css"
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getBaseURL()),
-}
-
 /** Google AdSense publisher id. Only place it appears. */
 const ADSENSE_CLIENT_ID = "ca-pub-1113985459345993"
+
+export const metadata: Metadata = {
+  metadataBase: new URL(getBaseURL()),
+  other: {
+    // Ownership verification. Two rejections came before this: the script tag
+    // alone did not satisfy the check even once it was in the raw HTML.
+    // The script below stays — it serves ads, this line proves ownership.
+    "google-adsense-account": ADSENSE_CLIENT_ID,
+  },
+}
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
