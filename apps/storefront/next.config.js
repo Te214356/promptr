@@ -62,6 +62,13 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          // One year, subdomains included. Not preloaded: the preload list is
+          // effectively irreversible, so it needs a deliberate decision that
+          // every present and future subdomain will serve HTTPS.
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
+          },
         ],
       },
     ]
