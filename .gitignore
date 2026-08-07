@@ -38,6 +38,10 @@ yarn-error.log*
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
+# .env.production was the gap: only the *.local variant was covered, so two of
+# them sat tracked in the repo. Keep this rule — a secret landing there is a
+# push away from being permanent in the history.
+**/.env.production
 
 # Turbo
 .turbo
@@ -58,4 +62,4 @@ test-moyasar.mjs
 .Trashes
 ehthumbs.db
 Thumbs.db
-**/.DS_Store
+**/.DS_Storescripts/reupload-product-images.py
