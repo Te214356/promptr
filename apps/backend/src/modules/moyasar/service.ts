@@ -325,6 +325,32 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     }
   }
 
+  /**
+   * ⛔ DO NOT fix the payload reading (payload.id -> payload.data.id) on its
+   *    own. It must land in the same change as HMAC verification.
+   *
+   * What is actually happening today: Medusa passes an envelope
+   * `{ data, rawData, headers }` (see ProviderWebhookPayload in
+   * @medusajs/types), so `payload.id` and `payload.status` are always
+   * undefined and every webhook — genuine or forged — exits as
+   * "not_supported". That accident is the only thing protecting this path.
+   * There is no signature check anywhere in the backend.
+   *
+   * Correcting the reading alone turns any unauthenticated POST into an
+   * accepted payment: a forged body with `status: "paid"` and a session_id
+   * lifted from the browser would authorize a payment that never happened —
+   * and because the products are digital, the order subscriber emails signed
+   * download links immediately. There is no shipping step to catch it.
+   *
+   * The real payment flow does not depend on this method: authorizePayment
+   * verifies server-to-server against Moyasar with the secret key.
+   *
+   * Prerequisite before touching this: the webhook signing secret from the
+   * Moyasar dashboard (no env var for it exists yet) plus the exact signature
+   * header name and algorithm from their docs — do not guess either. Both
+   * `rawData` and `headers` are already handed to this method, so everything
+   * needed to compute and compare the HMAC is in scope.
+   */
   async getWebhookActionAndData(
     payload: Record<string, unknown>
   ): Promise<WebhookActionResult> {
