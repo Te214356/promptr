@@ -203,7 +203,7 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 `ecommerce-success-guide`'s cover image is uploaded to the public bucket (`promptr-uploads`) as `ecommerce-success-guide-cover.png` — public URL: `https://pub-896449c4f58a451cbf268d643d1dff28.r2.dev/ecommerce-success-guide-cover.png`.
 
 ### Signed URL generation
-`apps/backend/src/utils/signed-url.ts` — generates 7-day presigned GET URLs with `ResponseContentDisposition: attachment`. Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.
+`apps/backend/src/utils/signed-url.ts` — generates **48-hour** presigned GET URLs with `ResponseContentDisposition: attachment` (كانت 7 أيام؛ قُصِّرت 2026-08-08 لأن الرابط الموقّع حامله يملكه). Uses env vars: `S3_PRIVATE_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`, `S3_REGION`.
 
 ### Download API
 `GET /store/order-downloads?order_id=xxx&email=customer@example.com`
@@ -211,6 +211,7 @@ Set `file_key` in the product's **metadata** field in Medusa Admin. Value = exac
 - Ownership check: logged-in customer → matches `auth_context.actor_id` vs `order.customer_id`; guest → matches `email` param vs `order.email` (case-insensitive)
 - Always returns `403 { message: "unauthorized" }` on failure — never 404 (avoids leaking order existence)
 - Returns `{ downloads: [{ product_title, download_url }] }`
+- **Rate limited: 15 requests per `order_id` per 10 minutes**, then `429` with `Retry-After`. Rejected (403) attempts count too. Keyed on `order_id` — **not IP** — because the confirmation page calls this route server-side, so all legitimate buyers share the storefront's address. Counter is in-process; move to Redis if the backend ever runs more than one instance.
 
 ### Order confirmation email
 `apps/backend/src/subscribers/order-placed.ts` — on `order.placed`:
@@ -281,7 +282,7 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 | Term | Meaning |
 |---|---|
 | **منتج رقمي** | Any Medusa product with `metadata.file_key` set |
-| **رابط موقّع** | 7-day presigned R2 URL for PDF download |
+| **رابط موقّع** | 48-hour presigned R2 URL for PDF download |
 | **مفتاح الأسلوب** | Style-variable feature in `chatgpt-arabic-prompts`: `[الأسلوب: فصحى رسمية / فصحى مُيسَّرة / خليجية]` |
 | **railway up** | Manual storefront deploy — always from repo root with explicit IDs |
 | **صفحة التأكيد** | `/[countryCode]/order/[id]/confirmed` — shows download links post-payment |
@@ -408,10 +409,13 @@ draft: false                   # true يخفيه من القائمة ومن site
 
 ## ملاحظات مؤجلة
 
-- **بندان من فحص منطق العمل (2026-08-08) — سليمان اليوم، يستحقان تشديدًا:**
-  - **مدة رابط التحميل الموقّع 7 أيام** (`EXPIRY_SECONDS = 604800` في `utils/signed-url.ts`). الرابط **حامله يملكه**: من يحصل عليه من بريد مُعاد توجيهه أو جهاز مشترك يحمّل الملف بلا تحقق، ولا سقف لعدد التحميلات. المقترح: **24–48 ساعة** — تغيير رقم واحد يقلّص نافذة التسريب، مع مراعاة أن العميل يستطيع دائمًا توليد رابط جديد من صفحة التأكيد.
-  - **لا تحديد معدل (rate limiting) على `GET /store/order-downloads`**. التحقق من الملكية سليم (مالك مسجَّل عبر `auth_context`، وضيف عبر مطابقة البريد، و**403 دائمًا** حتى للطلب غير الموجود فلا يسرّب وجوده — فُحص حيًّا: معرّف وهمي ⟵ 403، بلا مفتاح نشر ⟵ 400). لكن من يعرف `order_id` + البريد يولّد روابط جديدة بلا حد طوال عمر الطلب.
-  - **ما فُحص ووجد سليمًا في نفس الجولة:** قراءة طلبات الغير (`/store/orders/:id` بمعرّف عشوائي ⟵ 404، ولا مسارات مخصصة أخرى تقرأ طلبات)، والتسليم قبل الدفع (يُطلقه حدث `order.placed` وحده، ولا يُنشأ الطلب إلا بنجاح `authorizePayment`؛ والحالة المعلّقة تُرجع `PENDING` لا تصريحًا).
+- ~~**بندان من فحص منطق العمل (2026-08-08)**~~ — ✅ **كلاهما مغلق (كوميت `11f2484`)**:
+  - **مدة الرابط الموقّع**: `EXPIRY_SECONDS` في `utils/signed-url.ts` صار **`172800` (48 ساعة)** بدل 7 أيام. الرابط **حامله يملكه**، فالنافذة قُصِّرت؛ والمشتري لا يفقد شيئًا لأن صفحة التأكيد والمسار يولّدان رابطًا جديدًا كل زيارة — **وبريد الطلب صار يقول ذلك صراحة** ويدلّ على صفحة التأكيد بدل ترك المشتري أمام رابط منتهٍ.
+  - **تحديد المعدل على `GET /store/order-downloads`**: **15 طلبًا لكل `order_id` كل 10 دقائق**، وبعدها **429** مع `Retry-After`. المحاولات المرفوضة (403) تُحسب أيضًا فلا يكون تخمين البريد مجانيًا.
+    > ⚠️ **المفتاح `order_id` لا IP — عن قصد:** صفحة التأكيد تستدعي المسار **من الخادم** (`"use server"` في `lib/data/downloads.ts`)، فكل المشترين الشرعيين يصلون الباك إند من عنوان Railway واحد. حدّ على IP كان سيخنق المتجر كله أو لا يحمي شيئًا. و`order_id` هو شكل التهديد نفسه (رابط/معرّف مسرَّب).
+    > العدّاد **في الذاكرة** لأن الباك إند خدمة واحدة، وتصفيره عند النشر لا يُضعف الحماية عمليًا. **انتقل إلى Redis** (المُعدّ أصلًا) يوم تتعدد نسخ الباك إند.
+    **تحقق حي بعد النشر:** 15 طلبًا متتاليًا لنفس المعرّف ⟵ 403 (فحص الملكية)، والسادس عشر والسابع عشر ⟵ **429** مع `retry-after: 592`، ومعرّف آخر في نفس اللحظة ⟵ 403 (أي أن الحد على الطلب لا على المتصل).
+  - **ما فُحص ووجد سليمًا في نفس الجولة** (لا تُعِد فحصه): قراءة طلبات الغير (`/store/orders/:id` بمعرّف عشوائي ⟵ 404، ولا مسارات مخصصة أخرى تقرأ طلبات)، والتسليم قبل الدفع (يُطلقه حدث `order.placed` وحده، ولا يُنشأ الطلب إلا بنجاح `authorizePayment`؛ والحالة المعلّقة تُرجع `PENDING` لا تصريحًا).
 
 - **ترقيات أمنية مؤجلة لعدم وجود نسخة مستقرة (فحص 2026-08-07)** — `npm audit` يقترح إصلاحات تشير إلى نسخ **غير منشورة على القناة المستقرة**، فلا تُثبَّت:
   - **`@medusajs/framework`**: المقترح `2.16.0`، لكن `npm view` يُظهر `latest: 2.15.5` — وهو **المثبَّت لدينا** — و`2.16.0` موجود كـ`preview`/`snapshot` فقط. القرار: **لا نثبّت preview في باك إند حي**. راجع البند حين تصدر `2.16.0` مستقرة؛ ترقيتها تغلق أخطر ما في التقرير: **حقن SQL في `@mikro-orm/knex`** (المثبَّت `6.6.12` عبر `@medusajs/cli` → `@medusajs/deps`؛ المصلَحة `6.6.14` منشورة لكنها مثبّتة بدقة داخل شجرة Medusa). ورُفض حلّ `overrides` لرفع `@mikro-orm/knex` وحدها لأنه يفرض على Medusa نسخة لم تُختبر معها.
