@@ -132,6 +132,16 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
     const { data } = input
 
+    // Pin what this session is *supposed* to cost, straight from Medusa's cart.
+    // authorizePayment receives only { data, context } — no amount — so without
+    // stashing it here there is nothing to compare Moyasar's figure against.
+    // Same conversion used when sending an amount to Moyasar, so both sides of
+    // the later comparison are on one scale.
+    const expected = {
+      expected_amount: this.toMoyasarAmount(input.amount as number),
+      expected_currency: input.currency_code?.toLowerCase(),
+    }
+
     // If moyasar_id is provided (from the callback after MPF payment), verify it.
     if (data?.moyasar_id) {
       try {
@@ -141,6 +151,7 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
           data: {
             moyasar_id: payment.id,
             moyasar_status: payment.status,
+            ...expected,
           },
         }
       } catch (error) {
@@ -153,7 +164,7 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     // Return a pending local session; moyasar_id will be set after the MPF callback.
     return {
       id: `ms_pending_${Date.now()}`,
-      data: { status: "pending" },
+      data: { status: "pending", ...expected },
     }
   }
 
@@ -187,6 +198,55 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
         )
 
         if (AUTHORIZED_STATUSES.includes(payment.status)) {
+          // A successful payment is not necessarily the *right* payment. The
+          // Moyasar form is initialised in the browser, so its amount is under
+          // the buyer's control; without this check, paying 1 SAR for a full
+          // cart would authorize and the digital goods would ship immediately.
+          //
+          // Both figures are in the minor unit (halalas): Medusa stores prices
+          // that way (a 99.00 SAR product returns calculated_amount 9900) and
+          // Moyasar uses the same, which is why updatePayment already forwards
+          // Medusa's amount to Moyasar untouched.
+          const expectedAmount = data?.expected_amount as number | undefined
+          const expectedCurrency = (data?.expected_currency as string | undefined)?.toLowerCase()
+          const paidAmount = Math.round(Number(payment.amount))
+          const paidCurrency = String(payment.currency ?? "").toLowerCase()
+
+          if (typeof expectedAmount !== "number" || !expectedCurrency) {
+            // Fail closed: an unverifiable session is refused rather than
+            // trusted. Only reachable for a session created before this check
+            // existed; the buyer can simply retry checkout.
+            this.logger_.error(
+              `[moyasar] AMOUNT CHECK SKIPPED — refusing to authorize. ` +
+              `id=${payment.id} paid=${paidAmount} ${paidCurrency} ` +
+              `expected=missing (session predates amount pinning)`
+            )
+            return {
+              status: STATUS.ERROR,
+              data: { ...data, moyasar_id: payment.id, moyasar_status: payment.status },
+            }
+          }
+
+          if (paidAmount !== expectedAmount || paidCurrency !== expectedCurrency) {
+            this.logger_.error(
+              `[moyasar] AMOUNT MISMATCH — refusing to authorize. ` +
+              `id=${payment.id} paid=${paidAmount} ${paidCurrency} ` +
+              `expected=${expectedAmount} ${expectedCurrency} ` +
+              `diff=${paidAmount - expectedAmount}`
+            )
+            return {
+              status: STATUS.ERROR,
+              data: {
+                ...data,
+                moyasar_id: payment.id,
+                moyasar_status: payment.status,
+                amount_mismatch: true,
+                paid_amount: paidAmount,
+                paid_currency: paidCurrency,
+              },
+            }
+          }
+
           return {
             status: this.mapStatus(payment.status),
             data: { ...data, moyasar_id: payment.id, moyasar_status: payment.status },
