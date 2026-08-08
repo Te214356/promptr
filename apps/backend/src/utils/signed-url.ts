@@ -11,7 +11,14 @@ const s3 = new S3Client({
 })
 
 const BUCKET = process.env.S3_PRIVATE_BUCKET!
-const EXPIRY_SECONDS = 604800 // 7 days
+
+/**
+ * 48 hours, down from 7 days. A signed URL is a bearer token — anyone holding
+ * it downloads the file — so the window is kept short. Buyers lose nothing:
+ * the confirmation page and /store/order-downloads mint a fresh URL on every
+ * visit; only a stale link inside an old email expires.
+ */
+const EXPIRY_SECONDS = 172800
 
 export async function generateSignedUrl(fileKey: string): Promise<string> {
   const command = new GetObjectCommand({

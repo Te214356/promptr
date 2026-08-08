@@ -117,7 +117,9 @@ export function buildOrderConfirmationEmail(data: OrderConfirmationData): {
               <p style="margin: 0 0 32px; font-size: 13px; color: #606080;
                          background-color: #0a0a1a; border: 1px solid #1a1a30;
                          border-radius: 6px; padding: 10px 14px;">
-                ⏱ الروابط صالحة لمدة 7 أيام من تاريخ الطلب.
+                ⏱ هذه الروابط صالحة لمدة 48 ساعة من تاريخ الطلب.
+                وبعد انتهائها لا تفقد ملفاتك — افتح صفحة تأكيد طلبك في أي وقت
+                ليُنشأ لك رابط تحميل جديد.
               </p>
 
               <!-- Help note -->
