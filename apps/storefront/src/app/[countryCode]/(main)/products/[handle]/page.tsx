@@ -3,6 +3,9 @@ import { notFound } from "next/navigation"
 import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
+import ProductJsonLd from "@modules/products/components/product-jsonld"
+import { getBaseURL } from "@lib/util/env"
+import { toPlainText, truncate } from "@lib/util/plain-text"
 import { HttpTypes } from "@medusajs/types"
 
 // Always render dynamically — product pages call cookies() for auth headers,
@@ -91,12 +94,18 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     notFound()
   }
 
+  // The description was the title repeated, which wasted the search snippet.
+  // Markdown and hard line breaks are stripped, then clipped to a length search
+  // engines actually display.
+  const description =
+    truncate(toPlainText(product.description), 155) || product.title
+
   return {
     title: `${product.title} | Promptr`,
-    description: `${product.title}`,
+    description,
     openGraph: {
       title: `${product.title} | Promptr`,
-      description: `${product.title}`,
+      description,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
   }
@@ -125,11 +134,20 @@ export default async function ProductPage(props: Props) {
   const images = getImagesForVariant(pricedProduct, selectedVariantId)
 
   return (
-    <ProductTemplate
-      product={pricedProduct}
-      region={region}
-      countryCode={params.countryCode}
-      images={images}
-    />
+    <>
+      {/* Server-rendered: present in the initial HTML, not injected on hydration. */}
+      <ProductJsonLd
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        baseUrl={getBaseURL()}
+      />
+      <ProductTemplate
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        images={images}
+      />
+    </>
   )
 }
