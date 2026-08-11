@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { getCategoryByHandle, listCategories } from "@lib/data/categories"
+import { getBaseURL } from "@lib/util/env"
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
@@ -61,7 +62,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       title: `${title} | Promptr`,
       description,
       alternates: {
-        canonical: `${params.category.join("/")}`,
+        // Was a bare relative value ("ai-tools"), which resolved against
+        // metadataBase to a URL that 404s. The canonical is the region-prefixed
+        // page that actually answers 200 — the same form the sitemap uses.
+        canonical: `${getBaseURL()}/${params.countryCode}/categories/${params.category.join("/")}`,
       },
     }
   } catch (error) {
