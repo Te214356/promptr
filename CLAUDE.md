@@ -76,6 +76,30 @@ mutabi (status summary) → mustashar (strategic priorities)
 - **Monorepo layout:** `apps/backend` (Medusa), `apps/storefront` (Next.js 15), `.claude/agents/` (subagents), root `package.json` (npm workspaces).
 - **Build note:** `ts-node` and `typescript` are in `dependencies` (not devDependencies) — required for Railway production builds.
 
+### 🔑 متغيرات البيئة وقت البناء — تُعلَن في `turbo.json` وإلا اختفت
+
+البناء يمرّ عبر **turbo** من جذر المونوريبو، و**Turbo 2 يعمل بـ`envMode: strict` افتراضيًا**: المهمة لا تستلم إلا المتغيرات المعلَنة صراحةً. مهمة `build` في `turbo.json` تُعلن الآن خمسة:
+
+```
+MEDUSA_BACKEND_URL · NEXT_PUBLIC_MEDUSA_BACKEND_URL
+NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY · NEXT_PUBLIC_BASE_URL · NEXT_PUBLIC_DEFAULT_REGION
+```
+
+> **قاعدة:** أي متغير جديد يحتاجه **البناء** (لا التشغيل فقط) يجب أن يُضاف إلى هذه القائمة **وأن يكون مضبوطًا كمتغير خدمة على Railway**. الاثنان معًا؛ أحدهما وحده لا يكفي.
+>
+> اختُير `env` لا `passThroughEnv` عمدًا: هذه القيم تُخبز في مخرَج البناء، فيجب أن تدخل بصمة الكاش — وإلا أعاد turbo استخدام بناء قديم بعد تغيير إحداها.
+
+**كيف انكشف هذا (2026-08-11) — تفاعل بين تغييرين صحيحين:** لم يكن في `turbo.json` أي إعلان `env` منذ البداية، لكن العطل كان **مستترًا** لأن `apps/storefront/.env.production` كان متتبَّعًا في git ويحوي المتغيرات نفسها — و**Next يقرأ ملفات `.env` بنفسه بعد بدء العملية، فلا يمسّه فلتر turbo**. وحين أُزيل الملف من التتبع (كوميت `be027d9`، وهو إصلاح أمني صحيح) اختفى الالتفاف وظهر الحجب: بناء Railway فقد الخمسة، فشُحنت `sitemap.xml` **بلا أي صفحة منتج**، ولم يُكتشف إلا من تصدير Search Console.
+
+**تشخيص هذه الفئة من الأعطال:**
+```bash
+npx turbo build --filter=@dtc/storefront --dry=json   # declared env: [] ⟵ حجب
+railway logs --build <DEPLOYMENT_ID> | grep "\[sitemap\]"
+```
+> ⚠️ **الفحص المحلي وحده يخدع:** `.env.local` على جهازك يجعل البناء ينجح مهما فلتر turbo. اختبر عبر سجل بناء Railway، لا عبر بنائك.
+>
+> و`turbo.json` **لا يقبل مفاتيح غير معروفة** — لا تضع تعليقًا بصيغة `"// key"`، يفشل التحليل. وثّق هنا بدلًا منه.
+
 ---
 
 ## 📌 نقطة استئناف — آخر تحديث 2026-08-08
@@ -249,6 +273,26 @@ Env vars required: `RESEND_API_KEY`, `RESEND_FROM_EMAIL=orders@promptrsa.com`
 
 ---
 
+## canonical — الحالة والخطة (2026-08-11)
+
+تصدير Search Console أظهر **8 مسارات مفهرسة بنسختين** (`/X` و`/sa/X`). السبب في جملة: **كل صفحة متاحة بعنوانين ولا `canonical` يحسم أيهما الأصل**، فحسمت Google بالتناوب.
+
+**القرار: `/sa/...` هي النسخة الأصل** — لأنها ما يُرجع 200 بلا تحويل، وما في `sitemap.xml`، وما ينشره `offers.url` في JSON-LD.
+
+| الصفحة | الحالة اليوم |
+|---|---|
+| مقال مدونة | ✅ `/sa/blog/<slug>` |
+| صفحة تصنيف | ✅ أُصلحت (كانت قيمة نسبية `ai-tools` تُحلّ إلى 404) |
+| **صفحة منتج** | ❌ **بلا canonical** — وهي محور الازدواج |
+| **قائمة المدونة** | ⚠️ تشير إلى `/blog` المجرّد، عكس المقالات والخريطة |
+| **الرئيسية** | ❌ بلا canonical — والوحيدة المقدَّمة بعنوانين حقيقيين (rewrite للجذر) |
+
+**المتبقي:** إضافة canonical مطلق لصفحات المنتجات والرئيسية، وقلب قائمة المدونة إلى `/sa/blog`. بلا مساس بـ`middleware.ts`: تحويلات 307 وrewrite الجذر تبقى (شرط تحقق Google).
+
+**مسار `/collections/*`** يبقى 404 بقرار — فهرسة قديمة لا صفحات عاملة، وGoogle تُسقطها.
+
+---
+
 ## Product structured data (JSON-LD) — قرارات مقيسة (2026-08-09)
 
 `modules/products/components/product-jsonld` — مكوّن **خادم** مُركَّب في `app/[countryCode]/(main)/products/[handle]/page.tsx`، فالمخرَج يظهر في HTML الأولي لا بعد hydration. قبل هذا لم تكن صفحات المنتجات تحمل أي بيانات منظّمة (المدونة وحدها كانت تحملها). تحقق بعد النشر على **الـ12 كلها**: JSON صالح، كل الحقول الإلزامية، وصفر حقل ناقص.
@@ -399,6 +443,10 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 **كل المنتجات ذات `data.json` استُخدمت الآن** — آخرها `chatgpt-arabic-prompts` (قسم 7) و`chatgpt-prompts-pro-arabic` (قسما 2 و5). لا يزال في كل منتج أقسام لم تُستثمر بعد، فالمصدر لم ينفد: أي مقال قادم يبدأ من قسم غير مستخدَم في الجدول أعلاه.
 
 > ⚠️ **`ai-income-book` و`digital-marketing-saudi-guide` ليسا مصدرًا صالحًا بهذه الطريقة:** لا يملك أيٌّ منهما ملف `data.json` (تحقّق مباشر 2026-08-03؛ الأول يُبنى من ملفات `book/` عبر `products/_book-template/generate.js`). لا تدرجهما في تخطيط مقال قادم قبل معالجة ذلك.
+
+**`sitemap.xml` يشمل صفحات المنتجات (2026-08-11):** 37 رابطًا = 8 ثوابت + 17 مقالًا + **12 منتجًا** بصيغة `/sa/products/<handle>`. صفحات التصنيفات مؤجلة حتى إعادة تسميتها في Admin.
+> **لماذا أُضيفت بعد أن كانت مستبعدة:** تصدير Search Console كشف **ثلاثة منتجات لم تُفهرس قط** (`ecommerce-prompts-arabic` · `social-media-templates` · `ai-income-book`) — لأن الاكتشاف كان يعتمد على الروابط الداخلية وحدها.
+> **الحماية بأربع طبقات** في `app/sitemap.ts`: `fetch` مباشر لا `listProducts` (الأخير يقرأ الكوكيز فيُخرج المسار من التوليد المسبق) · مهلة 8 ثوانٍ · `revalidate = 3600` فتُشفى الخريطة ذاتيًا بدل تجميد لقطة بناء خاطئة · و`try/catch` يُرجع الثوابت والمقالات. **واستجابة سليمة بصفر منتجات تُعامَل كفشل** — المتجر لم يكن يومًا فارغًا، فالشكل يعني مشكلة مفتاح أو فلتر. كل مسار فشل يُسجَّل بـ`console.error`.
 
 > ⚠️ **مصادر المنتجات ليست كلها آمنة للنقل الحرفي:** `midjourney-arabic-prompts` يحتوي أرقام إصدارات ومعاملات متضاربة داخليًا (يذكر `--v 8.1` ويصف `6.1` بأنه الأحدث في الفقرة نفسها). المقال التاسع تعمّد **عدم** ذكر أي رقم إصدار أو نطاق قيمة معامل، وأحال لتوثيق كل أداة. طبّق نفس الحذر مع أي رقم في بقية الأدلة.
 
