@@ -1,10 +1,11 @@
 import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
+import { listCartShippingMethods } from "@lib/data/fulfillment"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Checkout",
@@ -20,11 +21,13 @@ const ERROR_MESSAGES: Record<string, string> = {
 }
 
 type Props = {
+  params: Promise<{ countryCode: string }>
   searchParams: Promise<{ step?: string; error?: string }>
 }
 
-export default async function Checkout({ searchParams }: Props) {
-  const { error } = await searchParams
+export default async function Checkout({ params, searchParams }: Props) {
+  const { step, error } = await searchParams
+  const { countryCode } = await params
   const errorMessage = error
     ? (ERROR_MESSAGES[error] ?? "حدث خطأ في عملية الدفع — يرجى المحاولة مرة أخرى. / A payment error occurred — please try again.")
     : null
@@ -36,6 +39,20 @@ export default async function Checkout({ searchParams }: Props) {
 
   if (!cart) {
     return notFound()
+  }
+
+  // Safety net: ?step=delivery is a dead end when the cart has no shipping
+  // options, because CheckoutForm does not render the Shipping component at
+  // all — no section opens and the buyer cannot proceed. Covers every way that
+  // URL can be reached, not just the cart button: a bookmark, the back button,
+  // or a link written later.
+  if (step === "delivery") {
+    const shippingMethods = await listCartShippingMethods(cart.id)
+    if (!shippingMethods?.length) {
+      redirect(
+        `/${countryCode}/checkout?step=payment${error ? `&error=${error}` : ""}`
+      )
+    }
   }
 
   return (

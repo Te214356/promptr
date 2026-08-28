@@ -13,20 +13,29 @@ type SummaryProps = {
   cart: HttpTypes.StoreCart & {
     promotions: HttpTypes.StorePromotion[]
   }
+  isDigitalOnly?: boolean
 }
 
-function getCheckoutStep(cart: HttpTypes.StoreCart) {
+/**
+ * `delivery` is only a real step when the cart actually has shipping options.
+ * Every Promptr product is digital, so cart.shipping_methods is always empty
+ * and the stock rule below would send every buyer whose cart already carries an
+ * address to ?step=delivery — a step CheckoutForm never renders, leaving the
+ * page with no open section at all. First-time buyers escaped it only because
+ * their cart had no address yet and so went through ?step=address instead.
+ */
+function getCheckoutStep(cart: HttpTypes.StoreCart, isDigitalOnly: boolean) {
   if (!cart?.shipping_address?.address_1 || !cart.email) {
     return "address"
-  } else if (cart?.shipping_methods?.length === 0) {
+  } else if (!isDigitalOnly && cart?.shipping_methods?.length === 0) {
     return "delivery"
   } else {
     return "payment"
   }
 }
 
-const Summary = ({ cart }: SummaryProps) => {
-  const step = getCheckoutStep(cart)
+const Summary = ({ cart, isDigitalOnly = false }: SummaryProps) => {
+  const step = getCheckoutStep(cart, isDigitalOnly)
   const { lang } = useLanguage()
   const isAR = lang === "ar"
 
