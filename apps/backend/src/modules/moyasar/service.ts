@@ -101,12 +101,30 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     return Math.round(Number(amount))
   }
 
+  /**
+   * Moyasar's "paid" means the funds are already charged, not merely held: a
+   * hold requires creating the payment with `"manual": true`, which the MPF
+   * form never does, so every payment here goes through the purchase flow and
+   * is captured on the spot.
+   *
+   * It therefore maps to CAPTURED, not AUTHORIZED. Mapping it to AUTHORIZED
+   * left every order sitting in Medusa as "awaiting capture" for money that
+   * had already left the buyer's card, and capturing it by hand would call
+   * Moyasar's /capture — an endpoint that only accepts a manually authorized
+   * payment and rejects a purchase-flow one.
+   *
+   * Returning CAPTURED from authorizePayment is understood by the payment
+   * module: it records the session as authorized, then books the capture with
+   * `is_captured: true`, and capturePaymentFromProvider_ skips the provider
+   * call entirely for that flag. So Medusa marks the payment captured without
+   * ever calling Moyasar's /capture.
+   */
   private mapStatus(moyasarStatus: string): PaymentSessionStatus {
     switch (moyasarStatus) {
       case "initiated":
         return STATUS.PENDING
       case "paid":
-        return STATUS.AUTHORIZED
+        return STATUS.CAPTURED
       case "captured":
         return STATUS.CAPTURED
       case "refunded":
