@@ -48,23 +48,47 @@ export default async function orderPlacedHandler({
   )
 
   const links: { title: string; url: string }[] = []
+  const deliveredKeys: string[] = []
+  const missingFileKey: string[] = []
 
   for (const item of (order.items ?? []).filter(Boolean)) {
     const product = metaMap.get((item as any).product_id) as any
     const fileKey = product?.metadata?.file_key as string | undefined
-    if (!fileKey) continue
+    if (!fileKey) {
+      missingFileKey.push((item as any).product_id ?? "unknown")
+      continue
+    }
 
     const url = await generateSignedUrl(fileKey)
     links.push({ title: product.title ?? (item as any).title, url })
+    deliveredKeys.push(fileKey)
   }
 
-  if (!links.length) return
-
-  // Log for monitoring
-  console.log(`[order-placed] Order ${orderId} | ${order.email}`)
-  for (const link of links) {
-    console.log(`  ↳ ${link.title}: ${link.url}`)
+  // A paid item with no metadata.file_key is silently undeliverable: the buyer
+  // is charged and receives nothing. Never let that pass without a log line.
+  if (missingFileKey.length) {
+    console.error(
+      `[order-placed] Order ${orderId} | ${order.email} | ` +
+      `${missingFileKey.length} item(s) have NO metadata.file_key and will not be ` +
+      `delivered — set it in Medusa Admin. product_ids=${[...new Set(missingFileKey)].join(", ")}`
+    )
   }
+
+  if (!links.length) {
+    console.error(
+      `[order-placed] Order ${orderId} | ${order.email} | NO EMAIL SENT — not one ` +
+      `item in this order carries metadata.file_key. The buyer has paid and ` +
+      `received nothing. product_ids=${productIds.join(", ")}`
+    )
+    return
+  }
+
+  // Log for monitoring. Signed URLs are bearer tokens valid for 48h, so they are
+  // never printed — anyone with log access would otherwise hold every purchase.
+  console.log(
+    `[order-placed] Order ${orderId} | ${order.email} | ` +
+    `${links.length} link(s) generated: ${deliveredKeys.join(", ")}`
+  )
 
   // Send confirmation email — failure must not break order processing
   try {

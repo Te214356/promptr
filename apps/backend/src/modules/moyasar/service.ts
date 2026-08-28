@@ -205,8 +205,18 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
           //
           // Both figures are in the minor unit (halalas): Medusa stores prices
           // that way (a 99.00 SAR product returns calculated_amount 9900) and
-          // Moyasar uses the same, which is why updatePayment already forwards
-          // Medusa's amount to Moyasar untouched.
+          // Moyasar uses the same, which is why refundPayment (below) forwards
+          // Medusa's amount to Moyasar through toMoyasarAmount untouched.
+          // (updatePayment makes no Moyasar call at all -- it only returns
+          // input.data -- so it is not evidence of anything about scale.)
+          //
+          // ⛔ NEVER multiply by 100 anywhere in the payment path. The
+          // storefront already divides by 100 for display (lib/util/money.ts),
+          // and the browser form sends cart.total to Moyasar raw, so the amount
+          // charged always equals the amount shown. Scaling the form alone
+          // makes every payment fail this very check; scaling both sides
+          // overcharges every buyer 100x. A 100x gap seen in Medusa Admin is
+          // that dashboard's known display bug, not a bug in this path.
           const expectedAmount = data?.expected_amount as number | undefined
           const expectedCurrency = (data?.expected_currency as string | undefined)?.toLowerCase()
           const paidAmount = Math.round(Number(payment.amount))

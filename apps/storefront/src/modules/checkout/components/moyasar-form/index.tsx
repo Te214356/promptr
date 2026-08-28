@@ -35,6 +35,11 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
 
       window.Moyasar.init({
         element: ".mysr-form",
+        // ⛔ Raw pass-through — never scale this. `amount` is cart.total in the
+        // minor unit, which is exactly what Moyasar expects, and convertToLocale
+        // divides by 100 for display, so what is charged == what was shown.
+        // Multiplying by 100 here makes the backend amount check reject every
+        // payment (see authorizePayment in the moyasar provider service).
         amount: Math.round(amount),
         currency: currency.toUpperCase(),
         description: "Promptr Order",
