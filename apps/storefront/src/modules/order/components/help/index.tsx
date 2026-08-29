@@ -19,9 +19,14 @@ const Help = () => {
               {isAR ? "تواصل معنا" : "Contact"}
             </LocalizedClientLink>
           </li>
+          {/*
+            This pointed at /contact, so the one link named after the policy
+            never reached it. Buyers land here straight after paying, which is
+            exactly when the refund terms matter.
+          */}
           <li>
-            <LocalizedClientLink href="/contact">
-              {isAR ? "الاسترجاع والتبادل" : "Returns & Exchanges"}
+            <LocalizedClientLink href="/refund-policy">
+              {isAR ? "سياسة الاسترجاع" : "Refund Policy"}
             </LocalizedClientLink>
           </li>
         </ul>

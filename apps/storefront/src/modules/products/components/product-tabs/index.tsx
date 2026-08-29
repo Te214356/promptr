@@ -1,8 +1,9 @@
 "use client"
 
-import Back from "@modules/common/icons/back"
 import FastDelivery from "@modules/common/icons/fast-delivery"
+import Package from "@modules/common/icons/package"
 import Refresh from "@modules/common/icons/refresh"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
@@ -96,30 +97,48 @@ const ShippingInfoTab = () => {
             </p>
           </div>
         </div>
+        {/*
+          This tab used to promise "easy returns" and "simple exchanges", which
+          contradicted the published policy outright: it states that once a
+          digital product is delivered it cannot be returned or refunded. The
+          buyer read the softer promise at the moment of deciding. The wording
+          below mirrors /refund-policy — keep the two in step, and keep
+          `returnPolicyCategory` in product-jsonld in step with both.
+        */}
         <div className="flex items-start gap-x-2">
-          <Refresh />
+          <Package />
           <div>
             <span className="font-semibold">
-              {isAR ? "استبدال سهل" : "Simple exchanges"}
+              {isAR
+                ? "منتج رقمي غير قابل للاسترجاع"
+                : "Digital product — non-returnable"}
             </span>
             <p className="max-w-sm">
               {isAR
-                ? "لديك مشكلة في ملف التنزيل؟ سنُعيد إرساله فوراً."
-                : "Problem with your download file? We'll resend it immediately."}
+                ? "بمجرد تسليم المنتج أو الإفصاح عن محتواه، لا يمكن إرجاعه أو استرداد قيمته."
+                : "Once the product is delivered or its content disclosed, it cannot be returned or refunded."}
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
-          <Back />
+          <Refresh />
           <div>
             <span className="font-semibold">
-              {isAR ? "استرداد سهل" : "Easy returns"}
+              {isAR ? "متى نستردّ المبلغ" : "When we do refund"}
             </span>
             <p className="max-w-sm">
               {isAR
-                ? "راجع سياسة الاسترجاع لدينا. نحن نسعى لرضاك التام."
-                : "Check our refund policy. We strive for your complete satisfaction."}
+                ? "إن كان الملف تالفاً أو غير مكتمل، أو لم يطابق الوصف بشكل جوهري، أو تكرّر خصم المبلغ، أو لم يصلك خلال 24 ساعة من الدفع."
+                : "If the file is corrupted or incomplete, materially differs from its description, you were charged twice, or it was not delivered within 24 hours of payment."}
             </p>
+            <LocalizedClientLink
+              href="/refund-policy"
+              className="text-[#00CFFF] hover:text-[#00CFFF]/70 underline underline-offset-4 mt-2 inline-block transition-colors"
+            >
+              {isAR
+                ? "اقرأ سياسة الاسترجاع كاملة"
+                : "Read the full refund policy"}
+            </LocalizedClientLink>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ const CONTENT = {
     title: 'سياسة الاسترجاع والاسترداد',
     subtitle: 'Refund & Return Policy',
     back: '← العودة للرئيسية',
-    updated: 'آخر تحديث: يونيو 2026',
+    updated: 'آخر تحديث: أغسطس 2026',
     notice: 'نظراً لطبيعة المنتجات الرقمية، فإن الاسترجاع مقيّد. يرجى قراءة هذه السياسة بعناية قبل إتمام الشراء.',
     sections: [
       {
@@ -18,6 +18,7 @@ const CONTENT = {
       },
       {
         title: 'الحالات المؤهلة للاسترداد',
+        note: 'هذه الحالات علاج لعيب في المنتج أو في عملية الدفع، ولا تسقط بمرور 7 أيام. وهي تُقدَّم على أي قيد مذكور في القسم التالي.',
         bullets: [
           'الملف المُسلَّم تالف أو لا يمكن فتحه أو غير مكتمل.',
           'المنتج المستلَم لا يطابق وصف صفحة المنتج بشكل جوهري.',
@@ -32,13 +33,13 @@ const CONTENT = {
           'عدم الرضا الشخصي عن المحتوى مع مطابقته للوصف.',
           'الشراء بالخطأ بعد الاطلاع على تفاصيل المنتج كاملة.',
           'مشكلات في جهاز المستخدم أو اتصاله بالإنترنت.',
-          'مرور أكثر من 7 أيام على تاريخ الشراء.',
+          'مرور أكثر من 7 أيام على تاريخ الشراء — ولا يسري هذا القيد على الحالات المؤهلة للاسترداد المذكورة أعلاه.',
         ]
       },
       {
         title: 'آلية طلب الاسترداد',
         steps: [
-          'تواصل معنا عبر واتساب خلال 7 أيام من تاريخ الشراء.',
+          'تواصل معنا عبر واتساب خلال 7 أيام من تاريخ الشراء. أما الحالات المؤهلة للاسترداد (ملف تالف أو غير مطابق أو ازدواج دفع أو عدم تسليم) فلا تسقط بمرور هذه المدة — تواصل معنا فور اكتشاف المشكلة.',
           'أرسل رقم الطلب ووصفاً واضحاً للمشكلة مع لقطة شاشة إن أمكن.',
           'سيُراجَع طلبك خلال 24–48 ساعة عمل.',
           'عند الموافقة، يُردّ المبلغ على نفس وسيلة الدفع خلال 5–10 أيام عمل.',
@@ -55,7 +56,7 @@ const CONTENT = {
     title: 'Refund & Return Policy',
     subtitle: 'سياسة الاسترجاع والاسترداد',
     back: '← Back to Home',
-    updated: 'Last updated: June 2026',
+    updated: 'Last updated: August 2026',
     notice: 'Due to the nature of digital products, refunds are limited. Please read this policy carefully before completing your purchase.',
     sections: [
       {
@@ -64,6 +65,7 @@ const CONTENT = {
       },
       {
         title: 'Eligible Refund Cases',
+        note: 'These cases remedy a defect in the product or in the payment itself. They do not lapse after 7 days, and they take precedence over any limit listed in the following section.',
         bullets: [
           'The delivered file is corrupted, cannot be opened, or is incomplete.',
           'The received product materially differs from its product page description.',
@@ -78,13 +80,13 @@ const CONTENT = {
           'Personal dissatisfaction when the product matches its description.',
           'Accidental purchase after fully reading product details.',
           'Issues related to the user\'s device or internet connection.',
-          'More than 7 days have passed since the purchase date.',
+          'More than 7 days have passed since the purchase date — this limit does not apply to the eligible refund cases listed above.',
         ]
       },
       {
         title: 'How to Request a Refund',
         steps: [
-          'Contact us via WhatsApp within 7 days of your purchase date.',
+          'Contact us via WhatsApp within 7 days of your purchase date. The eligible refund cases (corrupted file, material mismatch, duplicate charge, non-delivery) do not lapse after this period — contact us as soon as you discover the issue.',
           'Send your order number, a clear description of the issue, and a screenshot if possible.',
           'Your request will be reviewed within 24–48 business hours.',
           'Upon approval, the amount will be refunded to the original payment method within 5–10 business days.',
@@ -128,6 +130,19 @@ export default function RefundPolicyPage() {
             {t.sections.map((section, i) => (
               <div key={i}>
                 <h2 className="text-white/75 font-semibold text-base mb-3">{section.title}</h2>
+                {/*
+                  The eligible-cases section carries a `note`: the 7-day bar in
+                  the next section used to swallow it whole, so a corrupt file
+                  found on day eight lost its remedy in writing — while the
+                  section above still called it eligible. The note states which
+                  one wins, and the 7-day lines in both later sections repeat
+                  the carve-out so no single section reads as the whole rule.
+                */}
+                {'note' in section && (
+                  <p className="text-white/55 text-sm leading-relaxed mb-3 p-3 rounded-lg border border-[#00CFFF]/15 bg-[#00CFFF]/[0.04]">
+                    {section.note}
+                  </p>
+                )}
                 {'content' in section && (
                   <p className="text-white/45 text-sm leading-relaxed">{section.content}</p>
                 )}
