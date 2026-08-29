@@ -3,6 +3,7 @@
 import Script from "next/script"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
+import { useLanguage } from "@lib/context/language-context"
 
 declare global {
   interface Window {
@@ -20,6 +21,7 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
   const initialized = useRef(false)
   const params = useParams()
   const countryCode = (params?.countryCode as string) ?? "sa"
+  const { lang } = useLanguage()
   const [error, setError] = useState<string | null>(null)
 
   // Called by next/script onLoad + onReady (handles both first load and cached script)
@@ -47,6 +49,20 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
         callback_url: `${window.location.origin}/${countryCode}/checkout/moyasar-callback?cart_id=${cartId}`,
         methods: ["creditcard"],
         supported_networks: ["visa", "mastercard", "mada"],
+        // Passed explicitly rather than left to inference. Moyasar's documented
+        // default is "inferred from the <html> element, then fall back to en" —
+        // and LanguageProvider writes document.documentElement.lang on mount
+        // from localStorage, so the attribute Moyasar reads is whatever the
+        // visitor last picked. A visitor who once chose English kept getting an
+        // English form even with the rest of the page in Arabic, and the value
+        // depended on whether that write landed before Moyasar initialised.
+        //
+        // Driven by the same `lang` as every other string in checkout, so the
+        // form matches the page instead of being pinned to one language.
+        // Read once at init: switching language after the form has mounted does
+        // not re-render it (`initialized` guard), which is deliberate — tearing
+        // down a mounted payment form mid-entry would clear typed card data.
+        language: lang,
       })
     } catch (e: any) {
       initialized.current = false

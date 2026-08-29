@@ -3,7 +3,6 @@ import { listCartPaymentMethods } from "@lib/data/payment"
 import { HttpTypes } from "@medusajs/types"
 import Addresses from "@modules/checkout/components/addresses"
 import Payment from "@modules/checkout/components/payment"
-import Review from "@modules/checkout/components/review"
 import Shipping from "@modules/checkout/components/shipping"
 
 export default async function CheckoutForm({
@@ -35,9 +34,14 @@ export default async function CheckoutForm({
         <Shipping cart={cart} availableShippingMethods={shippingMethods} />
       )}
 
+      {/*
+        No Review step. Payment completes inside the Moyasar form and returns
+        through /checkout/moyasar-callback, so the flow is address → payment and
+        nothing ever navigated to ?step=review. The Review component rendered an
+        empty heading on every checkout and its consent copy never reached a
+        buyer; that copy now sits above the card fields in Payment.
+      */}
       <Payment cart={cart} availablePaymentMethods={paymentMethods} />
-
-      <Review cart={cart} />
     </div>
   )
 }
