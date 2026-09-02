@@ -62,4 +62,9 @@ test-moyasar.mjs
 .Trashes
 ehthumbs.db
 Thumbs.db
-**/.DS_Storescripts/reupload-product-images.py
+**/.DS_Store
+scripts/reupload-product-images.py
+
+# Claude Flow local state
+.claude-flow/
+
