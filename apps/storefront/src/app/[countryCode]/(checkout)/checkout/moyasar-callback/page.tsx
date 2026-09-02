@@ -30,7 +30,13 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
 
   // Not a failure — the buyer pressed cancel on the bank's page.
   if (status === "canceled") {
-    return <CallbackError countryCode={countryCode} message="تم إلغاء عملية الدفع. لم يُخصم أي مبلغ." />
+    return (
+      <CallbackError
+        countryCode={countryCode}
+        message="تم إلغاء عملية الدفع. لم يُخصم أي مبلغ."
+        cartId={cartIdFromUrl}
+      />
+    )
   }
 
   if (status === "failed") {
@@ -41,7 +47,13 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       cartId: cartIdFromUrl,
       rawMessage: message,
     })
-    return <CallbackError countryCode={countryCode} message={paymentErrorMessage(code, "ar")} />
+    return (
+      <CallbackError
+        countryCode={countryCode}
+        message={paymentErrorMessage(code, "ar")}
+        cartId={cartIdFromUrl}
+      />
+    )
   }
 
   if (status !== "paid" || !paymentId) {
@@ -55,7 +67,11 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       rawMessage: message,
     })
     return (
-      <CallbackError countryCode={countryCode} message={paymentErrorMessage("unexpected", "ar")} />
+      <CallbackError
+        countryCode={countryCode}
+        message={paymentErrorMessage("unexpected", "ar")}
+        cartId={cartIdFromUrl}
+      />
     )
   }
 
@@ -99,6 +115,7 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       <CallbackError
         countryCode={countryCode}
         message={paymentErrorMessage(classifyPaymentError(err), "ar")}
+        cartId={cart.id}
       />
     )
   }
@@ -133,11 +150,19 @@ function CallbackError({
   countryCode,
   title,
   reference,
+  cartId,
   variant = "retry",
 }: {
   message: string
   countryCode: string
   title?: string
+  /**
+   * Carried into the retry link. This page is reached by a cross-site
+   * navigation back from Moyasar, so the SameSite=Strict cart cookie may not
+   * have come with it — without this the retry lands on a checkout page that
+   * cannot find the cart.
+   */
+  cartId?: string
   /** Payment id, shown only so support can find the payment. Not an error code. */
   reference?: string
   /**
@@ -181,7 +206,11 @@ function CallbackError({
           {variant === "retry" && (
             <>
               <LocalizedClientLink
-                href="/checkout?step=payment"
+                href={
+                  cartId
+                    ? `/checkout?step=payment&cart_id=${encodeURIComponent(cartId)}`
+                    : "/checkout?step=payment"
+                }
                 className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"
               >
                 إعادة المحاولة

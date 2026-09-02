@@ -16,12 +16,34 @@ import {
 import { getRegion } from "./regions"
 import { getLocale } from "@lib/data/locale-cookie"
 
+export type RetrieveCartOptions = {
+  /**
+   * Whether a lookup that did not simply come back "not found" should throw.
+   *
+   * Default false, which keeps every existing caller behaving as it did: any
+   * failure reads as "there is no cart", which is the right answer for
+   * getOrSetCart (it creates one) and for the cart page (it draws the empty
+   * state).
+   *
+   * The checkout page passes true, and needs to: it turns a null cart into a
+   * redirect away from checkout, so collapsing a backend outage into null told
+   * a buyer holding a perfectly good cart that it had expired. Measured against
+   * a dead backend with a valid cart cookie: the checkout page answered 404
+   * while the cart page answered 500.
+   */
+  throwOnFailure?: boolean
+}
+
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
  * @param cartId - optional - The ID of the cart to retrieve.
- * @returns The cart object if found, or null if not found.
+ * @returns The cart object, or null if the cart does not exist (see options).
  */
-export async function retrieveCart(cartId?: string, fields?: string) {
+export async function retrieveCart(
+  cartId?: string,
+  fields?: string,
+  options: RetrieveCartOptions = {}
+) {
   const id = cartId || (await getCartId())
   fields ??=
     "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, *payment_collection, *payment_collection.payment_sessions"
@@ -38,18 +60,45 @@ export async function retrieveCart(cartId?: string, fields?: string) {
     ...(await getCacheOptions("carts")),
   }
 
-  return await sdk.client
-    .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
-      method: "GET",
-      query: {
-        fields,
-      },
-      headers,
-      next,
-      cache: "force-cache",
+  try {
+    const { cart } = await sdk.client.fetch<HttpTypes.StoreCartResponse>(
+      `/store/carts/${id}`,
+      {
+        method: "GET",
+        query: {
+          fields,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+    return cart
+  } catch (err: any) {
+    // The two outcomes are cleanly distinguishable and were measured against
+    // the live backend, not assumed:
+    //   missing cart    -> status 404, "Cart with id '…' not found"
+    //   backend is down -> no status at all, "fetch failed"
+    // The old single `.catch(() => null)` erased that difference, which is what
+    // let a transient outage read as "your cart is gone".
+    const status = err?.status ?? err?.response?.status
+
+    if (status === 404) {
+      return null
+    }
+
+    console.error("[retrieveCart] lookup failed", {
+      cartId: id,
+      status,
+      error: err?.message ?? err,
     })
-    .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
-    .catch(() => null)
+
+    if (options.throwOnFailure) {
+      throw err
+    }
+
+    return null
+  }
 }
 
 export async function getOrSetCart(countryCode: string) {

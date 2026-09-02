@@ -1,11 +1,12 @@
 import { retrieveCart } from "@lib/data/cart"
+import { getCartId } from "@lib/data/cookies"
 import { retrieveCustomer } from "@lib/data/customer"
 import { listCartShippingMethods } from "@lib/data/fulfillment"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
 import { Metadata } from "next"
-import { notFound, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Checkout",
@@ -22,23 +23,43 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 type Props = {
   params: Promise<{ countryCode: string }>
-  searchParams: Promise<{ step?: string; error?: string }>
+  searchParams: Promise<{ step?: string; error?: string; cart_id?: string }>
 }
 
 export default async function Checkout({ params, searchParams }: Props) {
-  const { step, error } = await searchParams
+  const { step, error, cart_id: cartIdFromUrl } = await searchParams
   const { countryCode } = await params
   const errorMessage = error
     ? (ERROR_MESSAGES[error] ?? "حدث خطأ في عملية الدفع — يرجى المحاولة مرة أخرى. / A payment error occurred — please try again.")
     : null
 
+  // A cart id in the URL means the buyer arrived from somewhere that could not
+  // send the SameSite=Strict cookie — coming back from Moyasar's 3-D Secure
+  // page is the case that matters. Hand off to the route handler, which is the
+  // only context allowed to write the cookie back; it ignores the URL value if
+  // a working cart is already in hand, so this can only recover, never swap.
+  if (cartIdFromUrl && cartIdFromUrl !== (await getCartId())) {
+    redirect(
+      `/api/checkout-session?cart_id=${encodeURIComponent(cartIdFromUrl)}` +
+        `&country_code=${countryCode}&step=${step ?? "payment"}`
+    )
+  }
+
+  // throwOnFailure: this page turns a null cart into a redirect off checkout,
+  // so it must not read a backend outage as "the cart is gone". Only a real 404
+  // returns null now; anything else raises and lands on the (checkout) error
+  // boundary, which shows the buyer an error digest instead of a bare 404.
   const [cart, customer] = await Promise.all([
-    retrieveCart(),
+    retrieveCart(undefined, undefined, { throwOnFailure: true }),
     retrieveCustomer(),
   ])
 
+  // No cart is not a missing page. This used to call notFound(), which told a
+  // buyer whose cart session had simply lapsed that the checkout URL did not
+  // exist. ?step= and ?error= are deliberately dropped: neither means anything
+  // once there is no cart to apply them to.
   if (!cart) {
-    return notFound()
+    redirect(`/${countryCode}/cart?notice=cart_expired`)
   }
 
   // Safety net: ?step=delivery is a dead end when the cart has no shipping

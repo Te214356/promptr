@@ -9,7 +9,13 @@ export const metadata: Metadata = {
   description: "View your cart",
 }
 
-export default async function Cart() {
+type Props = {
+  searchParams: Promise<{ notice?: string }>
+}
+
+export default async function Cart({ searchParams }: Props) {
+  const { notice } = await searchParams
+
   const [cart, customer] = await Promise.all([
     retrieveCart().catch((error) => {
       console.error(error)
@@ -34,6 +40,7 @@ export default async function Cart() {
       cart={cart}
       customer={customer}
       isDigitalOnly={isDigitalOnly}
+      notice={notice}
     />
   )
 }
