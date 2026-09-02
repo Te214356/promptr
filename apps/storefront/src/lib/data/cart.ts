@@ -459,7 +459,17 @@ export async function completeCart(cartId?: string): Promise<{ orderId: string; 
   let cartRes: any
   try {
     cartRes = await sdk.store.cart.complete(id, {}, headers)
-  } catch {
+  } catch (err: any) {
+    // Only /checkout/moyasar-callback calls this, and it reaches here *after*
+    // Moyasar confirmed the charge — so a silent null here is a paid buyer with
+    // no order and nothing in the logs to find them by. The reason (a rejected
+    // authorizePayment, an amount mismatch, a backend that is down) only exists
+    // in this error object; the caller sees null either way.
+    console.error("[completeCart] cart.complete failed", {
+      cartId: id,
+      status: err?.status ?? err?.response?.status,
+      error: err?.message ?? err,
+    })
     return null
   }
 
