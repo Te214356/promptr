@@ -13,6 +13,8 @@ type Props = {
     status?: string
     message?: string
     cart_id?: string
+    /** Signed cart handoff minted before the buyer left for Moyasar. */
+    t?: string
   }>
 }
 
@@ -26,7 +28,18 @@ type Props = {
  */
 export default async function MoyasarCallbackPage({ params, searchParams }: Props) {
   const { countryCode } = await params
-  const { id: paymentId, status, message, cart_id: cartIdFromUrl } = await searchParams
+  const {
+    id: paymentId,
+    status,
+    message,
+    cart_id: cartIdFromUrl,
+    t: handoffToken,
+  } = await searchParams
+
+  // Every branch below is either before the charge or after it, and the two get
+  // different buttons. `status === "paid"` is the line: Moyasar only sends it
+  // once the money has moved, so nothing past that point may offer "try again"
+  // — a second attempt is a second charge. Nothing before it may withhold one.
 
   // Not a failure — the buyer pressed cancel on the bank's page.
   if (status === "canceled") {
@@ -35,6 +48,7 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
         countryCode={countryCode}
         message="تم إلغاء عملية الدفع. لم يُخصم أي مبلغ."
         cartId={cartIdFromUrl}
+        handoffToken={handoffToken}
       />
     )
   }
@@ -52,14 +66,34 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
         countryCode={countryCode}
         message={paymentErrorMessage(code, "ar")}
         cartId={cartIdFromUrl}
+        handoffToken={handoffToken}
+      />
+    )
+  }
+
+  if (status === "paid" && !paymentId) {
+    // Paid, but with no id to quote. The money moved, so this is emphatically
+    // not a retry — and we cannot even hand over a reference, which is exactly
+    // why it is logged loudly: the payment has to be found from the Moyasar
+    // dashboard by time and amount instead.
+    console.error("[moyasar-callback] paid callback carried no payment id", {
+      cartId: cartIdFromUrl,
+      rawMessage: message,
+    })
+    return (
+      <CallbackError
+        countryCode={countryCode}
+        title="تم استلام دفعتك"
+        message="تم استلام دفعتك، لكن تعذّر إكمال الطلب تلقائيًا. لا تُعد الدفع — تواصل معنا وسنُكمل طلبك يدويًا."
+        variant="paid"
       />
     )
   }
 
   if (status !== "paid" || !paymentId) {
-    // Moyasar sent us back with something we do not know how to complete —
-    // a status we do not handle, or no payment id at all. There is no buyer
-    // action that fixes this, so it reads as unexpected and the shape is logged.
+    // A status we do not handle. Nothing was charged under any status Moyasar
+    // documents other than "paid", so a retry is safe here — and there is no
+    // buyer action that fixes it, so the shape is logged.
     console.error("[moyasar-callback] unusable callback params", {
       status,
       hasPaymentId: Boolean(paymentId),
@@ -71,6 +105,7 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
         countryCode={countryCode}
         message={paymentErrorMessage("unexpected", "ar")}
         cartId={cartIdFromUrl}
+        handoffToken={handoffToken}
       />
     )
   }
@@ -80,19 +115,23 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
   const cart = await retrieveCart(cartIdFromUrl || undefined)
 
   if (!cart) {
-    // retrieveCart swallows every failure into null, so this is either a cart
-    // that really is gone or a backend that could not be reached. Both leave the
-    // buyer in the same place — start over — but the log records which id we
-    // looked for so the two can be told apart afterwards.
-    console.error("[moyasar-callback] cart lookup returned nothing", {
+    // Reached only with status "paid", so the buyer has been charged and the
+    // cart we were supposed to complete cannot be read — either really gone or
+    // a backend that could not be reached. This used to render "session
+    // expired" with a link back to the store, which told someone who had just
+    // paid that nothing had happened. It is a paid outcome: no retry, and the
+    // payment id so support can find the charge.
+    console.error("[moyasar-callback] cart lookup returned nothing after payment", {
       paymentId,
       cartId: cartIdFromUrl ?? "(from cookie)",
     })
     return (
       <CallbackError
         countryCode={countryCode}
-        message={paymentErrorMessage("session_expired", "ar")}
-        variant="cart-gone"
+        title="تم استلام دفعتك"
+        message="تم استلام دفعتك، لكن تعذّر الوصول إلى سلتك لإكمال الطلب. لا تُعد الدفع — تواصل معنا وسنُكمل طلبك يدويًا."
+        reference={paymentId}
+        variant="paid"
       />
     )
   }
@@ -111,11 +150,18 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       code: classifyPaymentError(err),
       error: err?.message ?? err,
     })
+    // Post-charge as well: Moyasar reported "paid" before we got here, so the
+    // default "retry" variant would have charged the buyer twice. It carried a
+    // cart id too, which is what made that retry link actually work rather than
+    // dead-end on a 404 — a working double-charge link is worse than a broken
+    // one. Support, with the payment id, is the only correct exit.
     return (
       <CallbackError
         countryCode={countryCode}
-        message={paymentErrorMessage(classifyPaymentError(err), "ar")}
-        cartId={cart.id}
+        title="تم استلام دفعتك"
+        message="تم استلام دفعتك، لكن تعذّر تجهيز الطلب. لا تُعد الدفع — تواصل معنا وسنُكمل طلبك يدويًا."
+        reference={paymentId}
+        variant="paid"
       />
     )
   }
@@ -151,6 +197,7 @@ function CallbackError({
   title,
   reference,
   cartId,
+  handoffToken,
   variant = "retry",
 }: {
   message: string
@@ -163,17 +210,26 @@ function CallbackError({
    * cannot find the cart.
    */
   cartId?: string
+  /**
+   * Signature proving the cart id above is the one this server handed to this
+   * buyer. Without it the retry link is inert for recovery purposes, because
+   * /api/checkout-session declines an unsigned id rather than trusting it.
+   */
+  handoffToken?: string
   /** Payment id, shown only so support can find the payment. Not an error code. */
   reference?: string
   /**
-   * retry     — nothing was charged; send the buyer back to the payment step.
-   * cart-gone — there is no cart to pay for; send them to the store.
-   * paid      — money moved; never offer a retry, offer support.
+   * retry — nothing was charged; send the buyer back to the payment step.
+   * paid  — money moved; never offer a retry, offer support.
+   *
+   * There used to be a third, `cart-gone`, for a missing cart. It is gone with
+   * its only caller: that branch sits after `status === "paid"`, so "there is
+   * no cart, go back to the store" was being shown to someone who had just been
+   * charged. Anything that can only happen post-charge is `paid`.
    */
-  variant?: "retry" | "cart-gone" | "paid"
+  variant?: "retry" | "paid"
 }) {
-  const heading =
-    title ?? (variant === "cart-gone" ? "انتهت الجلسة" : "فشل الدفع")
+  const heading = title ?? "فشل الدفع" 
 
   return (
     <div className="min-h-screen bg-[#080810] flex flex-col items-center justify-center px-4" dir="rtl">
@@ -194,21 +250,14 @@ function CallbackError({
           </p>
         )}
         <div className={reference ? "flex flex-col gap-3" : "flex flex-col gap-3 mt-2"}>
-          {variant === "cart-gone" && (
-            <LocalizedClientLink
-              href="/"
-              className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"
-            >
-              العودة للمتجر
-            </LocalizedClientLink>
-          )}
-
           {variant === "retry" && (
             <>
               <LocalizedClientLink
                 href={
-                  cartId
-                    ? `/checkout?step=payment&cart_id=${encodeURIComponent(cartId)}`
+                  cartId && handoffToken
+                    ? `/checkout?step=payment` +
+                      `&cart_id=${encodeURIComponent(cartId)}` +
+                      `&t=${encodeURIComponent(handoffToken)}`
                     : "/checkout?step=payment"
                 }
                 className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"

@@ -16,12 +16,28 @@ declare global {
   }
 }
 
-type Props = { amount: number; currency: string; cartId: string }
+type Props = {
+  amount: number
+  currency: string
+  cartId: string
+  /**
+   * Signed proof, minted server-side, that this cart belongs to this buyer.
+   * Rides to Moyasar and back so the return link can restore the SameSite=Strict
+   * cart cookie without trusting a raw id from a URL. Null when the signing
+   * secret is unset, in which case recovery is simply declined.
+   */
+  returnToken?: string | null
+}
 
 const MPF_CSS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.css"
 const MPF_JS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"
 
-export default function MoyasarForm({ amount, currency, cartId }: Props) {
+export default function MoyasarForm({
+  amount,
+  currency,
+  cartId,
+  returnToken,
+}: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
   const params = useParams()
@@ -97,7 +113,10 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
         currency: currency.toUpperCase(),
         description: "Promptr Order",
         publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY ?? "",
-        callback_url: `${window.location.origin}/${countryCode}/checkout/moyasar-callback?cart_id=${cartId}`,
+        callback_url:
+          `${window.location.origin}/${countryCode}/checkout/moyasar-callback` +
+          `?cart_id=${encodeURIComponent(cartId)}` +
+          (returnToken ? `&t=${encodeURIComponent(returnToken)}` : ""),
         methods: ["creditcard"],
         supported_networks: ["visa", "mastercard", "mada"],
         // Passed explicitly rather than left to inference. Moyasar's documented

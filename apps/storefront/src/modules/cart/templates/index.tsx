@@ -12,9 +12,16 @@ import { HttpTypes } from "@medusajs/types"
  * cart session lapsed and nothing more: a buyer who was mid-payment must not
  * read it as "your money is gone", so it makes no claim about a payment either
  * way and does not use the word "failed".
+ *
+ * `cart_unavailable` is the backend-outage case, kept separate on purpose. It
+ * is the one thing that must never be reported as an expired session: the cart
+ * is fine, we just could not reach it, and telling someone their session lapsed
+ * invites them to rebuild a cart that still exists.
  */
 const NOTICES: Record<string, string> = {
   cart_expired: "انتهت جلسة السلة، الرجاء المحاولة مجدداً.",
+  cart_unavailable:
+    "تعذّر الوصول إلى الخادم الآن. سلتك لم تُفقد — الرجاء المحاولة بعد قليل.",
 }
 
 const CartTemplate = ({

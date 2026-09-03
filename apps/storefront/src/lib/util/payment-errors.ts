@@ -101,6 +101,22 @@ const PATTERNS: ReadonlyArray<readonly [PaymentErrorCode, RegExp]> = [
     /3-?\s?d[-\s]?secure|three[-\s]?ds|\b3ds\b|authentication\s*(failed|error|required|declined)|not\s*authenticated|التحقق\s*الثلاثي/i,
   ],
   [
+    // Transport failures are matched BEFORE card_declined, not after it.
+    // card_declined's alternation contains `\brefus` and `issuer`, so with the
+    // old ordering "Connection refused" or "The connection was refused" was
+    // reported to the buyer as "لم تُقبل البطاقة … جرّب بطاقة أخرى" — sending
+    // someone to try card after card while the gateway was simply unreachable,
+    // and poisoning any later diagnosis with a decline that never happened.
+    // The `\b` anchor noted above only ever protected the single-token
+    // ECONNREFUSED form; it does nothing for the spaced one.
+    //
+    // 3-D Secure still outranks this: a 3DS failure that mentions a timeout is
+    // a 3DS failure. "issuer" deliberately stays with card_declined — an issuer
+    // that is down really is a "try a different card" situation.
+    "network",
+    /network|timed?\s*out|timeout|fetch\s*failed|failed\s*to\s*fetch|load\s*failed|unreachable|connection|econn(reset|refused|aborted)|enotfound|socket|\b50[234]\b|محاولة\s*الات?صال|الإتصال/i,
+  ],
+  [
     "card_declined",
     /declin|do\s*not\s*honou?r|insufficient|not\s*sufficient|restricted|stolen|lost\s*card|pick[-\s]?up\s*card|expired\s*card|invalid\s*card|card\s*(is\s*)?(not\s*)?(valid|supported|allowed)|unsupported|exceed|issuer|\brefus|\brejected/i,
   ],
@@ -111,10 +127,6 @@ const PATTERNS: ReadonlyArray<readonly [PaymentErrorCode, RegExp]> = [
   [
     "session_expired",
     /session\s*(has\s*)?(expired|not\s*found|invalid)|expired\s*session|invalid[_\s]?token|otp\s*time|انتهت\s*(صلاحية|الجلسة)|الوقت\s*المسموح/i,
-  ],
-  [
-    "network",
-    /network|timed?\s*out|timeout|fetch\s*failed|failed\s*to\s*fetch|load\s*failed|unreachable|connection|econn(reset|refused|aborted)|enotfound|socket|\b50[234]\b|محاولة\s*الات?صال|الإتصال/i,
   ],
 ]
 

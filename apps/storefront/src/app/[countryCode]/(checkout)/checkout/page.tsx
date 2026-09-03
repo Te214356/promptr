@@ -23,11 +23,16 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 type Props = {
   params: Promise<{ countryCode: string }>
-  searchParams: Promise<{ step?: string; error?: string; cart_id?: string }>
+  searchParams: Promise<{
+    step?: string
+    error?: string
+    cart_id?: string
+    t?: string
+  }>
 }
 
 export default async function Checkout({ params, searchParams }: Props) {
-  const { step, error, cart_id: cartIdFromUrl } = await searchParams
+  const { step, error, cart_id: cartIdFromUrl, t: handoffToken } = await searchParams
   const { countryCode } = await params
   const errorMessage = error
     ? (ERROR_MESSAGES[error] ?? "حدث خطأ في عملية الدفع — يرجى المحاولة مرة أخرى. / A payment error occurred — please try again.")
@@ -38,10 +43,17 @@ export default async function Checkout({ params, searchParams }: Props) {
   // page is the case that matters. Hand off to the route handler, which is the
   // only context allowed to write the cookie back; it ignores the URL value if
   // a working cart is already in hand, so this can only recover, never swap.
+  // Every value is encoded, including the two taken straight from the request.
+  // The route handler re-validates all of them anyway, but building a URL by
+  // splicing in raw input relies on that second check never being relaxed —
+  // `?step=payment%26cart_id=evil` would otherwise smuggle a second cart_id
+  // parameter into the handoff.
   if (cartIdFromUrl && cartIdFromUrl !== (await getCartId())) {
     redirect(
       `/api/checkout-session?cart_id=${encodeURIComponent(cartIdFromUrl)}` +
-        `&country_code=${countryCode}&step=${step ?? "payment"}`
+        `&country_code=${encodeURIComponent(countryCode)}` +
+        `&step=${encodeURIComponent(step ?? "payment")}` +
+        (handoffToken ? `&t=${encodeURIComponent(handoffToken)}` : "")
     )
   }
 

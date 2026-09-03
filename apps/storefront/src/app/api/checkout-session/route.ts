@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { retrieveCart } from "@lib/data/cart"
+import { getCartId } from "@lib/data/cookies"
+import { verifyCartHandoff } from "@lib/util/checkout-handoff"
 
 /**
  * Puts a cart id back into the cookie so checkout can rebuild itself.
@@ -22,12 +24,16 @@ import { retrieveCart } from "@lib/data/cart"
  * the only context allowed to write one — the same reason /api/order-complete
  * exists to clear this very cookie.
  *
- * ## Why an existing cart always wins
+ * ## Why the id must be signed
  *
- * A `cart_id` in a URL is attacker-suppliable. If it could overwrite a live
- * cookie, a crafted link would swap a buyer's cart for someone else's before
- * they paid. So the URL value is only ever used when the visitor has no working
- * cart of their own: recovery, never replacement.
+ * "An existing cart always wins" is not enough on its own. It stops a crafted
+ * link from displacing a live cart, but the victim who matters here has no cart
+ * to displace: an attacker builds a cart carrying their own email and products,
+ * sends `?cart_id=…` to someone with an empty session, and that person pays for
+ * it — while the confirmation mail and the 48-hour signed download links go to
+ * the attacker. So the id is only honoured with an HMAC this server minted
+ * while rendering that buyer's own checkout page from their own cookie
+ * (`lib/util/checkout-handoff`). Recovery, never adoption.
  */
 
 const CART_ID = /^cart_[A-Za-z0-9]+$/
@@ -50,12 +56,49 @@ export async function GET(request: NextRequest) {
 
   const rawCartId = searchParams.get("cart_id") ?? ""
   const cartId = CART_ID.test(rawCartId) ? rawCartId : null
+  const handoffToken = searchParams.get("t") ?? undefined
 
   const toCheckout = new URL(`/${countryCode}/checkout?step=${step}`, baseUrl)
   const toCart = new URL(`/${countryCode}/cart?notice=cart_expired`, baseUrl)
+  const toUnavailable = new URL(
+    `/${countryCode}/cart?notice=cart_unavailable`,
+    baseUrl
+  )
+
+  /**
+   * Where to send someone when the backend itself is unreachable.
+   *
+   * Not `toCart` with "your session lapsed" — that is the same lie this whole
+   * change exists to remove, and it is the one an earlier version of this
+   * handler still told: it redirected to checkout with neither cookie nor
+   * cart_id, and checkout then returned null *without any backend call* (there
+   * is no id to look up) and bounced to the expired-cart notice.
+   *
+   * With a cookie in hand, checkout is right: its own lookup will throw and
+   * land on the (checkout) error boundary, which shows a traceable digest.
+   * Without one there is nothing for checkout to look up, so the buyer gets an
+   * outage notice that says the cart is not lost.
+   */
+  const outageDestination = async () =>
+    (await getCartId()) ? toCheckout : toUnavailable
 
   // Already holding a usable cart — ignore the URL entirely and carry on.
-  const existing = await retrieveCart()
+  //
+  // throwOnFailure matters here more than anywhere: a null from a backend
+  // outage is indistinguishable from "no cart", and "no cart" is the single
+  // state in which a URL-supplied id is allowed to be written to the cookie.
+  // Collapsing the two would let a transient 500 open the handoff path for a
+  // buyer who is holding a perfectly good cart.
+  let existing
+  try {
+    existing = await retrieveCart(undefined, undefined, { throwOnFailure: true })
+  } catch (err: any) {
+    console.error("[checkout-session] existing cart lookup failed", {
+      error: err?.message ?? err,
+    })
+    return NextResponse.redirect(await outageDestination())
+  }
+
   if (existing && !(existing as any).completed_at) {
     return NextResponse.redirect(toCheckout)
   }
@@ -64,18 +107,26 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(toCart)
   }
 
+  // Unsigned, expired, or tampered id: refuse it and say nothing about whether
+  // that cart exists. Declining costs a buyer one re-entry through the cart;
+  // accepting costs them someone else's order.
+  if (!verifyCartHandoff(handoffToken, cartId)) {
+    console.error("[checkout-session] rejected an unsigned or stale cart id", {
+      cartId,
+      hasToken: Boolean(handoffToken),
+    })
+    return NextResponse.redirect(toCart)
+  }
+
   let recovered
   try {
     recovered = await retrieveCart(cartId, undefined, { throwOnFailure: true })
   } catch (err: any) {
-    // The backend is unreachable, not the cart missing. Sending the buyer to an
-    // "expired cart" page here would be the same lie this whole change removes,
-    // so bounce them back to checkout and let its error boundary say so.
     console.error("[checkout-session] cart lookup failed", {
       cartId,
       error: err?.message ?? err,
     })
-    return NextResponse.redirect(toCheckout)
+    return NextResponse.redirect(await outageDestination())
   }
 
   if (!recovered || (recovered as any).completed_at) {
