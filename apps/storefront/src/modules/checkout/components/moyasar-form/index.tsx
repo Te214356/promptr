@@ -16,28 +16,12 @@ declare global {
   }
 }
 
-type Props = {
-  amount: number
-  currency: string
-  cartId: string
-  /**
-   * Signed proof, minted server-side, that this cart belongs to this buyer.
-   * Rides to Moyasar and back so the return link can restore the SameSite=Strict
-   * cart cookie without trusting a raw id from a URL. Null when the signing
-   * secret is unset, in which case recovery is simply declined.
-   */
-  returnToken?: string | null
-}
+type Props = { amount: number; currency: string; cartId: string }
 
 const MPF_CSS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.css"
 const MPF_JS = "https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"
 
-export default function MoyasarForm({
-  amount,
-  currency,
-  cartId,
-  returnToken,
-}: Props) {
+export default function MoyasarForm({ amount, currency, cartId }: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const initialized = useRef(false)
   const params = useParams()
@@ -68,11 +52,51 @@ export default function MoyasarForm({
    *
    * The form lives outside React's tree by design (see the mount below), so
    * touching its DOM here is not fighting a React render.
+   *
+   * ⚠️ A single removal at on_failure time does nothing, and used to: MPF sets
+   * `fail` via its own batched setState and then calls on_failure synchronously
+   * in the same tick, so the class is not in the DOM yet when we look — and it
+   * re-applies on every render for the rest of its 3-second timer, so even a
+   * deferred one-shot removal gets undone. Hence an observer that strips the
+   * class for as long as MPF keeps putting it back, torn down once its timer
+   * has expired.
    */
-  const clearFailStyling = () => {
+  const failWatch = useRef<{
+    observer: MutationObserver
+    timer: ReturnType<typeof setTimeout>
+  } | null>(null)
+
+  const stripFailStyling = () => {
     hostRef.current
       ?.querySelectorAll(".mysr-form-fail, .mysr-form-busy")
       .forEach((el) => el.classList.remove("mysr-form-fail", "mysr-form-busy"))
+  }
+
+  const stopFailWatch = () => {
+    if (!failWatch.current) return
+    failWatch.current.observer.disconnect()
+    clearTimeout(failWatch.current.timer)
+    failWatch.current = null
+  }
+
+  const clearFailStyling = () => {
+    const host = hostRef.current
+    if (!host) return
+
+    stopFailWatch()
+    stripFailStyling()
+
+    const observer = new MutationObserver(stripFailStyling)
+    observer.observe(host, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    // A shade past MPF's own 3s timer, after which it stops re-applying and the
+    // observer has nothing left to do.
+    const timer = setTimeout(stopFailWatch, 3500)
+    failWatch.current = { observer, timer }
   }
 
   const handleFailure = (raw: unknown) => {
@@ -115,8 +139,7 @@ export default function MoyasarForm({
         publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY ?? "",
         callback_url:
           `${window.location.origin}/${countryCode}/checkout/moyasar-callback` +
-          `?cart_id=${encodeURIComponent(cartId)}` +
-          (returnToken ? `&t=${encodeURIComponent(returnToken)}` : ""),
+          `?cart_id=${encodeURIComponent(cartId)}`,
         methods: ["creditcard"],
         supported_networks: ["visa", "mastercard", "mada"],
         // Passed explicitly rather than left to inference. Moyasar's documented
@@ -175,6 +198,10 @@ export default function MoyasarForm({
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // The fail-styling observer outlives the failure that started it by up to
+  // 3.5s, so unmounting mid-window must not leave it attached.
+  useEffect(() => stopFailWatch, [])
 
   if (initError) {
     return (

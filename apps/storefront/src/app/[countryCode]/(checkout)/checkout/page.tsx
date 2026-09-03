@@ -1,5 +1,4 @@
 import { retrieveCart } from "@lib/data/cart"
-import { getCartId } from "@lib/data/cookies"
 import { retrieveCustomer } from "@lib/data/customer"
 import { listCartShippingMethods } from "@lib/data/fulfillment"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
@@ -23,39 +22,35 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 type Props = {
   params: Promise<{ countryCode: string }>
-  searchParams: Promise<{
-    step?: string
-    error?: string
-    cart_id?: string
-    t?: string
-  }>
+  searchParams: Promise<{ step?: string; error?: string }>
 }
 
 export default async function Checkout({ params, searchParams }: Props) {
-  const { step, error, cart_id: cartIdFromUrl, t: handoffToken } = await searchParams
+  const { step, error } = await searchParams
   const { countryCode } = await params
   const errorMessage = error
     ? (ERROR_MESSAGES[error] ?? "حدث خطأ في عملية الدفع — يرجى المحاولة مرة أخرى. / A payment error occurred — please try again.")
     : null
 
-  // A cart id in the URL means the buyer arrived from somewhere that could not
-  // send the SameSite=Strict cookie — coming back from Moyasar's 3-D Secure
-  // page is the case that matters. Hand off to the route handler, which is the
-  // only context allowed to write the cookie back; it ignores the URL value if
-  // a working cart is already in hand, so this can only recover, never swap.
-  // Every value is encoded, including the two taken straight from the request.
-  // The route handler re-validates all of them anyway, but building a URL by
-  // splicing in raw input relies on that second check never being relaxed —
-  // `?step=payment%26cart_id=evil` would otherwise smuggle a second cart_id
-  // parameter into the handoff.
-  if (cartIdFromUrl && cartIdFromUrl !== (await getCartId())) {
-    redirect(
-      `/api/checkout-session?cart_id=${encodeURIComponent(cartIdFromUrl)}` +
-        `&country_code=${encodeURIComponent(countryCode)}` +
-        `&step=${encodeURIComponent(step ?? "payment")}` +
-        (handoffToken ? `&t=${encodeURIComponent(handoffToken)}` : "")
-    )
-  }
+  // This page deliberately accepts no cart id from the URL.
+  //
+  // There was a `?cart_id=` handoff here, on the theory that a buyer returning
+  // from Moyasar's 3-D Secure page cannot send the SameSite=Strict cart cookie.
+  // That is true of the *callback* request, which arrives cross-site — but the
+  // buyer reaches this page by clicking a link on our own callback page, and a
+  // Strict cookie is sent on a same-site navigation. Strict withholds the
+  // cookie; it never deletes it. So the cookie is back by the time they get
+  // here, and the handoff answered a question nobody was asking.
+  //
+  // What it did do was accept a cart id from a URL, which is attacker-supplied
+  // by definition: build a cart with your own email, send someone the link, and
+  // they pay for it while the confirmation mail and the download links go to
+  // you. Signing the id did not fix that — the signature said "this server
+  // issued this id", not "for this browser", and an attacker mints one for
+  // their own cart just by loading their own checkout page and reading it.
+  //
+  // Binding it to the browser is possible, but it buys a recovery path with no
+  // demonstrated need. Removed instead.
 
   // throwOnFailure: this page turns a null cart into a redirect off checkout,
   // so it must not read a backend outage as "the cart is gone". Only a real 404

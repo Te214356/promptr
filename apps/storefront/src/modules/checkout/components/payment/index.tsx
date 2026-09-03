@@ -37,12 +37,9 @@ const PolicyLink = ({
 const Payment = ({
   cart,
   availablePaymentMethods,
-  returnToken,
 }: {
   cart: any
   availablePaymentMethods: any[]
-  /** Signed cart handoff, minted server-side. Null when unconfigured. */
-  returnToken?: string | null
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (s: any) => s.status === "pending"
@@ -156,7 +153,6 @@ const Payment = ({
             amount={cart.total ?? 0}
             currency={cart.currency_code ?? "sar"}
             cartId={cart.id}
-            returnToken={returnToken}
           />
         )}
 

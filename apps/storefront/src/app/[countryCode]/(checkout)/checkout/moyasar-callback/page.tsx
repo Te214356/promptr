@@ -12,9 +12,12 @@ type Props = {
     id?: string
     status?: string
     message?: string
+    /**
+     * Put here by our own callback_url, because this request arrives cross-site
+     * from Moyasar and the SameSite=Strict cart cookie is withheld on it. It is
+     * read below without any ownership check — see the warning there.
+     */
     cart_id?: string
-    /** Signed cart handoff minted before the buyer left for Moyasar. */
-    t?: string
   }>
 }
 
@@ -33,7 +36,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
     status,
     message,
     cart_id: cartIdFromUrl,
-    t: handoffToken,
   } = await searchParams
 
   // Every branch below is either before the charge or after it, and the two get
@@ -47,8 +49,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       <CallbackError
         countryCode={countryCode}
         message="تم إلغاء عملية الدفع. لم يُخصم أي مبلغ."
-        cartId={cartIdFromUrl}
-        handoffToken={handoffToken}
       />
     )
   }
@@ -65,8 +65,6 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       <CallbackError
         countryCode={countryCode}
         message={paymentErrorMessage(code, "ar")}
-        cartId={cartIdFromUrl}
-        handoffToken={handoffToken}
       />
     )
   }
@@ -104,14 +102,27 @@ export default async function MoyasarCallbackPage({ params, searchParams }: Prop
       <CallbackError
         countryCode={countryCode}
         message={paymentErrorMessage("unexpected", "ar")}
-        cartId={cartIdFromUrl}
-        handoffToken={handoffToken}
       />
     )
   }
 
-  // Retrieve cart: prefer explicit cart_id from URL (survives cross-domain cookie loss in
-  // Safari Private / strict browsers), fall back to the _medusa_cart_id cookie.
+  // Retrieve cart: prefer explicit cart_id from URL (this request arrives
+  // cross-site from Moyasar, so the Strict cart cookie is withheld), fall back
+  // to the _medusa_cart_id cookie.
+  //
+  // ⚠️ KNOWN GAP, predates this file's current shape and deliberately not
+  // patched here: nothing proves the caller owns this cart id. Anyone can call
+  //   /checkout/moyasar-callback?status=paid&id=<a payment>&cart_id=<any cart>
+  // and drive initiatePaymentSession + completeCart against a cart that is not
+  // theirs. What contains it today is entirely on the backend: authorizePayment
+  // re-verifies the payment with Moyasar server-side using the secret key, and
+  // compares amount and currency against the session (see the amount-guard note
+  // in CLAUDE.md), so a mismatched or invented payment is rejected rather than
+  // completing an order.
+  //
+  // Closing it properly means binding the cart id to the buyer's session before
+  // they leave for Moyasar — the same binding a signed ?cart_id= handoff would
+  // have needed and did not have. That is its own change, not a line here.
   const cart = await retrieveCart(cartIdFromUrl || undefined)
 
   if (!cart) {
@@ -196,26 +207,11 @@ function CallbackError({
   countryCode,
   title,
   reference,
-  cartId,
-  handoffToken,
   variant = "retry",
 }: {
   message: string
   countryCode: string
   title?: string
-  /**
-   * Carried into the retry link. This page is reached by a cross-site
-   * navigation back from Moyasar, so the SameSite=Strict cart cookie may not
-   * have come with it — without this the retry lands on a checkout page that
-   * cannot find the cart.
-   */
-  cartId?: string
-  /**
-   * Signature proving the cart id above is the one this server handed to this
-   * buyer. Without it the retry link is inert for recovery purposes, because
-   * /api/checkout-session declines an unsigned id rather than trusting it.
-   */
-  handoffToken?: string
   /** Payment id, shown only so support can find the payment. Not an error code. */
   reference?: string
   /**
@@ -253,13 +249,11 @@ function CallbackError({
           {variant === "retry" && (
             <>
               <LocalizedClientLink
-                href={
-                  cartId && handoffToken
-                    ? `/checkout?step=payment` +
-                      `&cart_id=${encodeURIComponent(cartId)}` +
-                      `&t=${encodeURIComponent(handoffToken)}`
-                    : "/checkout?step=payment"
-                }
+                // No cart id rides along. This link is a same-site click, so the
+                // Strict cart cookie is sent with it and checkout finds the cart
+                // on its own; a cart id in a URL would only be an id anyone
+                // could supply.
+                href="/checkout?step=payment"
                 className="block w-full py-3 px-6 rounded-lg bg-[#6C2BFF] text-white font-medium hover:bg-[#5a23d4] transition-colors text-center"
               >
                 إعادة المحاولة

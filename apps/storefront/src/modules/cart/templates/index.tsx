@@ -35,7 +35,12 @@ const CartTemplate = ({
   isDigitalOnly?: boolean
   notice?: string
 }) => {
-  const noticeMessage = notice ? NOTICES[notice] : null
+  // hasOwn, not a bare lookup: `notice` is raw query input, and `NOTICES` is an
+  // object literal, so `?notice=constructor` (or toString, valueOf) would walk
+  // up to Object.prototype, return a function, and render the notice box with a
+  // React "Functions are not valid as a React child" error inside it.
+  const noticeMessage =
+    notice && Object.hasOwn(NOTICES, notice) ? NOTICES[notice] : null
 
   return (
     <div className="py-8">
