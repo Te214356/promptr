@@ -13,12 +13,19 @@ const s3 = new S3Client({
 const BUCKET = process.env.S3_PRIVATE_BUCKET!
 
 /**
- * 48 hours, down from 7 days. A signed URL is a bearer token — anyone holding
- * it downloads the file — so the window is kept short. Buyers lose nothing:
- * the confirmation page and /store/order-downloads mint a fresh URL on every
- * visit; only a stale link inside an old email expires.
+ * 7 days — the maximum a SigV4 presigned URL can carry, so this cannot be
+ * raised further. Chosen over the previous 48h to cut "my link expired"
+ * support mail: buyers open order email late, and the shorter window bought
+ * little in practice.
+ *
+ * A signed URL is still a bearer token — anyone holding it downloads the file.
+ * What keeps that bounded is that these URLs are never logged, and the
+ * confirmation page and /store/order-downloads mint a fresh one on every visit
+ * behind an ownership check, so an expired link is never the only way in.
+ *
+ * Any value above 604800 is rejected by S3/R2 at signing time.
  */
-const EXPIRY_SECONDS = 172800
+const EXPIRY_SECONDS = 604800
 
 export async function generateSignedUrl(fileKey: string): Promise<string> {
   const command = new GetObjectCommand({

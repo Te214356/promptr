@@ -83,7 +83,7 @@ export default async function orderPlacedHandler({
     return
   }
 
-  // Log for monitoring. Signed URLs are bearer tokens valid for 48h, so they are
+  // Log for monitoring. Signed URLs are bearer tokens valid for 7 days, so they are
   // never printed — anyone with log access would otherwise hold every purchase.
   console.log(
     `[order-placed] Order ${orderId} | ${order.email} | ` +
