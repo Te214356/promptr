@@ -53,6 +53,9 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
    * The form lives outside React's tree by design (see the mount below), so
    * touching its DOM here is not fighting a React render.
    *
+   * Scope: the `fail` class only, and only until MPF stops re-applying it. It
+   * is disarmed early by on_initiating so it can never overlap a live attempt.
+   *
    * ⚠️ A single removal at on_failure time does nothing, and used to: MPF sets
    * `fail` via its own batched setState and then calls on_failure synchronously
    * in the same tick, so the class is not in the DOM yet when we look — and it
@@ -66,10 +69,24 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
     timer: ReturnType<typeof setTimeout>
   } | null>(null)
 
+  /**
+   * ⛔ Strips the failure class ONLY.
+   *
+   * `mysr-form-busy` used to be stripped here too, and that was a bug with the
+   * worst possible shape: the observer below stays armed for 3.5s, so a buyer
+   * who fixed one digit and pressed pay again within that window had the busy
+   * class torn off the in-flight attempt. The button rendered idle while a
+   * payment was actually being created — an invitation to click again and be
+   * charged twice, on the one page where that must never happen.
+   *
+   * Busy is MPF telling the truth about its own state. Only the red `fail`
+   * paint is ours to undo, and only because we replace it with a readable
+   * message.
+   */
   const stripFailStyling = () => {
     hostRef.current
-      ?.querySelectorAll(".mysr-form-fail, .mysr-form-busy")
-      .forEach((el) => el.classList.remove("mysr-form-fail", "mysr-form-busy"))
+      ?.querySelectorAll(".mysr-form-fail")
+      .forEach((el) => el.classList.remove("mysr-form-fail"))
   }
 
   const stopFailWatch = () => {
@@ -140,6 +157,21 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
         callback_url:
           `${window.location.origin}/${countryCode}/checkout/moyasar-callback` +
           `?cart_id=${encodeURIComponent(cartId)}`,
+        // The binding that makes this payment usable for THIS cart and no
+        // other. Moyasar stores it on the payment record and echoes it back on
+        // every server-side read, so the backend can ask "which cart was this
+        // paid for?" and get an answer the browser cannot revise afterwards.
+        //
+        // Without it, the only thing tying a payment to a cart was the amount —
+        // and equal totals are common here (four products share 69 SAR), so one
+        // real payment could complete a different cart of the same price, over
+        // and over. See authorizePayment/initiatePayment in the backend's
+        // Moyasar provider for the other half of this check.
+        //
+        // ⚠️ The value must stay a plain string: Moyasar's metadata is a
+        // string-to-string map, so an object here comes back mangled and the
+        // comparison fails closed on every purchase.
+        metadata: { cart_id: cartId },
         methods: ["creditcard"],
         supported_networks: ["visa", "mastercard", "mada"],
         // Passed explicitly rather than left to inference. Moyasar's documented
@@ -164,6 +196,10 @@ export default function MoyasarForm({ amount, currency, cartId }: Props) {
         // only callback_url/description/metadata/amount, and {} touches none.
         on_initiating: () => {
           setFailure(null)
+          // Disarm the fail-watch before this attempt starts. Without it, an
+          // observer left over from the previous failure keeps mutating the
+          // form's classes during a live payment — see stripFailStyling.
+          stopFailWatch()
           return true
         },
 

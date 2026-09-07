@@ -147,6 +147,77 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     }
   }
 
+  /**
+   * The cart a Moyasar payment was created for, as Moyasar itself recorded it.
+   *
+   * Written by the browser at form-init time (Moyasar.init -> metadata.cart_id
+   * in the storefront's moyasar-form) and read back here from Moyasar's own
+   * record with the secret key. The buyer chooses it, but only once and only
+   * before paying: once the payment exists the value is fixed, so it cannot be
+   * re-pointed at a second cart afterwards. That is the property the whole
+   * binding rests on.
+   *
+   * Moyasar's metadata is a string-to-string map; anything else means the value
+   * did not survive the round trip, and an unreadable binding is treated as no
+   * binding at all.
+   */
+  private readPaidCartId(payment: any): string | undefined {
+    const value = payment?.metadata?.cart_id
+    return typeof value === "string" && value.length > 0 ? value : undefined
+  }
+
+  /**
+   * Refuses a payment that was not made for this cart.
+   *
+   * `cartId` is not taken from the request body — it is derived on the server
+   * from the payment collection being paid (see the storefront-facing
+   * middleware in src/api/middlewares.ts) precisely so the caller cannot name
+   * both sides of this comparison.
+   *
+   * ⛔ A missing binding is a refusal, never a pass. Payments created before
+   * the storefront started sending metadata have no cart_id, and treating
+   * "absent" as "matches" would leave every one of them replayable — which is
+   * the entire hole this closes.
+   *
+   * ⚠️ Be honest about what failing closed costs, because an earlier version of
+   * this comment was not: a payment with no binding can never be spent. If this
+   * backend ships BEFORE the storefront that writes the metadata, Moyasar
+   * captures the money and then this throws — the buyer is charged with no
+   * order, and "retry" means a second charge, not a recovery. Only a refund
+   * fixes it.
+   *
+   * Which is why the deploy order is a rule, not a preference: storefront
+   * first, backend second (the old backend ignores the metadata, so the
+   * storefront leading is harmless). See the deploy note in CLAUDE.md.
+   *
+   * What makes this survivable today rather than merely acceptable: Moyasar
+   * live payments are not enabled yet (account activation pending), so there is
+   * no population of real in-flight payments to strand. That is a fact with an
+   * expiry date — once live payments are on, the ordering rule is the only
+   * thing standing between a careless deploy and charged buyers with no orders.
+   */
+  private assertCartBinding(
+    payment: any,
+    cartId: string | undefined,
+    stage: string
+  ): string {
+    const paidCartId = this.readPaidCartId(payment)
+
+    if (!cartId || !paidCartId || paidCartId !== cartId) {
+      this.logger_.error(
+        `[moyasar] CART BINDING REJECTED (${stage}) — refusing. ` +
+          `id=${payment?.id} paid_for=${paidCartId ?? "missing"} ` +
+          `completing=${cartId ?? "missing"}`
+      )
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "This payment was not made for this cart."
+      )
+    }
+
+    return paidCartId
+  }
+
   async initiatePayment(input: InitiatePaymentInput): Promise<InitiatePaymentOutput> {
     const { data } = input
 
@@ -160,15 +231,31 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
       expected_currency: input.currency_code?.toLowerCase(),
     }
 
+    // Server-derived cart id, injected by the middleware on the payment-session
+    // route. Re-emitted in the session data below so that the value
+    // authorizePayment later reads is this one and not whatever the request
+    // body happened to carry: Medusa merges provider output over client input,
+    // so what we return here wins.
+    const cartId = data?.cart_id as string | undefined
+
     // If moyasar_id is provided (from the callback after MPF payment), verify it.
     if (data?.moyasar_id) {
       try {
         const payment = await this.moyasarRequest<any>("GET", `/payments/${data.moyasar_id}`)
+
+        // Which cart Moyasar says this money was for, versus the cart we are
+        // about to complete. Unequal (or unstated) means someone is spending a
+        // payment somewhere it does not belong; throwing here means no session
+        // is created, so there is nothing left to authorize.
+        const paidCartId = this.assertCartBinding(payment, cartId, "initiate")
+
         return {
           id: payment.id,
           data: {
             moyasar_id: payment.id,
             moyasar_status: payment.status,
+            cart_id: cartId,
+            moyasar_cart_id: paidCartId,
             ...expected,
           },
         }
@@ -182,7 +269,7 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
     // Return a pending local session; moyasar_id will be set after the MPF callback.
     return {
       id: `ms_pending_${Date.now()}`,
-      data: { status: "pending", ...expected },
+      data: { status: "pending", cart_id: cartId, ...expected },
     }
   }
 
@@ -216,6 +303,35 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
         )
 
         if (AUTHORIZED_STATUSES.includes(payment.status)) {
+          // Second gate on the same question initiatePayment already asked, and
+          // deliberately not a formality: it is re-derived from the payment
+          // Moyasar just handed us rather than trusting the value pinned in the
+          // session, so it still holds if a session were created some other way.
+          //
+          // Fail-closed like the amount check below — a session with no cart
+          // binding is refused, not trusted. It returns ERROR rather than
+          // throwing so it behaves exactly as the amount guard does: the session
+          // is marked errored and the cart does not complete.
+          const boundCartId = data?.cart_id as string | undefined
+          const paidCartId = this.readPaidCartId(payment)
+
+          if (!boundCartId || !paidCartId || paidCartId !== boundCartId) {
+            this.logger_.error(
+              `[moyasar] CART BINDING REJECTED (authorize) — refusing to authorize. ` +
+              `id=${payment.id} paid_for=${paidCartId ?? "missing"} ` +
+              `completing=${boundCartId ?? "missing"}`
+            )
+            return {
+              status: STATUS.ERROR,
+              data: {
+                ...data,
+                moyasar_id: payment.id,
+                moyasar_status: payment.status,
+                cart_binding_mismatch: true,
+              },
+            }
+          }
+
           // A successful payment is not necessarily the *right* payment. The
           // Moyasar form is initialised in the browser, so its amount is under
           // the buyer's control; without this check, paying 1 SAR for a full

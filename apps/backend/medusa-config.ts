@@ -19,6 +19,14 @@ export default defineConfig({
     }
   },
   modules: [
+    // Records which Moyasar payments have already been spent, so one real
+    // payment cannot complete a second cart. Kept as its own module because it
+    // needs a table with a unique index, and a payment *provider* cannot have
+    // one: providers are registered inside the payment module's container and
+    // ship no migrations of their own.
+    {
+      resolve: "./src/modules/payment-guard",
+    },
     {
       resolve: "@medusajs/medusa/payment",
       options: {
