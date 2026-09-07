@@ -1,6 +1,5 @@
 import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
-import { listCartShippingMethods } from "@lib/data/fulfillment"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
@@ -69,18 +68,21 @@ export default async function Checkout({ params, searchParams }: Props) {
     redirect(`/${countryCode}/cart?notice=cart_expired`)
   }
 
-  // Safety net: ?step=delivery is a dead end when the cart has no shipping
-  // options, because CheckoutForm does not render the Shipping component at
-  // all — no section opens and the buyer cannot proceed. Covers every way that
-  // URL can be reached, not just the cart button: a bookmark, the back button,
-  // or a link written later.
-  if (step === "delivery") {
-    const shippingMethods = await listCartShippingMethods(cart.id)
-    if (!shippingMethods?.length) {
-      redirect(
-        `/${countryCode}/checkout?step=payment${error ? `&error=${error}` : ""}`
-      )
-    }
+  // Safety net: ?step=delivery is a dead end when CheckoutForm does not render
+  // the Shipping component — no section opens and the buyer cannot proceed.
+  // Covers every way that URL can be reached, not just the cart button: a
+  // bookmark, the back button, or a link written later.
+  //
+  // This MUST use the same test as CheckoutForm's isDigitalOnly. It previously
+  // keyed off shipping *options*, which silently cancelled that derivation: a
+  // cart whose items require shipping while the store has no options
+  // configured was bounced from delivery straight to payment, so the buyer
+  // paid and completeCart then refused the cart. Routing to payment is the
+  // step that takes money — never send a shipping-requiring cart there.
+  if (step === "delivery" && !cart.items?.some((item) => item.requires_shipping)) {
+    redirect(
+      `/${countryCode}/checkout?step=payment${error ? `&error=${error}` : ""}`
+    )
   }
 
   return (

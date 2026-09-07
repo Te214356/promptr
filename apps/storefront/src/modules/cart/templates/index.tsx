@@ -17,6 +17,24 @@ import { HttpTypes } from "@medusajs/types"
  * is the one thing that must never be reported as an expired session: the cart
  * is fine, we just could not reach it, and telling someone their session lapsed
  * invites them to rebuild a cart that still exists.
+ *
+ * ⚠️ `cart_unavailable` is currently UNEMITTED — nothing in the repo redirects
+ * with it (verified by grep across src/: this definition is the only hit). The
+ * outage it describes takes a different exit today: checkout's
+ * `throwOnFailure` path raises to the (checkout) error boundary instead of
+ * redirecting here, and /cart's own loader swallows a failed fetch into `null`,
+ * so the buyer sees an empty cart with no notice at all.
+ *
+ * Kept rather than deleted, deliberately. The distinction it encodes is the
+ * part that is expensive to rediscover — we have twice been one wording away
+ * from telling someone with a perfectly good cart that their session expired —
+ * and the wording is already reviewed and correct. Deleting it would leave the
+ * next person to reinvent both the case and the sentence under outage
+ * pressure, which is when it will be got wrong.
+ *
+ * So this is a ready answer without a question yet. Wiring it up (redirecting
+ * to /cart?notice=cart_unavailable when the backend is unreachable rather than
+ * rendering an unexplained empty cart) is the open item; the string is not.
  */
 const NOTICES: Record<string, string> = {
   cart_expired: "انتهت جلسة السلة، الرجاء المحاولة مجدداً.",

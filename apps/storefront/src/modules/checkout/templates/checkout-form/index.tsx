@@ -23,8 +23,26 @@ export default async function CheckoutForm({
     return null
   }
 
-  // All Promptr products are digital — skip shipping step when no methods exist
-  const isDigitalOnly = !shippingMethods?.length
+  /*
+    Every Promptr product is digital (a PDF delivered by email), so this is
+    normally true for every cart. Derive it from the line items' own
+    requires_shipping flag — the exact field Medusa's completeCart validates
+    against (core-flows validate-shipping: items requiring shipping + zero
+    shipping methods ⟶ 400) — so the storefront and the backend cannot
+    disagree about what "digital" means.
+
+    It was previously inferred from the *absence* of shipping options, which is
+    a different question with a different answer. A cart whose items required
+    shipping while the store had no options configured read as "digital" here,
+    skipped the shipping step, reached Moyasar, took the money, and was then
+    refused by completeCart. Measured on a real local purchase: the buyer was
+    charged and no order existed. Never infer this from shipping options again.
+
+    If an item ever does require shipping, the Shipping step renders instead —
+    the buyer may find it empty and be stuck, but stuck before paying beats
+    charged and refused after.
+  */
+  const isDigitalOnly = !cart.items?.some((item) => item.requires_shipping)
 
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
