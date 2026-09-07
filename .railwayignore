@@ -1,0 +1,39 @@
+# Keeps `railway up` uploads small. The storefront build needs apps/ plus the
+# workspace manifests at the root — nothing else here is read at build time.
+#
+# Written after a `railway up` upload timed out and left a deployment stuck in
+# INITIALIZING with no build attached: the payload was 60MB, of which 55MB was
+# product source assets and an image backup the build never opens.
+#
+# Every directory pattern is ROOT-ANCHORED with a leading slash. Without it,
+# gitignore semantics match a directory of that name at ANY depth: a bare
+# `products/` also excluded apps/storefront/src/modules/products and the
+# products route group, and the build failed on a missing @modules/products
+# import. Never write these unanchored.
+#
+# Do NOT exclude apps/backend: npm workspaces ("apps/**") resolves every
+# workspace manifest at install time, so dropping it breaks the install even
+# though only the storefront is built.
+
+# Product source assets and generated PDFs (~23MB)
+/products/
+
+# Book chapters and the generated book PDF (~1.6MB)
+/book/
+
+# One-off backup of product images (~32MB)
+/product-images-backup/
+
+# Backups, research notes, and loose assets
+/backup_products_*.json
+/research/
+/brain.jpg
+
+# Docs and agent config — not read by any build step
+/.claude/
+/CLAUDE.md
+/README.md
+/LICENSE
+
+# Any stray PDF anywhere; no build step reads one
+*.pdf
