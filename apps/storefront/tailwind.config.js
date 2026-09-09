@@ -1,7 +1,16 @@
 const path = require("path")
 
 module.exports = {
-  darkMode: "class",
+  // ⛔ المحدِّد هنا يجب أن يطابق ما يضعه app/layout.tsx على <html> فعلًا.
+  //
+  // كان "class" وحده، أي أن الرموز الداكنة تُكتب تحت ‎.dark‎ — والوسم يحمل
+  // data-mode="dark" لا صنف dark. فلم تطابق تلك الكتلة شيئًا قط: كل رمز من
+  // عائلة text-ui-fg-* كان يُرسم بقيمته الفاتحة (‎--fg-base: #18181B‎) فوق
+  // خلفية ‎#080810‎ — أي «الإجمالي» بنسبة تباين 1.13:1.
+  //
+  // القائمة الثانية هي المحدِّد المخصص الذي يقبله Tailwind 3.4، ويمرّره
+  // medusa ui-preset حرفيًا إلى الكتلة التي يولّدها.
+  darkMode: ["class", '[data-mode="dark"]'],
   presets: [require("@medusajs/ui-preset")],
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx}",

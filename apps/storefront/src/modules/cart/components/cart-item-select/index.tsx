@@ -38,14 +38,15 @@ const CartItemSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
 
     return (
       <div>
+        {/* لون حرفي لا رمز ui — الشارة سطح فاتح مثبَّت (globals.css) */}
         <IconBadge
           onFocus={() => innerRef.current?.focus()}
           onBlur={() => innerRef.current?.blur()}
           className={clx(
-            "relative flex items-center txt-compact-small border text-ui-fg-base group",
+            "relative flex items-center txt-compact-small border text-[#18181B] group",
             className,
             {
-              "text-ui-fg-subtle": isPlaceholder,
+              "text-[#52525B]": isPlaceholder,
             }
           )}
         >

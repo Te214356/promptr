@@ -96,7 +96,7 @@ const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const Description: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <Dialog.Description className="flex text-small-regular text-ui-fg-base items-center justify-center pt-2 pb-4 h-full">
+    <Dialog.Description className="flex text-small-regular text-[#18181B] items-center justify-center pt-2 pb-4 h-full">
       {children}
     </Dialog.Description>
   )

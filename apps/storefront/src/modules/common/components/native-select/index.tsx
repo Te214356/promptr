@@ -38,6 +38,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
 
     return (
       <div>
+        {/* لون حرفي لا رمز ui — السطح فاتح مثبَّت (globals.css) */}
         <div
           onFocus={() => innerRef.current?.focus()}
           onBlur={() => innerRef.current?.blur()}
@@ -45,7 +46,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             "relative flex items-center text-base-regular border border-ui-border-base bg-ui-bg-subtle rounded-md hover:bg-ui-bg-field-hover",
             className,
             {
-              "text-ui-fg-muted": isPlaceholder,
+              "text-[#71717A]": isPlaceholder,
             }
           )}
         >

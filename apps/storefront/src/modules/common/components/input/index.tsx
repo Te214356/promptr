@@ -38,6 +38,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {topLabel && (
           <Label className="mb-2 txt-compact-medium-plus">{topLabel}</Label>
         )}
+        {/* ألوان مثبَّتة بقيمها الحرفية لا برموز ui: هذا الحقل سطح فاتح
+            مثبَّت في globals.css، فرموز الوضع الداكن كانت ستجعل نصه غير مقروء. */}
         <div className="flex relative z-0 w-full txt-compact-medium">
           <input
             type={inputType}
@@ -51,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={name}
             onClick={() => inputRef.current?.focus()}
-            className="flex items-center justify-center mx-3 px-1 transition-all absolute duration-300 top-3 -z-1 origin-0 text-ui-fg-subtle"
+            className="flex items-center justify-center mx-3 px-1 transition-all absolute duration-300 top-3 -z-1 origin-0 text-[#52525B]"
           >
             {label}
             {required && <span className="text-rose-500">*</span>}
@@ -60,7 +62,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-ui-fg-subtle px-4 focus:outline-none transition-all duration-150 outline-none focus:text-ui-fg-base absolute right-0 top-3"
+              className="text-[#52525B] px-4 focus:outline-none transition-all duration-150 outline-none focus:text-[#18181B] absolute right-0 top-3"
             >
               {showPassword ? <Eye /> : <EyeOff />}
             </button>
