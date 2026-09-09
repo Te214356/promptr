@@ -23,7 +23,7 @@ const EmptyCartMessage = () => {
 
   return (
     <div
-      className="flex flex-col items-center gap-y-6 rounded-3xl border border-white/10 bg-[#0d0d1f] px-6 py-20 text-center"
+      className="flex flex-col items-center gap-y-6 rounded-3xl border border-white/40 bg-[#0d0d1f] px-6 py-20 text-center"
       data-testid="empty-cart-message"
     >
       <span

@@ -87,7 +87,7 @@ const CartTemplate = ({
             <div className="relative">
               <div className="flex flex-col gap-y-6 sticky top-12">
                 {cart && cart.region && (
-                  <div className="bg-[#0d0d1f] border border-white/10 rounded-2xl py-6 px-5">
+                  <div className="bg-[#0d0d1f] border border-white/40 rounded-2xl py-6 px-5">
                     <Summary cart={cart as any} isDigitalOnly={isDigitalOnly} />
                   </div>
                 )}

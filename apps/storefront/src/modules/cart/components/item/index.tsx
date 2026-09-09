@@ -39,7 +39,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-white truncate" data-testid="product-title">{item.product_title}</p>
-          <span className="flex gap-x-1 text-xs text-white/40">
+          <span className="flex gap-x-1 text-xs text-white/70">
             <span>{item.quantity}×</span>
             <LineItemUnitPrice item={item} style="tight" currencyCode={currencyCode} />
           </span>
@@ -61,9 +61,9 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
             <p className="text-sm font-medium text-white truncate" data-testid="product-title">{item.product_title}</p>
           </LocalizedClientLink>
           {item.variant?.title && (
-            <p className="text-xs text-white/40 mt-0.5">{item.variant.title}</p>
+            <p className="text-xs text-white/70 mt-0.5">{item.variant.title}</p>
           )}
-          <DeleteButton id={item.id} className="text-xs text-white/30 hover:text-red-400 mt-1" data-testid="product-delete-button" />
+          <DeleteButton id={item.id} className="text-xs text-white/70 hover:text-red-400 mt-1" data-testid="product-delete-button" />
           {error && <ErrorMessage error={error} data-testid="product-error-message" />}
         </div>
       </div>
@@ -73,7 +73,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         <select
           value={item.quantity}
           onChange={(e) => changeQuantity(parseInt(e.target.value))}
-          className="bg-white/5 border border-white/10 text-white text-sm rounded-lg px-2 py-1.5 w-14 appearance-none text-center focus:outline-none focus:border-white/30"
+          className="bg-white/5 border border-white/40 text-white text-sm rounded-lg px-2 py-1.5 w-14 appearance-none text-center focus:outline-none focus:border-white/60"
           data-testid="product-select-button"
         >
           {Array.from({ length: Math.min(maxQuantity, 10) }, (_, i) => (

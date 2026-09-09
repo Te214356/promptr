@@ -154,7 +154,7 @@ const Shipping: React.FC<ShippingProps> = ({
   }, [isOpen])
 
   return (
-    <div className="rounded-xl border border-white/[0.08] p-4 small:p-6">
+    <div className="rounded-xl border border-white/40 p-4 small:p-6">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"

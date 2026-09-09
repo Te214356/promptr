@@ -9,7 +9,7 @@ const SignInPrompt = () => {
   const isAR = lang === "ar"
 
   return (
-    <div className="bg-[#0d0d1f] border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+    <div className="bg-[#0d0d1f] border border-white/40 rounded-2xl p-5 flex items-center justify-between">
       <div>
         <h2 className="text-base font-semibold text-white">
           {isAR ? "لديك حساب بالفعل؟" : "Already have an account?"}

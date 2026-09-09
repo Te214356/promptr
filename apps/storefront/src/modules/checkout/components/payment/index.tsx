@@ -91,7 +91,7 @@ const Payment = ({
   const isEmptyCollapsed = !isOpen && !paymentReady && !paidByGiftcard
 
   return (
-    <div className={clx("rounded-xl border border-white/[0.08] p-4 small:p-6", { "hidden small:block": isEmptyCollapsed })}>
+    <div className={clx("rounded-xl border border-white/40 p-4 small:p-6", { "hidden small:block": isEmptyCollapsed })}>
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"

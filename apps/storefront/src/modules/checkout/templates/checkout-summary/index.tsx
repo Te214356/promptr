@@ -14,7 +14,7 @@ const CheckoutSummary = ({ cart }: { cart: any }) => {
 
   return (
     <div className="small:sticky small:top-16 flex flex-col-reverse small:flex-col gap-y-8 py-8 small:py-0">
-      <div className="w-full flex flex-col rounded-xl border border-white/[0.08] p-4 small:p-6">
+      <div className="w-full flex flex-col rounded-xl border border-white/40 p-4 small:p-6">
         <Divider className="my-6 small:hidden" />
         <Heading
           level="h2"

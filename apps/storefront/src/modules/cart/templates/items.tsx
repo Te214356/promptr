@@ -15,13 +15,13 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   const isAR = lang === "ar"
 
   return (
-    <div className="bg-[#0d0d1f] border border-white/10 rounded-2xl p-5">
+    <div className="bg-[#0d0d1f] border border-white/40 rounded-2xl p-5">
       <h2 className="text-xl font-bold text-white mb-4">
         {isAR ? "السلة" : "Cart"}
       </h2>
 
       {/* Table header */}
-      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 pb-3 border-b border-white/10 text-xs font-semibold text-white/40 uppercase tracking-wide">
+      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 pb-3 border-b border-white/40 text-xs font-semibold text-white/70 uppercase tracking-wide">
         <span>{isAR ? "المنتج" : "Item"}</span>
         <span className="text-center w-24">{isAR ? "الكمية" : "Quantity"}</span>
         <span className="hidden small:block text-right w-20">{isAR ? "السعر" : "Price"}</span>

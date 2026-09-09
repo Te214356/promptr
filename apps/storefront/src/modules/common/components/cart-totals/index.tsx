@@ -71,7 +71,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
           </div>
         )}
       </div>
-      <div className="h-px w-full border-b border-white/10 my-4" />
+      <div className="h-px w-full border-b border-white/40 my-4" />
       <div className="flex items-center justify-between gap-x-4 text-ui-fg-base mb-2 txt-medium ">
         <span className="min-w-0 flex-1">{isAR ? "الإجمالي" : "Total"}</span>
         <span
@@ -82,7 +82,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
           {convertToLocale({ amount: total ?? 0, currency_code })}
         </span>
       </div>
-      <div className="h-px w-full border-b border-white/10 mt-4" />
+      <div className="h-px w-full border-b border-white/40 mt-4" />
     </div>
   )
 }
