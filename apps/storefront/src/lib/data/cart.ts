@@ -316,27 +316,97 @@ export async function initiatePaymentSession(
   return resp
 }
 
-export async function applyPromotions(codes: string[]) {
+export type PromotionResult =
+  | { ok: true }
+  | { ok: false; reason: "no_cart" | "invalid_code" | "unavailable" }
+
+/**
+ * Applies the exact set of promotion codes the cart should end up with.
+ *
+ * ⛔ Returns a result, never throws — and that is not a style choice. This runs
+ * as a server action, and Next redacts the message of any error thrown in one
+ * when NODE_ENV is production: the client receives "An error occurred in the
+ * Server Components render..." verbatim. The previous version threw and the
+ * discount box printed `e.message`, so every failure — wrong code, backend
+ * down, expired cart — reached the buyer as that English sentence.
+ *
+ * ⚠️ And an unusable code is NOT an error from Medusa. updateCartPromotions
+ * computes actions for the codes it can resolve and quietly drops the rest
+ * (see prepareAdjustmentsFromPromotionActions: unknown codes produce no
+ * action, and limit/budget exhaustion only lands in `skippedPromoCodes`,
+ * which the store route does not return). A 200 therefore proves nothing.
+ * The only reliable signal is the outcome: read the codes back off the
+ * returned cart — `promotions.code` is in the store route's default fields —
+ * and treat any code that did not land as rejected.
+ */
+export async function applyPromotions(
+  codes: string[]
+): Promise<PromotionResult> {
   const cartId = await getCartId()
 
   if (!cartId) {
-    throw new Error("No existing cart found")
+    return { ok: false, reason: "no_cart" }
   }
 
   const headers = {
     ...(await getAuthHeaders()),
   }
 
-  return sdk.store.cart
-    .update(cartId, { promo_codes: codes }, {}, headers)
-    .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+  let cart: HttpTypes.StoreCart | undefined
 
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
-    })
-    .catch(medusaError)
+  try {
+    const result = await sdk.store.cart.update(
+      cartId,
+      { promo_codes: codes },
+      {},
+      headers
+    )
+    cart = result.cart
+  } catch (error) {
+    // Split on the status, not on the message. The SDK throws a FetchError
+    // carrying the numeric HTTP status (js-sdk/client.js), and the code the
+    // buyer typed is the only thing in this request they control — so a 4xx
+    // means the code, while a 5xx, a timeout, or a DNS failure means us.
+    //
+    // ⚠️ Reporting an outage as a bad code sends the buyer hunting for another
+    // code while theirs is fine; reporting a bad code as an outage tells them
+    // to wait for a problem that will never clear. This branch exists because
+    // it is NOT settled which one Medusa does: an unresolvable code is dropped
+    // silently today (caught by the outcome check below), but a future version
+    // rejecting it outright must not surface as "the server is down".
+    const status = (error as { status?: number })?.status
+    const reason =
+      typeof status === "number" && status >= 400 && status < 500
+        ? "invalid_code"
+        : "unavailable"
+    console.error("[promotions] apply failed", { cartId, codes, status, error })
+    return { ok: false, reason }
+  }
+
+  // Non-fatal: revalidateTag throws when called during a Server Component
+  // render, and losing the cache tag must not turn a successful apply into a
+  // reported failure.
+  try {
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+
+    const fulfillmentCacheTag = await getCacheTag("fulfillment")
+    revalidateTag(fulfillmentCacheTag)
+  } catch {
+    // ignored
+  }
+
+  const applied = new Set(
+    (cart?.promotions ?? []).map((p) => p.code).filter(Boolean)
+  )
+  const rejected = codes.filter((code) => !applied.has(code))
+
+  if (rejected.length > 0) {
+    console.error("[promotions] codes not applied", { cartId, rejected })
+    return { ok: false, reason: "invalid_code" }
+  }
+
+  return { ok: true }
 }
 
 export async function applyGiftCard(code: string) {
@@ -387,11 +457,12 @@ export async function submitPromotionForm(
   formData: FormData
 ) {
   const code = formData.get("code") as string
-  try {
-    await applyPromotions([code])
-  } catch (e: any) {
-    return e.message
-  }
+  const result = await applyPromotions([code])
+
+  // Returns the machine-readable reason, not prose: this action has no caller
+  // today, and whoever wires one must map the reason to a localised string the
+  // way DiscountCode does. Never surface a raw error string to a buyer.
+  return result.ok ? undefined : result.reason
 }
 
 // TODO: Pass a POJO instead of a form entity here

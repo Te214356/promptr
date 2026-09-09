@@ -3,7 +3,7 @@
 import { Badge, Heading, Label, Text } from "@medusajs/ui"
 import React from "react"
 
-import { applyPromotions } from "@lib/data/cart"
+import { applyPromotions, type PromotionResult } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
@@ -15,6 +15,35 @@ type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
     promotions: HttpTypes.StorePromotion[]
   }
+}
+
+/**
+ * One message per failure the server action can report.
+ *
+ * ⛔ Never render the raw error. In production Next replaces the message of any
+ * error thrown inside a server action with "An error occurred in the Server
+ * Components render...", which is exactly what buyers were being shown here.
+ *
+ * ⚠️ And "unavailable" is kept separate from "invalid_code" on purpose: a
+ * backend outage told as a bad code sends the buyer looking for another code
+ * while their real one is fine. Same rule as the payment error ordering.
+ */
+const REASON_MESSAGES: Record<
+  Extract<PromotionResult, { ok: false }>["reason"],
+  { ar: string; en: string }
+> = {
+  invalid_code: {
+    ar: "هذا الكود غير صالح، أو انتهت صلاحيته، أو استُخدم من قبل.",
+    en: "This code is invalid, expired, or has already been used.",
+  },
+  no_cart: {
+    ar: "انتهت جلسة سلتك. أعد تحميل الصفحة ثم حاول مرة أخرى.",
+    en: "Your cart session has expired. Reload the page and try again.",
+  },
+  unavailable: {
+    ar: "تعذّر الوصول إلى الخادم الآن، ولم يُطبَّق الكود. حاول بعد قليل.",
+    en: "We could not reach the server, so the code was not applied. Please try again shortly.",
+  },
 }
 
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
@@ -47,10 +76,14 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
       .map((p) => p.code!)
     codes.push(code.toString())
 
-    try {
-      await applyPromotions(codes)
-    } catch (e: any) {
-      setErrorMessage(e.message)
+    const result = await applyPromotions(codes)
+
+    if (!result.ok) {
+      setErrorMessage(REASON_MESSAGES[result.reason][isAR ? "ar" : "en"])
+      // The field keeps what was typed: a rejected code is usually a typo, and
+      // clearing it forces the buyer to retype the whole thing to fix one
+      // character. It is only cleared once a code has actually been applied.
+      return
     }
 
     if (input) {
