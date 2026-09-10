@@ -29,7 +29,10 @@ import { useLanguage } from '@lib/context/language-context'
  * تحمل الاسم أصلًا، وإضافة نصّ ثانٍ تكرار وخروج عن دليل الاستخدام.
  */
 
-const PILL = 'flex items-center px-3 py-1.5 rounded-lg bg-white border border-white/25 shadow-sm'
+// ⛔ بلا حدّ. أُضيف ‎border-white/25‎ أول مرة فجاء عند **2.13:1** — أي حدّ
+// غير مرئي أصلًا، ورسوبٌ جديد أدخلته هذه الشارات نفسها. والقرص الأبيض
+// يفصل نفسه عن الصفحة بـ19:1، فالحدّ زخرفة لا وظيفة. لا تُعِده.
+const PILL = 'flex items-center px-3 py-1.5 rounded-lg bg-white shadow-sm'
 
 /**
  * ‎w‎/‎h‎ هما الأبعاد **الأصلية** للملف لا أبعاد العرض: المتصفح يشتق منهما
