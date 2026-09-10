@@ -50,7 +50,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
 
       <div className="py-6 border-t border-white/5 bg-[#080810]">
         <div className="content-container flex flex-col sm:flex-row items-center justify-center gap-4">
-          <span className="text-white/20 text-xs">
+          <span className="text-white/70 text-xs">
             {isRTL ? 'وسائل الدفع المقبولة:' : 'Accepted payment methods:'}
           </span>
           <PaymentBadges compact />
