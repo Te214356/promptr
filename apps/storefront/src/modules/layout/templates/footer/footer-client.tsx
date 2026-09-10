@@ -102,7 +102,7 @@ export default function FooterClient({ categories }: FooterClientProps) {
             <div className="flex flex-col gap-2 mt-1">
               {/* Saudi trusted badge */}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium w-fit"
-                style={{ background: 'rgba(0,177,64,0.07)', borderColor: 'rgba(0,177,64,0.22)', color: 'rgba(255,255,255,0.55)' }}>
+                style={{ background: 'rgba(0,177,64,0.07)', borderColor: 'rgba(0,177,64,0.6)', color: 'rgba(255,255,255,0.55)' }}>
                 {t.saudiBadge}
               </span>
 
@@ -258,7 +258,7 @@ export default function FooterClient({ categories }: FooterClientProps) {
         {/* ── Made in Saudi ────────────────────────────────────────── */}
         <div className="flex justify-center pt-5">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium"
-            style={{ background: 'rgba(108,43,255,0.07)', borderColor: 'rgba(108,43,255,0.22)', color: 'rgba(255,255,255,0.5)' }}>
+            style={{ background: 'rgba(108,43,255,0.07)', borderColor: 'rgba(139,92,255,0.78)', color: 'rgba(255,255,255,0.5)' }}>
             {t.madeBadge}
           </span>
         </div>

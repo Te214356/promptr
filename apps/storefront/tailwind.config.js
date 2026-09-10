@@ -48,7 +48,10 @@ module.exports = {
           purple: "#6C2BFF",
           cyan: "#00CFFF",
           card: "#0d0d1f",
-          border: "#1a1a30",
+          // مرفوع من ‎#1a1a30‎ (1.17:1). ⚠️ هذه القيمة **غير** متغير CSS
+          // ‎--promptr-border‎: صنف ‎border-promptr-border‎ يُترجم من هنا، فتغيير
+          // المتغيّر وحده لا يمسّه. غيّرهما معًا.
+          border: "#606071",
         },
       },
       borderRadius: {

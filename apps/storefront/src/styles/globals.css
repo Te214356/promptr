@@ -7,7 +7,10 @@
   --promptr-purple: #6C2BFF;
   --promptr-cyan: #00CFFF;
   --promptr-card: #0d0d1f;
-  --promptr-border: #1a1a30;
+  /* رُفع من ‎#1a1a30‎ (1.17:1 — حدّ غير مرئي) إلى ‎#606071‎: 3.24:1 على
+     الصفحة و3.11:1 على البطاقة. يغذّي حدود جداول المدونة وكتل الكود
+     وأي ‎border-promptr-border‎، فرفعُه هنا يرفعها كلها. */
+  --promptr-border: #606071;
 }
 
 html,
@@ -338,7 +341,7 @@ input, select, textarea {
 
 .prose-promptr .callout--note {
   background-color: rgba(0, 207, 255, 0.06);
-  border-color: rgba(0, 207, 255, 0.35);
+  border-color: rgba(0, 207, 255, 0.55); /* 0.35 ⟵ 2.17:1 */
 }
 
 .prose-promptr .callout--note .callout__label {
@@ -347,7 +350,7 @@ input, select, textarea {
 
 .prose-promptr .callout--tip {
   background-color: rgba(108, 43, 255, 0.08);
-  border-color: rgba(108, 43, 255, 0.4);
+  border-color: rgba(139, 92, 255, 0.8); /* ‎#6C2BFF‎ عند 0.4 ⟵ 1.40:1، ولا يبلغ 3 حتى معتمًا */
 }
 
 .prose-promptr .callout--tip .callout__label {
@@ -356,7 +359,7 @@ input, select, textarea {
 
 .prose-promptr .callout--warning {
   background-color: rgba(255, 176, 32, 0.07);
-  border-color: rgba(255, 176, 32, 0.4);
+  border-color: rgba(255, 176, 32, 0.55); /* 0.4 ⟵ 2.51:1 */
 }
 
 .prose-promptr .callout--warning .callout__label {
@@ -447,3 +450,71 @@ input, select, textarea {
     transparent
   );
 }
+
+/* ══════════════════════════════════════════════════════════════
+   أرضية التباين — WCAG AA على خلفية ‎#080810‎ وبطاقة ‎#0d0d1f‎
+
+   مسحٌ لكل صفحة في المتجر بمحرك سفاري (playwright/webkit) على الموقع
+   الحي أعطى **139 عنصرًا راسبًا** في 36 مجموعة، وأغلبها ليس أخطاءً
+   متفرّقة بل **أدوات مشتركة**: ‎text-white/10..45‎ و‎border-white/5..20‎
+   مكرّرة في الفوتر والرأس وصناديق المدونة وصفحات السياسات.
+
+   فتُرفع هنا في موضع واحد بدل ترقيع عشرات المواضع. الترتيب بعد استيراد
+   أدوات Tailwind، والمحدِّد بنفس الوزن ‎(0,1,0)‎ — فالمتأخر يفوز.
+
+   ⛔ **السلّم يحفظ التدرّج ولا يسوّي كل شيء أبيض.** الخريطة رتيبة
+   تصاعديًا: ما كان أخفت يبقى أخفت. أرضيتها ‎/52‎ ⟵ 5.65:1 على الصفحة
+   و5.68:1 على البطاقة، وقمّتها ‎/86‎ ⟵ 14.57:1، والأبيض الخالص فوقها.
+   ⛔ **ولا تُخفِض قيمة في هذه الخريطة بمعزل عن جارتيها** — الخفض يقلب
+   الترتيب فيصير نصّ ثانوي أوضح من الذي يعلوه.
+
+   ⚠️ ولا تمسّ ‎bg-white/*‎: أسطح لا نصوص، ورفعها يفسد البطاقات.
+   ────────────────────────────────────────────────────────────── */
+/* النص: 4.5:1 فأعلى */
+.text-white\/10 { color: rgb(255 255 255 / 0.52) }
+.text-white\/15 { color: rgb(255 255 255 / 0.54) }
+.text-white\/20 { color: rgb(255 255 255 / 0.56) }
+.text-white\/25 { color: rgb(255 255 255 / 0.58) }
+.text-white\/30 { color: rgb(255 255 255 / 0.6) }
+.text-white\/35 { color: rgb(255 255 255 / 0.62) }
+.text-white\/40 { color: rgb(255 255 255 / 0.64) }
+.text-white\/45 { color: rgb(255 255 255 / 0.66) }
+.text-white\/50 { color: rgb(255 255 255 / 0.68) }
+.text-white\/55 { color: rgb(255 255 255 / 0.7) }
+.text-white\/60 { color: rgb(255 255 255 / 0.72) }
+.text-white\/70 { color: rgb(255 255 255 / 0.78) }
+.text-white\/75 { color: rgb(255 255 255 / 0.82) }
+.text-white\/80 { color: rgb(255 255 255 / 0.86) }
+
+.hover:text-white\/60:hover { color: rgb(255 255 255 / 0.72) }
+.hover:text-white\/80:hover { color: rgb(255 255 255 / 0.86) }
+.group:hover .group-hover:text-white\/60 { color: rgb(255 255 255 / 0.72) }
+
+/* الحدود: 3:1 فأعلى — ‎/40‎ يعطي 3.76 على الصفحة و3.81 على البطاقة */
+.border-white\/5 { border-color: rgb(255 255 255 / 0.4) }
+.border-white\/10 { border-color: rgb(255 255 255 / 0.4) }
+.border-white\/15 { border-color: rgb(255 255 255 / 0.45) }
+.border-white\/20 { border-color: rgb(255 255 255 / 0.45) }
+.border-white\/\[0\.08\] { border-color: rgb(255 255 255 / 0.4) }
+.hover:border-white\/20:hover { border-color: rgb(255 255 255 / 0.45) }
+
+/* حدود ملوّنة — البنفسجي وحده يستحيل أن يبلغ 3:1 بشفافية:
+   ‎#6C2BFF‎ يعطي **3.26:1 حتى بعتامة كاملة**، فيحتاج α=95% ليبلغ 3.03.
+   فيُستبدل بالبنفسجي المفتّح ‎#8B5CFF‎ (يكفيه 73%). والسماوي والكهرماني
+   يبلغانها عند 47%. */
+.border-\[\#6C2BFF\]\/40 { border-color: rgb(139 92 255 / 0.78) }
+.border-\[\#6C2BFF\]\/50 { border-color: rgb(139 92 255 / 0.78) }
+.border-\[\#6C2BFF\]\/70 { border-color: rgb(139 92 255 / 0.78) }
+.border-promptr-purple\/40 { border-color: rgb(139 92 255 / 0.78) }
+.border-\[\#00CFFF\]\/15 { border-color: rgb(0 207 255 / 0.5) }
+.border-\[\#00CFFF\]\/20 { border-color: rgb(0 207 255 / 0.5) }
+.border-amber-500\/30 { border-color: rgb(245 158 11 / 0.55) } /* amber-500 أغمق من ‎#FFB020‎: 0.5 ⟵ 2.99 */
+
+/* البنفسجي نصًّا صغيرًا: ‎#6C2BFF‎ يعطي 3.26:1 ويرسب. المفتّح ‎#8B5CFF‎
+   يعطي 4.82 على الصفحة و4.63 على البطاقة.
+   ⚠️ وعلى سطح ‎#12121A‎ (مبدّل اللغة) يعطي **4.50 بالضبط** — يعبر بلا هامش،
+   فأي تغميق لتلك الخلفية يُسقطه. */
+.text-\[\#6C2BFF\] { color: #8B5CFF }
+
+/* 🟢 زر واتساب ورابطه مستثنيان بقرار المالك: لون العلامة ‎#25D366‎ أولى
+   من AA هنا، فلا تُرفع حدوده ولا نص «تواصل معنا» عليه. */
