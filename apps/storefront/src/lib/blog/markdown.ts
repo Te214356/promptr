@@ -60,6 +60,48 @@ function isExternal(href: string): boolean {
 }
 
 /**
+ * المنطقة التي تُبادئ بها الروابط الداخلية في المقالات.
+ *
+ * نفس المصدر الذي يقرؤه `middleware.ts:6` و`app/sitemap.ts:19` — فلا ينزاح
+ * ما يكتبه المقال عمّا يحوّل إليه الـmiddleware أو يسمّيه الـsitemap.
+ */
+const REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "sa"
+
+/**
+ * يضيف بادئة المنطقة إلى رابط داخلي مكتوب مجرّدًا في الـMarkdown.
+ *
+ * ⛔ الروابط في `content/blog/*.md` تُكتب `/blog/…` و`/products/…`، والـ
+ * middleware يحوّلها **307** إلى `/${REGION}/…`. أي أن **كل** رابط داخلي كان
+ * يكلّف الزائر رحلة ذهاب وإياب زائدة (56 رابطًا، صفر منها مُبادأ)، ويُهدر
+ * جزءًا من وزن الرابط على كل تحويلة — على موقع أولويته جلب الزوار.
+ *
+ * ما يُستثنى، ولكلٍّ سبب:
+ *   · الروابط الخارجية (`http…`) — ليست لنا.
+ *   · المراسي (`#...`) والبروتوكولات (`mailto:` · `tel:`) — لا مسار فيها.
+ *   · ما بُودئ أصلًا بالمنطقة — لئلا يصير `/sa/sa/…`.
+ *   · المسارات ذات النقطة في الجزء الأول (`/ads.txt`) — الـmiddleware يمرّرها
+ *     من الجذر عمدًا، فبادئة المنطقة تكسرها.
+ *   · `/api/…` — مسارات خادمية لا صفحات إقليمية.
+ *
+ * ⚠️ **حدّ معروف:** البادئة هي المنطقة **الافتراضية** لا منطقة الزائر، لأن
+ * `renderArticle` يُستدعى من `posts.ts` حيث لا `countryCode` — والمقالات
+ * مُكوَّشة بلا تمييز منطقة. وهذا صحيح اليوم لأن المتجر **بمنطقة واحدة**
+ * (`sa`). **يوم تُضاف منطقة ثانية** يجب تمرير `countryCode` إلى
+ * `renderArticle` **وتمييز كاش المقالات به معًا** — أحدهما وحده يقدّم لزائر
+ * منطقةٍ روابطَ منطقةٍ أخرى.
+ */
+function withRegion(href: string): string {
+  if (!href.startsWith("/")) return href
+  if (href.startsWith(`/${REGION}/`) || href === `/${REGION}`) return href
+  if (href.startsWith("/api/")) return href
+
+  const firstSegment = href.split("/")[1] ?? ""
+  if (firstSegment.includes(".")) return href
+
+  return `/${REGION}${href}`
+}
+
+/**
  * Detects a GitHub-style `> [!TIP]` marker and strips it from the tokens in
  * place, so the label is not repeated inside the rendered body.
  * Returns the lowercased variant, or null for a plain blockquote.
@@ -179,10 +221,14 @@ function createRenderer(toc: TocEntry[]): RendererObject {
     link({ href, title, tokens }: Tokens.Link): string {
       const text = this.parser.parseInline(tokens)
       const titleAttr = title ? ` title="${title}"` : ""
-      const external = isExternal(href)
+      const isExt = isExternal(href)
+      const external = isExt
         ? ` target="_blank" rel="noopener noreferrer"`
         : ""
-      return `<a href="${href}"${titleAttr}${external}>${text}</a>`
+      // البادئة تُضاف هنا لا في ملفات الـMarkdown: الكاتب يكتب `/blog/x`
+      // ويبقى الملف مقروءًا ومستقلًا عن المنطقة، والمُصيِّر يحسم الشكل النهائي.
+      const resolved = isExt ? href : withRegion(href)
+      return `<a href="${resolved}"${titleAttr}${external}>${text}</a>`
     },
 
     image({ href, title, text }: Tokens.Image): string {
