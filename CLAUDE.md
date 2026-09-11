@@ -120,7 +120,7 @@ railway logs --build <DEPLOYMENT_ID> | grep "\[sitemap\]"
 
 ### ⏳ المفتوح — أربعة، بترتيب ما ذُكر
 
-1. **`api.promptrsa.com` يفشل في TLS** — `no alternative certificate subject name matches` (مُعاد فحصه 2026-09-11). خارج المسار الحرج، ويُصلَح بإعادة إصدار الشهادة من لوحة Railway.
+~~1. **`api.promptrsa.com` يفشل في TLS**~~ — ✅ **مُغلق 2026-09-11.** `CN=api.promptrsa.com` من Let's Encrypt، و`/health` يردّ **200 في 0.46s**. التفاصيل والدرس في قسم *Railway Deployment*.
 2. **بندان منخفضان من مراجعة الكود** — لوق المطالبة المحذوفة ناعمًا، و`cart_unavailable` غير قابل للوصول. مؤجَّلان بقرار.
 3. **`/code-review ultra` لم يُشغَّل** — يُطلقه المالك من الطرفية؛ لا يستطيع Claude إطلاقه.
 4. **زر واتساب** — 16 عنصرًا دون AA، **مستثنى بقرار المالك**: لون العلامة أولى.
@@ -295,9 +295,7 @@ npx playwright@latest install webkit     # مرة واحدة
 
 ### ⏳ ما بقي مفتوحًا بعد الإغلاق
 
-1. **`api.promptrsa.com` يفشل في TLS.** يُحلّ DNS إلى `bdxw01kc.up.railway.app` لكن المصافحة تفشل، فالنطاق يرد `000`.
-   **غير حرج اليوم:** متغيّرا الستورفرنت (`MEDUSA_BACKEND_URL` و`NEXT_PUBLIC_MEDUSA_BACKEND_URL`) يشيران إلى `dtcbackend-production-32a2.up.railway.app` مباشرة وهو يرد 200 — فالنطاق المخصص **خارج المسار الحرج كليًا**.
-   > ⚠️ **يستحق إصلاحًا:** أي كود مستقبلي يفترض `api.promptrsa.com` سينكسر بلا سبب ظاهر، والعطل في الشهادة لا في الباك إند. أعد إصدار الشهادة من لوحة Railway (Custom Domain) وتحقّق بـ`curl -sS https://api.promptrsa.com/health`.
+~~1. **`api.promptrsa.com` يفشل في TLS**~~ — ✅ **مُغلق 2026-09-11.** انظر *Railway Deployment ⟵ النطاق المخصص*.
 
 2. **بندان منخفضان من مراجعة الكود، مؤجَّلان بقرار:**
    - `payment-guard/service.ts` — صف مطالبة **محذوف ناعمًا** يمنع الإدخال (الفهرس غير جزئي عمدًا) بينما `listMoyasarPaymentClaims` يفلتر المحذوف، فيقرأ غائبًا. النتيجة `claimed_by_other_cart: "(unknown)"` — **رفض دائم على صاحب الدفعة نفسه** بسطر لوق لا يسمّي سلة. الرفض هو التصرّف الصحيح؛ الناقص أن يميّز اللوق «الصف محذوف ناعمًا» عن «خسر التسابق».
@@ -628,8 +626,39 @@ Both services live in project **`zoological-hope`** (`b635b9d9-0241-4f5f-bbbd-1b
 
 | Service | ID | URL | Deploy method |
 |---|---|---|---|
-| `@dtc/backend` | `cfae7146-9e7b-4f07-8d9f-2f75bdcb7cd1` | `https://dtcbackend-production-32a2.up.railway.app` (also `api.promptrsa.com`) | **Auto** — triggers on every `git push origin main` |
+| `@dtc/backend` | `cfae7146-9e7b-4f07-8d9f-2f75bdcb7cd1` | `https://dtcbackend-production-32a2.up.railway.app` — و`https://api.promptrsa.com` **يعمل بشهادة سليمة منذ 2026-09-11** | **Auto** — triggers on every `git push origin main` |
 | `storefront` | `f7497b9a-c86b-4c81-ae08-bac368caa0ae` | `https://promptrsa.com` | **Auto** on `git push origin main` (تحقّق 2026-07-30، انظر التصحيح أدناه) + **`railway up`** يدويًا من جذر الريبو لنشر تغييرات غير مكوميتة أو إجبار إعادة بناء |
+
+### 🔐 النطاق المخصص `api.promptrsa.com` — عالقًا 80 يومًا، والمخرج ليس «إعادة الإصدار» (2026-09-11)
+
+**الحالة اليوم:** يعمل. `CN=api.promptrsa.com` من Let's Encrypt (تنتهي 2026-12-10)، و`/health` يردّ **200 في 0.46s** — أسرع من النطاق المباشر (0.55s).
+
+**ما كان مكتوبًا هنا قبل اليوم خاطئ التشخيص:** «العطل في الشهادة، أعد إصدارها من اللوحة». القياس نفاه:
+
+| ما فُحص | النتيجة وقت العطل |
+|---|---|
+| CNAME | ✅ صحيح · TXT `_railway-verify.api` | ✅ **موجود ومطابق** |
+| مصافحة TLS | ✅ **تنجح** — والحافة تقدّم `CN=*.up.railway.app` الافتراضية |
+| الباك إند | ✅ سليم |
+| `Verified` / `Certificate status` | ❌ **`no` / `ISSUING` منذ 2026-06-23** — نحو **80 يومًا** |
+
+فلا DNS ناقص ولا شهادة فاسدة: **دورة الإصدار نفسها عند Railway كانت ميتة**.
+
+> ### ⛔ القاعدة: `ISSUING` العالق ليس فشلًا، فلا يُعاد
+>
+> ```
+> railway domain certificate retry api.promptrsa.com
+> ⟵ "retry is only available after certificate issuance fails. Current status: ISSUING"
+> ```
+> **الأمر المخصَّص لهذه الحالة يرفض العمل عليها.** المخرج الوحيد **حذف النطاق وإعادة إضافته** — واستغرقت الدورة الجديدة أقل من دقيقة (`Verified: yes` ثم `VALID` فورًا).
+>
+> ⚠️ **وإعادة الإضافة تُغيّر هدف الـCNAME:** `bdxw01kc` ⟵ **`adcemwjp.up.railway.app`**، ويسقط طلب سجل TXT كليًا. فالتعديل في DNS (Namecheap — `dns1/dns2.registrar-servers.com`) **جزء من العملية لا أثر جانبي**، وانتشر في نحو ساعة.
+
+**وقبل أي حذف مستقبلي، فُحصت الاعتماديات ولم يكن شيء يعتمد عليه** (يُعاد الفحص لا يُفترض):
+
+- `RAILWAY_PUBLIC_DOMAIN` · `RAILWAY_STATIC_URL` · `RAILWAY_SERVICE__DTC_BACKEND_URL` تحمل اسم النطاق لكن **Railway يولّدها، وكودنا لا يقرأ أيًّا منها — صفر موضع**.
+- `next.config.js` يذكره في `images.remotePatterns` — إذن مصدر صور لا بيانات، والصور من `*.r2.dev`.
+- **لا webhook مسجَّل في ميسر إطلاقًا** (انظر البند الأمني أدناه).
 
 > ⚠️ **لا تستخدم `railway up` المجرد** — الربط في هذا المجلد يشير للمشروع القديم المعطّل (`881899a5`). استخدم دائمًا الأمر بالمعرّفات الصريحة الموثّق أدناه.
 
@@ -1133,7 +1162,12 @@ Admin screens showing order totals may display amounts ×100 too large (e.g., a 
 2. ~~**إضافة `**/.env.production` إلى `.gitignore`**~~ — ✅ **مغلق (2026-08-07، كوميت `be027d9`)**. أُضيفت القاعدة `**/.env.production` في `.gitignore` الجذري (كانت التغطية تشمل `*.local` وحدها)، وأُزيل الملفان المتتبَّعان من الفهرس بـ`git rm --cached` **مع بقائهما على القرص** فلم يتأثر البناء المحلي. لم يبقَ متتبَّعًا سوى `.env.template` في المشروعين.
    **نتيجة التدقيق قبل الإزالة — لا تدوير مطلوب:** فُحصت **كل** نسخة تاريخية من الملفين (ثلاثة كوميتات: `4876b0f`, `987f2ab`, `84536b2`) فلم تحمل إلا متغيرات عامة: عناوين الباكند والموقع، `NEXT_PUBLIC_DEFAULT_REGION`، `MEDUSA_DISABLE_ADMIN`، و`NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` (مفتاح قابل للنشر بتصميمه ويُرسل للمتصفح). ومسح كامل التاريخ لأي `*.env.production` بحثًا عن `SECRET|PASSWORD|PRIVATE|TOKEN|sk_|DATABASE_URL|REDIS_URL|RESEND|S3_` أرجع **صفر نتائج**. أي أن الفجوة كانت **خطرًا كامنًا لا تسريبًا واقعًا**: أول سرّ يُكتب في ملف متتبَّع بهذا الاسم كان سيصير دائمًا في التاريخ بعد أول دفع.
 3. **تحقق يدوي من إعدادات Cloudflare R2**: تأكيد أن `Public Development URL` مُعطَّل (Disabled) لـ bucket `promptr-files` — لم يمكن التحقق من هذا برمجيًا (لا يوجد Cloudflare API token متاح في بيئة العمل، فقط مفاتيح S3-compatible)
-4. **إصلاح تحقق توقيع Moyasar webhook (HMAC)** — لا يوجد أي تحقق توقيع حاليًا في `apps/backend/src/modules/moyasar/service.ts`. يعمل حاليًا "آمنًا بالصدفة" فقط بسبب علة برمجية منفصلة (`getWebhookActionAndData` يقرأ `payload.id`/`payload.status` بدل الشكل الفعلي `payload.data.id`/`payload.data.status`)، فيتجاهل كل الطلبات الحقيقية والمزوّرة على حد سواء. إصلاح هذه العلة وحدها بدون إضافة تحقق توقيع حقيقي في نفس الوقت سيفتح مسار ثقة بـwebhook غير موثّق — يجب إصلاح الاثنين معًا. (تدفق الدفع الفعلي نفسه سليم ومنفصل عن هذا: الباكند يتحقق من Moyasar server-to-server مباشرة بمفتاحه السري قبل قبول أي دفع، بغض النظر عن الـwebhook.)
+4. **إصلاح تحقق توقيع Moyasar webhook (HMAC)**
+   > 📏 **مقيس 2026-09-11 (أثناء فحص اعتماديات النطاق المخصص):** `GET /v1/webhooks` بالمفتاح السري يُرجع **صفر webhook مسجَّل**. فالثغرة **نظرية اليوم** — لا يوجد مسار يصل إلى `getWebhookActionAndData` أصلًا.
+   >
+   > ⛔ **وتصير حيّة لحظة تسجيل أول webhook.** فلا يُسجَّل أي webhook في لوحة ميسر **قبل إتمام التوقيع والتحقق معًا**. تسجيلٌ سابق لهما يفتح مسار ثقة غير موثَّق في اللحظة نفسها.
+
+   — لا يوجد أي تحقق توقيع حاليًا في `apps/backend/src/modules/moyasar/service.ts`. يعمل حاليًا "آمنًا بالصدفة" فقط بسبب علة برمجية منفصلة (`getWebhookActionAndData` يقرأ `payload.id`/`payload.status` بدل الشكل الفعلي `payload.data.id`/`payload.data.status`)، فيتجاهل كل الطلبات الحقيقية والمزوّرة على حد سواء. إصلاح هذه العلة وحدها بدون إضافة تحقق توقيع حقيقي في نفس الوقت سيفتح مسار ثقة بـwebhook غير موثّق — يجب إصلاح الاثنين معًا. (تدفق الدفع الفعلي نفسه سليم ومنفصل عن هذا: الباكند يتحقق من Moyasar server-to-server مباشرة بمفتاحه السري قبل قبول أي دفع، بغض النظر عن الـwebhook.)
 5. **مراجعة أمنية من مختص بشري** — كانت مشروطة بما قبل التفعيل، **ولم تجرِ**. الدفع الحي يعمل بدونها.
 
 6. ~~**مقارنة المبلغ والعملة في `authorizePayment`**~~ — ✅ **مغلق (2026-08-08، كوميت `555c395`)**. كانت **ثغرة قابلة للاستغلال فعليًا**: نموذج Moyasar يُهيّأ في المتصفح بـ`cart.total` (`modules/checkout/components/payment/index.tsx` ← `moyasar-form`)، فالمبلغ تحت سيطرة المشتري، والباك إند كان يتحقق من **الحالة فقط** (`paid`/`captured`) ولا يقارن المبلغ إطلاقًا. دفع ريال واحد لسلة كاملة كان يُصرَّح، ويكتمل الطلب، وتُرسل روابط التحميل فورًا لأن المنتجات رقمية.
