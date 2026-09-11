@@ -3,10 +3,12 @@
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import { getCacheOptions } from "./cookies"
+import { CATALOG_REVALIDATE_SECONDS } from "./cookies"
 
 export const retrieveCollection = async (id: string) => {
   const next = {
     ...(await getCacheOptions("collections")),
+    revalidate: CATALOG_REVALIDATE_SECONDS,
   }
 
   return sdk.client
@@ -25,6 +27,7 @@ export const listCollections = async (
 ): Promise<{ collections: HttpTypes.StoreCollection[]; count: number }> => {
   const next = {
     ...(await getCacheOptions("collections")),
+    revalidate: CATALOG_REVALIDATE_SECONDS,
   }
 
   queryParams.limit = queryParams.limit || "100"
@@ -47,6 +50,7 @@ export const getCollectionByHandle = async (
 ): Promise<HttpTypes.StoreCollection> => {
   const next = {
     ...(await getCacheOptions("collections")),
+    revalidate: CATALOG_REVALIDATE_SECONDS,
   }
 
   return sdk.client
