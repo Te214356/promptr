@@ -100,12 +100,20 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const description =
     truncate(toPlainText(product.description), 155) || product.title
 
+  // ⛔ صفحات المنتجات كانت **بلا canonical إطلاقًا** — وهي محور ازدواج
+  // الفهرسة الذي كشفه تصدير Search Console (ثمانية مسارات بنسختين).
+  // الصيغة الإقليمية هي الأصل: ما يردّ 200 بلا تحويل، وما في `sitemap.xml`،
+  // وما ينشره `offers.url` في JSON-LD على الصفحة نفسها.
+  const url = `${getBaseURL()}/${params.countryCode}/products/${handle}`
+
   return {
     title: `${product.title} | Promptr`,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title: `${product.title} | Promptr`,
       description,
+      url,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
   }

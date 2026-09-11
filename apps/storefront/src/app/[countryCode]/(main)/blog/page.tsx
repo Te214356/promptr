@@ -8,23 +8,39 @@ const TITLE = "المدونة | Promptr"
 const DESCRIPTION =
   "مقالات عملية عن الذكاء الاصطناعي، المنتجات الرقمية، وبناء دخل إضافي من الإنترنت — مكتوبة للسوق العربي."
 
-export const metadata: Metadata = {
-  title: TITLE,
-  description: DESCRIPTION,
-  alternates: { canonical: `${getBaseURL()}/blog` },
-  openGraph: {
-    type: "website",
+/**
+ * ⛔ الـcanonical إقليمي (`/sa/blog`) لا مجرّد (`/blog`).
+ *
+ * كان مجرّدًا، وهو **يناقض جيرانه**: المقالات تُعلن `/${countryCode}/blog/<slug>`،
+ * و`sitemap.xml` يسمّي الصيغة الإقليمية، والمسار المجرّد يردّ 307 لا 200.
+ * أي أن هذه الصفحة كانت وحدها تُرشّح عنوانًا لا يُقدَّم مباشرةً.
+ *
+ * ولهذا صارت `generateMetadata`: القيمة الثابتة لا تصل إلى `countryCode`.
+ */
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string }>
+}): Promise<Metadata> {
+  const { countryCode } = await props.params
+  const url = `${getBaseURL()}/${countryCode}/blog`
+
+  return {
     title: TITLE,
     description: DESCRIPTION,
-    url: `${getBaseURL()}/blog`,
-    siteName: "Promptr",
-    locale: "ar_SA",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
-  },
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      title: TITLE,
+      description: DESCRIPTION,
+      url,
+      siteName: "Promptr",
+      locale: "ar_SA",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: DESCRIPTION,
+    },
+  }
 }
 
 export default function BlogPage() {

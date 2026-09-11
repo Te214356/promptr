@@ -4,11 +4,33 @@ import Hero from "@modules/home/components/hero"
 import PromoBanners from "@modules/home/components/promo-banners"
 import CollectionCards from "@modules/home/components/collection-cards"
 import { getRegion } from "@lib/data/regions"
+import { getBaseURL } from "@lib/util/env"
 
-export const metadata: Metadata = {
-  title: "Promptr — متجرك الرقمي المتكامل",
-  description:
-    "منتجات رقمية مختارة للعالم العربي الحديث — Curated digital products for the modern Arab world.",
+const TITLE = "Promptr — متجرك الرقمي المتكامل"
+const DESCRIPTION =
+  "منتجات رقمية مختارة للعالم العربي الحديث — Curated digital products for the modern Arab world."
+
+/**
+ * ⛔ هذه الصفحة **تُقدَّم بعنوانين بحالة 200**، وهي الوحيدة كذلك: الجذر `/`
+ * يُعاد كتابته داخليًا إلى `/${countryCode}` (انظر `middleware.ts`) — قرارٌ
+ * اتُّخذ لاجتياز تحقق Google، وتحويله إلى 307 يُبطله.
+ *
+ * فالـcanonical هو ما يحسم الازدواج. ويشير إلى الصيغة الإقليمية لأنها ما
+ * يسمّيه `sitemap.xml` وما تُعلنه بقية الصفحات.
+ *
+ * ⚠️ وعند إعادة الكتابة يستلم هذا المكوّن `countryCode` الفعلي (المنطقة
+ * الافتراضية)، فيخرج `/sa` على العنوانين معًا — وهو المقصود بالضبط.
+ */
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string }>
+}): Promise<Metadata> {
+  const { countryCode } = await props.params
+
+  return {
+    title: TITLE,
+    description: DESCRIPTION,
+    alternates: { canonical: `${getBaseURL()}/${countryCode}` },
+  }
 }
 
 export default async function Home(props: {
