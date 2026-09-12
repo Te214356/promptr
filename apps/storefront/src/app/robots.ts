@@ -3,9 +3,17 @@ import type { MetadataRoute } from "next"
 import { getBaseURL } from "@lib/util/env"
 
 /**
- * Replaces the never-installed `next-sitemap` setup: `next-sitemap.js` sits in
- * the repo but the package is absent and no `postbuild` script runs it, so the
- * site has been serving neither robots.txt nor sitemap.xml.
+ * المصدر الوحيد لـ`robots.txt` — مسار Next الأصلي، وبجانبه `app/sitemap.ts`.
+ *
+ * سبق أن وُجد في المستودع ملف إعداد `next-sitemap.js` **بلا حزمة مثبَّتة ولا
+ * سكربت `postbuild` يشغّله**، فلم يكن الموقع يقدّم `robots.txt` ولا
+ * `sitemap.xml` إطلاقًا. وقد **حُذف الملف في 2026-09-12** بعد التحقق من أنه
+ * ميت — ولم يكن ميتًا فحسب بل معطوبًا: `siteUrl` كان يقرأ
+ * `NEXT_PUBLIC_VERCEL_URL` (ونحن على Railway)، و`exclude` كان جمع مصفوفتين
+ * بـ`+` فيُنتج **سلسلة نصية واحدة** لا مصفوفة.
+ *
+ * ⛔ فلا تُعِد `next-sitemap`: الملفان هنا يغطّيانه، وإعادته تعني مصدرين
+ * متنافسين لنفس الملفين.
  */
 export default function robots(): MetadataRoute.Robots {
   const base = getBaseURL()
