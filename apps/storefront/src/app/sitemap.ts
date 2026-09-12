@@ -13,8 +13,10 @@ import { getBaseURL } from "@lib/util/env"
  * were never indexed at all. They are fetched defensively instead — see
  * fetchProducts below.
  *
- * Category pages are still absent, pending their rename and re-assignment in
- * Admin.
+ * Category pages are included as of 2026-09-12. They were held back pending a
+ * rename in Admin; that condition has expired — the three live categories
+ * carry proper Arabic names and clean handles, each answers 200 with a correct
+ * regional canonical, and an unknown handle answers a real 404.
  */
 const REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "sa"
 
@@ -27,6 +29,7 @@ const REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "sa"
 export const revalidate = 3600
 
 const PRODUCT_FETCH_TIMEOUT_MS = 8000
+const CATEGORY_FETCH_TIMEOUT_MS = 8000
 
 const STATIC_ROUTES: { path: string; priority: number }[] = [
   { path: "", priority: 1 },
@@ -95,6 +98,58 @@ async function fetchProducts(): Promise<SitemapProduct[]> {
   }
 }
 
+type SitemapCategory = { handle: string; updated_at?: string }
+
+/**
+ * Same shape and the same refusals as fetchProducts, for the same reasons: a
+ * plain fetch so the route stays statically generable, a timeout, and never a
+ * throw — the sitemap has to render when the backend does not answer.
+ *
+ * ⚠️ One difference, deliberately: an empty list here is NOT treated as a
+ * failure. The catalogue has never been empty so zero products means something
+ * is wrong, but a store legitimately can have no categories — and the three
+ * that exist were themselves created after launch. Treating empty as failure
+ * would log an error forever for a store that simply stopped using them.
+ */
+async function fetchCategories(): Promise<SitemapCategory[]> {
+  const backend = process.env.MEDUSA_BACKEND_URL
+  const key = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+
+  if (!backend || !key) {
+    console.error("[sitemap] missing MEDUSA_BACKEND_URL or publishable key — categories omitted")
+    return []
+  }
+
+  try {
+    const res = await fetch(
+      `${backend}/store/product-categories?limit=100&fields=handle,updated_at`,
+      {
+        headers: { "x-publishable-api-key": key },
+        signal: AbortSignal.timeout(CATEGORY_FETCH_TIMEOUT_MS),
+        next: { revalidate },
+      }
+    )
+
+    if (!res.ok) {
+      console.error(`[sitemap] category fetch failed: HTTP ${res.status} — categories omitted`)
+      return []
+    }
+
+    const { product_categories: categories } = (await res.json()) as {
+      product_categories?: SitemapCategory[]
+    }
+
+    return (categories ?? []).filter((c) => c.handle)
+  } catch (error) {
+    console.error(
+      `[sitemap] category fetch threw: ${
+        error instanceof Error ? error.message : String(error)
+      } — categories omitted`
+    )
+    return []
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseURL()
   const now = new Date()
@@ -115,7 +170,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const products = await fetchProducts()
+  const [products, categories] = await Promise.all([
+    fetchProducts(),
+    fetchCategories(),
+  ])
 
   const productEntries: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${base}/${REGION}/products/${product.handle}`,
@@ -124,7 +182,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  // Category pages are intentionally absent for now: they are about to be
-  // renamed and re-assigned in Admin.
-  return [...staticEntries, ...postEntries, ...productEntries]
+  // Below products (0.9) and above the policy pages: a category is a real entry
+  // point into the catalogue, but a product page is what actually sells.
+  const categoryEntries: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: `${base}/${REGION}/categories/${category.handle}`,
+    lastModified: category.updated_at ? new Date(category.updated_at) : now,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }))
+
+  return [...staticEntries, ...postEntries, ...productEntries, ...categoryEntries]
 }

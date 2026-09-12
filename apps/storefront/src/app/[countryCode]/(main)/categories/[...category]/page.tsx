@@ -59,7 +59,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     const description = productCategory.description ?? `${title} category.`
 
     return {
-      title: `${title} | Promptr`,
+      // ⛔ `title` يحمل «| Promptr» أصلًا (أُلحق عند بنائه أعلاه)، فإلحاقه
+      // هنا ثانيةً كان يُخرج «… | Promptr | Promptr» في كل صفحة تصنيف.
+      title,
       description,
       alternates: {
         // Was a bare relative value ("ai-tools"), which resolved against
