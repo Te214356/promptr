@@ -22,6 +22,7 @@ import {
   WebhookActionResult,
 } from "@medusajs/framework/types"
 import { Logger } from "@medusajs/framework/types"
+import { timingSafeEqual } from "crypto"
 
 type Options = {
   publishableKey: string
@@ -530,68 +531,127 @@ class MoyasarProviderService extends AbstractPaymentProvider<Options> {
   }
 
   /**
-   * ⛔ DO NOT fix the payload reading (payload.id -> payload.data.id) on its
-   *    own. It must land in the same change as HMAC verification.
+   * ⛔ هذا المسار **معطَّل عمدًا**: يتحقق ثم يُرجع `not_supported` دائمًا.
    *
-   * What is actually happening today: Medusa passes an envelope
-   * `{ data, rawData, headers }` (see ProviderWebhookPayload in
-   * @medusajs/types), so `payload.id` and `payload.status` are always
-   * undefined and every webhook — genuine or forged — exits as
-   * "not_supported". That accident is the only thing protecting this path.
-   * There is no signature check anywhere in the backend.
+   * ═══ لماذا كان خطرًا، ولماذا صار عقيمًا بقرار ═══
    *
-   * Correcting the reading alone turns any unauthenticated POST into an
-   * accepted payment: a forged body with `status: "paid"` and a session_id
-   * lifted from the browser would authorize a payment that never happened —
-   * and because the products are digital, the order subscriber emails signed
-   * download links immediately. There is no shipping step to catch it.
+   * كان فيه عطلان يحمي كلٌّ منهما الآخر بالصدفة:
    *
-   * The real payment flow does not depend on this method: authorizePayment
-   * verifies server-to-server against Moyasar with the secret key.
+   *  1. **لا تحقق من المُرسِل إطلاقًا.** لا شيء في الباك إند كله يتأكد أن
+   *     الطلب من ميسر.
+   *  2. **قراءة خاطئة بمستويين.** كان يقرأ `payload.id` و`payload.status`،
+   *     وكلاهما `undefined` دائمًا — فيخرج كل webhook، صادقًا كان أو مزوَّرًا،
+   *     بـ`not_supported`. **تلك الصدفة كانت الحماية الوحيدة.**
    *
-   * Prerequisite before touching this: the webhook signing secret from the
-   * Moyasar dashboard (no env var for it exists yet) plus the exact signature
-   * header name and algorithm from their docs — do not guess either. Both
-   * `rawData` and `headers` are already handed to this method, so everything
-   * needed to compute and compare the HMAC is in scope.
+   * ولو صُحّحت القراءة وحدها لصار أي `POST` غير موثَّق بجسم فيه
+   * `status: "paid"` طلبًا مكتملًا — والمنتجات رقمية، فبريد روابط التحميل
+   * الموقَّعة يخرج فورًا ولا خطوة شحن تُمسك الخطأ.
+   *
+   * ═══ مظروفان لا واحد ═══
+   *
+   * Medusa يمرّر مظروفًا: `{ data, rawData, headers }` (`ProviderWebhookPayload`
+   * في @medusajs/types، ويبنيه `api/hooks/payment/[provider]/route.js`).
+   * وجسم ميسر نفسه مظروف ثانٍ:
+   *
+   *   { id, type, created_at, secret_token, account_name, live, data: {…} }
+   *
+   * فالدفعة في `payload.data.data` — **بمستويين لا بواحد**.
+   *
+   * ⚠️ وتصحيحٌ لِما كان مكتوبًا هنا قبل اليوم: قال إن الصواب `payload.data.id`
+   * و`payload.data.status`. **غير دقيق** — `payload.data.id` معرّف **الحدث** لا
+   * الدفعة، و`payload.data.status` لا وجود له.
+   *
+   * ⚠️ **ونِسبة الدفعة إلى `data` مقيسة بالقياس لا بالنص:** توثيق ميسر ينشر
+   * مثالًا لحدث `card_auth` وحده ولا ينشر مثالًا لحدث دفع. لذلك القراءة أدناه
+   * **متسامحة مع الشكلين**، وتسجّل ما وصل فعلًا — فإن سُجّل webhook يومًا، يحسم
+   * أول حدث الشكلَ بالأثر بدل الافتراض.
+   *
+   * ═══ ولماذا لا يُفعَّل حتى بعد التحصين ═══
+   *
+   * `processPaymentWorkflow` يبحث عن الجلسة بـ`session_id`، و`metadata` التي
+   * نكتبها لا تحمل إلا `cart_id` — لأنها تُكتب في المتصفح **قبل** الدفع، وجلسة
+   * الدفع تُنشأ في صفحة الـcallback **بعده**. فالحقل غير موجود بنيويًا لا سهوًا.
+   * أي أن تفعيل هذا المسار يحتاج ربطًا بديلًا (`moyasar_id` ⟵ الجلسة)، وهو
+   * **بند مستقل في CLAUDE.md** لم يُتخذ قرار به.
+   *
+   * ⛔ فلا تُرجع من هنا `authorized` أو `captured` قبل إنجاز ذلك البند — وقبل
+   *    تسجيل webhook في لوحة ميسر بسرّ مضبوط في `MOYASAR_WEBHOOK_SECRET`.
    */
   async getWebhookActionAndData(
-    payload: Record<string, unknown>
+    payload: {
+      data?: Record<string, unknown>
+      rawData?: string | Buffer
+      headers?: Record<string, unknown>
+    }
   ): Promise<WebhookActionResult> {
-    const event = payload as any
+    const body = (payload?.data ?? {}) as Record<string, any>
 
-    if (!event?.id || !event?.status) {
+    // متسامح مع الشكلين: الدفعة في `data` المتداخلة إن وُجدت، وإلا فالجسم نفسه.
+    const resource = (body?.data ?? body) as Record<string, any>
+
+    // أثرٌ يحسم الشكل لاحقًا. ⛔ لا يُسجَّل `secret_token` ولا الجسم كاملًا:
+    // الأول سرّ، والثاني قد يحمل بيانات مشتر.
+    this.logger_.info(
+      `[moyasar-webhook] received` +
+        ` type=${body?.type ?? "(none)"}` +
+        ` live=${body?.live ?? "(none)"}` +
+        ` top_keys=${Object.keys(body ?? {}).join(",") || "(empty)"}` +
+        ` resource_id=${resource?.id ?? "(none)"}` +
+        ` resource_status=${resource?.status ?? "(none)"}` +
+        ` nested=${body?.data ? "yes" : "no"}`
+    )
+
+    if (!this.verifyWebhookSecret(body?.secret_token)) {
+      // صاخب عمدًا: لا webhook مسجَّل اليوم، فأي وصول إلى هنا إما تزوير أو
+      // تسجيل جرى بلا ضبط السرّ — وكلاهما يستحق أن يُرى في السجل.
+      this.logger_.error(
+        `[moyasar-webhook] REJECTED — secret mismatch or unset.` +
+          ` resource_id=${resource?.id ?? "(none)"}`
+      )
       return { action: "not_supported" }
     }
 
-    switch (event.status) {
-      case "paid":
-        return {
-          action: "authorized",
-          data: {
-            session_id: event.metadata?.session_id,
-            amount: new BigNumber(Number(event.amount)),
-          },
-        }
-      case "captured":
-        return {
-          action: "captured",
-          data: {
-            session_id: event.metadata?.session_id,
-            amount: new BigNumber(Number(event.amount)),
-          },
-        }
-      case "failed":
-        return {
-          action: "failed",
-          data: {
-            session_id: event.metadata?.session_id,
-            amount: new BigNumber(Number(event.amount)),
-          },
-        }
-      default:
-        return { action: "not_supported" }
+    // وصل موثَّقًا — ومع ذلك لا يُفعل شيء، بقرار موثَّق أعلاه.
+    this.logger_.warn(
+      `[moyasar-webhook] authenticated but intentionally inert —` +
+        ` type=${body?.type ?? "(none)"} resource_id=${resource?.id ?? "(none)"}.` +
+        ` تفعيله يحتاج ربط الدفعة بالجلسة (بند مستقل).`
+    )
+
+    return { action: "not_supported" }
+  }
+
+  /**
+   * مقارنة السرّ المشترك الذي ترسله ميسر في جسم الطلب.
+   *
+   * ⛔ **ليست HMAC.** ميسر لا توقّع الحمولة إطلاقًا — لا ترويسة توقيع ولا
+   * تجزئة على الجسم الخام. ما ترسله حقل `secret_token` في الجسم، يختاره
+   * التاجر عند إنشاء الـwebhook. ولهذا لا يُستعمل `rawData` هنا: لا شيء
+   * يُوقَّع كي يُتحقق منه.
+   *
+   * ⛔ **وغياب المتغيّر رفض لا تجاوز.** لو لم يُضبط `MOYASAR_WEBHOOK_SECRET`
+   * فكل طلب يُرفض — لا أن يُقبل الجميع. وهذا هو الاتجاه الصحيح للفشل على
+   * مسار يلمس المال.
+   *
+   * والمقارنة ثابتة الزمن: المقارنة النصية العادية تُفشي طول البادئة
+   * المطابقة، فتسمح باستنتاج السرّ حرفًا حرفًا.
+   */
+  private verifyWebhookSecret(received: unknown): boolean {
+    const expected = process.env.MOYASAR_WEBHOOK_SECRET
+
+    if (!expected || typeof received !== "string" || received.length === 0) {
+      return false
     }
+
+    const a = Buffer.from(received, "utf8")
+    const b = Buffer.from(expected, "utf8")
+
+    // `timingSafeEqual` يرمي عند اختلاف الطول، والطول نفسه ليس سرًّا.
+    if (a.length !== b.length) {
+      return false
+    }
+
+    return timingSafeEqual(a, b)
   }
 }
 
