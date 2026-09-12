@@ -11,10 +11,11 @@ type Props = {
 }
 
 /**
- * Social crawlers need an absolute URL. `og:image` is emitted only when the
- * post declares a cover — pointing at a placeholder that does not exist would
- * be worse than omitting the tag. Drop a 1200×630 image in `public/images` and
- * wire it here as a site-wide fallback whenever one is ready.
+ * Social crawlers need an absolute URL.
+ *
+ * ✅ والبديل الافتراضي صار موجودًا (2026-09-12): `public/images/brand/og-default.png`
+ * بمقاس 1200×630. كان مكتوبًا هنا أن الوسم يُحذف عند غياب الغلاف «لأن الإشارة
+ * إلى نائب غير موجود أسوأ من حذفه» — وهو صحيح وقتها، وقد انقضى.
  */
 function toAbsolute(url: string): string {
   return /^https?:\/\//i.test(url) ? url : `${getBaseURL()}${url}`
@@ -39,7 +40,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const url = `${getBaseURL()}/${countryCode}/blog/${post.slug}`
-  const image = post.cover ? toAbsolute(post.cover) : undefined
+
+  // ⛔ بطاقة افتراضية بدل لا شيء. **كل المقالات السبعة عشر بلا `cover`**، وكانت
+  // الصفحة تُصدر `openGraph` بلا `images` إطلاقًا — و`app/opengraph-image.jpg`
+  // الجذري **لا يُورَّث** حين تُعرّف الصفحة كائن `openGraph` خاصًا بها. فكل
+  // مشاركة على واتساب أو إكس تظهر رابطًا أصمّ بلا صورة، على موقع أولويته
+  // جلب الزوار من المشاركات.
+  //
+  // والبطاقة بالهوية لا بصورة موضوعية: مقاسها 1200×630 وهو ما تتوقعه المنصات،
+  // وتبقى صحيحة لأي مقال. ⚠️ وأي مقال يضيف `cover` يتقدّم عليها تلقائيًا.
+  const image = post.cover
+    ? toAbsolute(post.cover)
+    : `${getBaseURL()}/images/brand/og-default.png`
 
   return {
     title: `${post.title} | مدونة Promptr`,
@@ -83,6 +95,10 @@ export default async function BlogPostPage({ params }: Props) {
       <ArticleJsonLd
         post={post}
         url={url}
+        // ⛔ البطاقة الافتراضية **لا تُمرَّر إلى JSON-LD** عمدًا: `Article.image`
+        // في schema.org يعني صورة تُمثّل المقال، والبطاقة شعارٌ لا يمثّل شيئًا.
+        // وسمُ og غرضه بصري في المشاركات، والبيانات المنظّمة غرضها وصفي — فلا
+        // يُملأ حقل وصفي بقيمة زخرفية. (نفس مبدأ رفض `aggregateRating` الملفّق.)
         imageUrl={post.cover ? toAbsolute(post.cover) : undefined}
       />
       <BlogPostTemplate post={post} related={related} />
