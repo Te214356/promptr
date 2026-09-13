@@ -3,7 +3,6 @@
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
@@ -165,7 +164,15 @@ export default function ProductActions({
 
         <ProductPrice product={product} variant={selectedVariant} />
 
-        <Button
+        {/*
+          A plain button in the brand colour, not Medusa's <Button variant="primary">.
+          That one paints `bg-ui-button-inverted`, which under the dark palette
+          resolves to grey (rgb(82,82,91) measured on production) — the only
+          button on the site without the brand colour was the one that takes
+          the money. Same shape as the home-page CTA.
+        */}
+        <button
+          type="button"
           onClick={handleAddToCart}
           disabled={
             !inStock ||
@@ -174,17 +181,18 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
+          className="w-full h-12 rounded-full bg-[#6C2BFF] hover:bg-[#5a22dd] text-white font-semibold text-base transition-colors duration-200 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed"
+          aria-busy={isAdding}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
+          {isAdding
+            ? (isAR ? "جارٍ الإضافة…" : "Adding…")
+            : !selectedVariant && !options
             ? (isAR ? "اختر النوع" : "Select variant")
             : !inStock || !isValidVariant
             ? (isAR ? "غير متوفر" : "Out of stock")
             : (isAR ? "أضف للسلة" : "Add to cart")}
-        </Button>
+        </button>
         <MobileActions
           product={product}
           variant={selectedVariant}

@@ -119,19 +119,23 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   <ChevronDown />
                 </div>
               </Button>}
-              <Button
+              {/* Brand-coloured, same as the main add-to-cart button (see product-actions/index.tsx). */}
+              <button
+                type="button"
                 onClick={handleAddToCart}
-                disabled={!inStock || !variant}
-                className="w-full"
-                isLoading={isAdding}
+                disabled={!inStock || !variant || isAdding}
+                className="w-full h-12 rounded-full bg-[#6C2BFF] hover:bg-[#5a22dd] text-white font-semibold text-base transition-colors duration-200 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed"
+                aria-busy={isAdding}
                 data-testid="mobile-cart-button"
               >
-                {!variant
+                {isAdding
+                  ? (isAR ? "جارٍ الإضافة…" : "Adding…")
+                  : !variant
                   ? (isAR ? "اختر النوع" : "Select variant")
                   : !inStock
                   ? (isAR ? "غير متوفر" : "Out of stock")
                   : (isAR ? "أضف للسلة" : "Add to cart")}
-              </Button>
+              </button>
             </div>
           </div>
         </Transition>

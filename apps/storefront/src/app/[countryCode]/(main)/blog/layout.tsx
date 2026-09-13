@@ -1,16 +1,10 @@
-import { Cairo } from "next/font/google"
-
 import { ADSENSE_SCRIPT_SRC } from "@lib/util/adsense"
 
 /**
- * Cairo is scoped to the blog on purpose — the store, cart and checkout keep
- * their existing typography untouched.
+ * Cairo used to be loaded here and scoped to the blog. It now comes from the
+ * root layout for the whole site (2026-09-14), so this layout only carries the
+ * AdSense library.
  */
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  display: "swap",
-  variable: "--font-cairo",
-})
 
 export default function BlogLayout({
   children,
@@ -18,7 +12,7 @@ export default function BlogLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className={`${cairo.variable} ${cairo.className} bg-promptr-bg`}>
+    <div className="bg-promptr-bg">
       {/*
         The AdSense library loads here and nowhere else. It sat in the root
         layout while ownership verification was pending, which meant every page

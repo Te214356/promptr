@@ -46,7 +46,6 @@ const Hero = () => {
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto" dir={isRTL ? "rtl" : "ltr"}>
         <h1
           className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight"
-          style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
         >
           {t.headline}
         </h1>

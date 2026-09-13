@@ -1,4 +1,3 @@
-import { EllipseMiniSolid } from "@medusajs/icons"
 import { Label, RadioGroup, Text, clx } from "@medusajs/ui"
 
 type FilterRadioGroupProps = {
@@ -12,6 +11,12 @@ type FilterRadioGroupProps = {
   "data-testid"?: string
 }
 
+/**
+ * The active option is marked by colour and a short rule in the brand
+ * colour, not by the Medusa starter's `EllipseMiniSolid` dot hung off a
+ * `ml-[-23px]` — that dot read as a stray list bullet, and the negative
+ * left margin pointed the wrong way under RTL.
+ */
 const FilterRadioGroup = ({
   title,
   items,
@@ -20,38 +25,44 @@ const FilterRadioGroup = ({
   "data-testid": dataTestId,
 }: FilterRadioGroupProps) => {
   return (
-    <div className="flex gap-x-3 flex-col gap-y-3">
+    <div className="flex flex-col gap-y-3">
       <Text className="txt-compact-small-plus text-ui-fg-muted">{title}</Text>
-      <RadioGroup data-testid={dataTestId} onValueChange={handleChange}>
-        {items?.map((i) => (
-          <div
-            key={i.value}
-            className={clx("flex gap-x-2 items-center", {
-              "ml-[-23px]": i.value === value,
-            })}
-          >
-            {i.value === value && <EllipseMiniSolid />}
-            <RadioGroup.Item
-              checked={i.value === value}
-              className="hidden peer"
-              id={i.value}
-              value={i.value}
-            />
-            <Label
-              htmlFor={i.value}
-              className={clx(
-                "!txt-compact-small !transform-none text-ui-fg-subtle hover:cursor-pointer",
-                {
-                  "text-ui-fg-base": i.value === value,
-                }
-              )}
-              data-testid="radio-label"
-              data-active={i.value === value}
-            >
-              {i.label}
-            </Label>
-          </div>
-        ))}
+      <RadioGroup
+        data-testid={dataTestId}
+        onValueChange={handleChange}
+        className="flex flex-col gap-y-1"
+      >
+        {items?.map((i) => {
+          const active = i.value === value
+          return (
+            <div key={i.value} className="flex items-center gap-x-3">
+              <span
+                aria-hidden
+                className={clx(
+                  "h-px w-4 shrink-0 transition-[background-color,width] duration-200",
+                  active ? "bg-[#6C2BFF]" : "bg-transparent"
+                )}
+              />
+              <RadioGroup.Item
+                checked={active}
+                className="hidden peer"
+                id={i.value}
+                value={i.value}
+              />
+              <Label
+                htmlFor={i.value}
+                className={clx(
+                  "!txt-compact-small !transform-none hover:cursor-pointer transition-colors duration-200",
+                  active ? "text-white" : "text-white/55 hover:text-white/85"
+                )}
+                data-testid="radio-label"
+                data-active={active}
+              >
+                {i.label}
+              </Label>
+            </div>
+          )
+        })}
       </RadioGroup>
     </div>
   )

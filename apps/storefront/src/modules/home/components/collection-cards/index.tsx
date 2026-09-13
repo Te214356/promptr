@@ -102,7 +102,6 @@ export default function CollectionCards() {
                 <div className="mt-6" dir={isRTL ? "rtl" : "ltr"}>
                   <p
                     className="text-xl font-bold text-white leading-snug"
-                    style={{ fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif" }}
                   >
                     {lang === "ar" ? cat.titleAr : cat.titleEn}
                   </p>

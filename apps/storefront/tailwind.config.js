@@ -78,8 +78,9 @@ module.exports = {
         "3xl": "2rem",
       },
       fontFamily: {
+        // Cairo is declared by next/font in `app/layout.tsx` as --font-cairo.
         sans: [
-          "Inter",
+          "var(--font-cairo)",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
