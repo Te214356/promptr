@@ -45,12 +45,20 @@ const Hero = () => {
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto" dir={isRTL ? "rtl" : "ltr"}>
         <h1
-          className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight"
+          className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-5 leading-[1.3]"
         >
           {t.headline}
         </h1>
 
-        <h2 className="text-2xl sm:text-3xl font-light mb-6 bg-gradient-to-r from-[#6C2BFF] to-[#00CFFF] bg-clip-text text-transparent">
+        {/*
+          Cairo's descenders reach well below the em box. `bg-clip-text` paints
+          the gradient only inside the line box, so with a tight line-height
+          the tail of «في» simply vanished (seen on production after the font
+          change). The taller line-height and padding keep the glyphs inside
+          the painted area; the H1 above gets the same treatment so its «ي»
+          no longer crosses into this line.
+        */}
+        <h2 className="text-2xl sm:text-3xl font-light mb-6 leading-[1.6] pb-1 bg-gradient-to-r from-[#6C2BFF] to-[#00CFFF] bg-clip-text text-transparent">
           {t.subheadline}
         </h2>
 
