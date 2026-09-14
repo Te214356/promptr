@@ -1,16 +1,12 @@
 import { Metadata } from "next"
-import { HttpTypes } from "@medusajs/types"
 
-import Hero, { type HeroCover } from "@modules/home/components/hero"
+import Hero from "@modules/home/components/hero"
 import ProductRail from "@modules/home/components/featured-products/product-rail"
 import PromoBanners from "@modules/home/components/promo-banners"
-import CollectionCards from "@modules/home/components/collection-cards"
-import { listProducts } from "@lib/data/products"
+import CategoryCards from "@modules/home/components/collection-cards"
+import { getHomeCatalogue } from "@lib/data/home"
 import { getRegion } from "@lib/data/regions"
 import { getBaseURL } from "@lib/util/env"
-
-/** Eight on the rail; the last three of them also make the hero shelf. */
-const HOME_PRODUCT_COUNT = 8
 
 const TITLE = "Promptr — متجرك الرقمي المتكامل"
 const DESCRIPTION =
@@ -51,33 +47,15 @@ export default async function Home(props: {
     return null
   }
 
-  /*
-    One catalogue fetch feeds both the hero shelf and the rail. Cached with
-    the catalogue's 60-second revalidate (`CATALOG_REVALIDATE_SECONDS`), so a
-    price or cover edited in Admin shows here within a minute, same as the
-    store page. A failed fetch degrades to the text hero, never to a 500.
-  */
-  const products = await listProducts({
-    countryCode,
-    queryParams: { limit: HOME_PRODUCT_COUNT },
-  })
-    .then(({ response }) => response.products)
-    .catch((e) => {
-      console.error("[home] product fetch failed, rendering without the shelf", e)
-      return [] as HttpTypes.StoreProduct[]
-    })
-
-  // The shelf takes the last three, so the rail's first row shows different products.
-  const covers: HeroCover[] = products
-    .filter((p) => p.thumbnail)
-    .slice(-3)
-    .map((p) => ({ src: p.thumbnail as string, title: p.title, handle: p.handle as string }))
+  // Rail, hero shelf and category covers are allocated together so no cover
+  // appears twice on the page. See `lib/data/home.ts`.
+  const { rail, shelf, cards } = await getHomeCatalogue(countryCode)
 
   return (
     <div className="bg-[#080810]">
-      <Hero covers={covers} />
-      <ProductRail products={products} region={region} countryCode={countryCode} />
-      <CollectionCards />
+      <Hero covers={shelf} />
+      <ProductRail products={rail} region={region} countryCode={countryCode} />
+      <CategoryCards cards={cards} />
       <PromoBanners />
     </div>
   )

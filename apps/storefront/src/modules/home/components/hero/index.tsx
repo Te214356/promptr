@@ -4,11 +4,9 @@ import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { useLanguage } from "@lib/context/language-context"
 
-export type HeroCover = {
-  src: string
-  title: string
-  handle: string
-}
+import type { HomeCover } from "@lib/data/home"
+
+export type HeroCover = HomeCover
 
 const CONTENT = {
   ar: {
