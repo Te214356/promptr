@@ -33,13 +33,16 @@ const LABELS = {
   Two subject-specific drawings, chosen on 2026-09-15 from six candidates.
   Both are short SVG paths in the accent colour with a single cyan point of
   emphasis, kept on the logical end side (away from the copy in both text
-  directions) so they never sit behind the title or the button.
+  directions) so they never sit behind the title or the button. Below the
+  `small` breakpoint the copy spans the whole slide, so there is no free side
+  and the drawing is hidden rather than layered under the text (measured on
+  production at 820px and 390px: it overlapped the title there).
 */
 
 /** A rising path of connected nodes ending in one large node: from the idea to the first 100 orders. */
 const OrdersPath = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-[-16px] h-[300px] w-[300px] opacity-[0.18]"
+    className="pointer-events-none absolute top-1/2 hidden -translate-y-1/2 end-[-16px] small:block h-[300px] w-[300px] opacity-[0.18]"
     viewBox="0 0 200 200"
     fill="none"
     stroke={accent}
@@ -63,7 +66,7 @@ const OrdersPath = ({ accent }: { accent: string }) => (
 /** Three layers of connected nodes; the two output nodes carry the cyan point. */
 const NeuralNet = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-[-16px] h-[320px] w-[320px] opacity-[0.16]"
+    className="pointer-events-none absolute top-1/2 hidden -translate-y-1/2 end-[-16px] small:block h-[320px] w-[320px] opacity-[0.16]"
     viewBox="0 0 200 200"
     fill="none"
     stroke={accent}
