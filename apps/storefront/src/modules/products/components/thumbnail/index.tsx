@@ -11,6 +11,8 @@ type ThumbnailProps = {
   size?: "small" | "medium" | "large" | "full" | "square"
   isFeatured?: boolean
   className?: string
+  /** `sizes` for next/image; grids should pass their real column width so the optimizer is not asked for an 800px file to fill 330px. */
+  sizes?: string
   "data-testid"?: string
 }
 
@@ -20,6 +22,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   size = "small",
   isFeatured,
   className,
+  sizes,
   "data-testid": dataTestid,
 }) => {
   const initialImage = thumbnail || images?.[0]?.url
@@ -41,7 +44,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
       )}
       data-testid={dataTestid}
     >
-      <ImageOrPlaceholder image={initialImage} size={size} />
+      <ImageOrPlaceholder image={initialImage} size={size} sizes={sizes} />
     </div>
   )
 }
@@ -49,7 +52,8 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
 const ImageOrPlaceholder = ({
   image,
   size,
-}: Pick<ThumbnailProps, "size"> & { image?: string }) => {
+  sizes,
+}: Pick<ThumbnailProps, "size" | "sizes"> & { image?: string }) => {
   const [failed, setFailed] = useState(false)
 
   if (!image || failed) {
@@ -65,7 +69,7 @@ const ImageOrPlaceholder = ({
       className="absolute inset-0 object-cover object-center"
       draggable={false}
       quality={50}
-      sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
+      sizes={sizes ?? "(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"}
       fill
       onError={() => setFailed(true)}
     />

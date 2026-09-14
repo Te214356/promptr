@@ -1,4 +1,7 @@
+"use client"
+
 import { Label, RadioGroup, Text, clx } from "@medusajs/ui"
+import { useLanguage } from "@lib/context/language-context"
 
 type FilterRadioGroupProps = {
   title: string
@@ -24,12 +27,17 @@ const FilterRadioGroup = ({
   handleChange,
   "data-testid": dataTestId,
 }: FilterRadioGroupProps) => {
+  // Radix RadioGroup renders `dir="ltr"` unless told otherwise, which put the
+  // active-option rule on the left of Arabic labels (seen on production).
+  const { lang } = useLanguage()
+
   return (
     <div className="flex flex-col gap-y-3">
       <Text className="txt-compact-small-plus text-ui-fg-muted">{title}</Text>
       <RadioGroup
         data-testid={dataTestId}
         onValueChange={handleChange}
+        dir={lang === "ar" ? "rtl" : "ltr"}
         className="flex flex-col gap-y-1"
       >
         {items?.map((i) => {

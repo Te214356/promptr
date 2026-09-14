@@ -6,6 +6,9 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 
+/** Every grid this card sits in is 2 / 3 / 4 columns wide (store, related, home rail). */
+const GRID_SIZES = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 340px"
+
 export default async function ProductPreview({
   product,
   isFeatured,
@@ -29,6 +32,7 @@ export default async function ProductPreview({
           images={product.images}
           size="square"
           isFeatured={false}
+          sizes={GRID_SIZES}
         />
         <div className="flex txt-compact-medium mt-4 justify-between">
           <Text className="text-ui-fg-subtle" data-testid="product-title">
@@ -48,6 +52,7 @@ export default async function ProductPreview({
           images={product.images}
           size="square"
           isFeatured={false}
+          sizes={GRID_SIZES}
         />
         <div className="flex txt-compact-medium mt-4 justify-between">
           <Text className="text-ui-fg-subtle" data-testid="product-title">

@@ -26,21 +26,13 @@ export type Banner = {
   icon: BannerIcon
 }
 
+/*
+  The "store" slide was removed on 2026-09-15: it repeated the hero's message
+  ("digital products for the Saudi market" + a second "browse the store"
+  button) one screen below it. The hero and the product rail now say that
+  with real products.
+*/
 export const BANNERS: Banner[] = [
-  {
-    id: "store",
-    titleAr: "منتجات رقمية جاهزة للسوق السعودي",
-    titleEn: "Digital products built for the Saudi market",
-    descriptionAr: "أدلة وحزم برومبتات وقوالب — تحميل فوري بعد الشراء.",
-    descriptionEn: "Guides, prompt packs and templates — instant download after checkout.",
-    ctaAr: "تصفّح المتجر",
-    ctaEn: "Browse the store",
-    href: "/store",
-    gradient: "linear-gradient(135deg, #EDE7FF 0%, #F8F5FF 100%)",
-    accent: "#6C2BFF",
-    decoration: "circles",
-    icon: "store",
-  },
   {
     id: "ecommerce-guide",
     titleAr: "دليل متجرك الإلكتروني — من الفكرة إلى أول 100 طلب",
