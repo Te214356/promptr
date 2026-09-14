@@ -20,24 +20,36 @@ export default async function Nav() {
   return (
     <div className="sticky top-0 inset-x-0 z-50">
       <header className="relative h-16 mx-auto border-b border-white/5 bg-[#080810]/90 backdrop-blur-md">
-        <nav className="content-container flex items-center justify-between w-full h-full">
-          <div className="flex-1 basis-0 h-full flex items-center">
+        {/*
+          Three columns: menu | wordmark | language + cart. The wordmark column
+          must not shrink and the row needs a real gap: on 390px the side
+          columns used to squeeze until the toggle touched the wordmark
+          (0px, measured on production) and the cart label wrapped to three
+          lines. Below `xsmall` (512px) the wordmark is set smaller and the
+          cart collapses to an icon with a count. The side columns also size
+          from their content there (`basis-auto`) instead of splitting the row
+          in halves: with equal halves the wider language+cart column overflowed
+          toward the wordmark (5px at 360px) while the menu side kept 57px.
+          The wordmark is a few pixels off exact centre on phones in exchange
+          for even gaps on both sides.
+        */}
+        <nav className="content-container flex items-center justify-between gap-x-3 w-full h-full">
+          <div className="flex-1 basis-auto xsmall:basis-0 min-w-0 h-full flex items-center">
             <div className="h-full">
               <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
             </div>
           </div>
 
-          <div className="flex items-center h-full">
+          <div className="flex items-center h-full shrink-0">
             <LocalizedClientLink
               href="/"
               className="hover:opacity-80 transition-opacity duration-200"
               data-testid="nav-store-link"
             >
               <span
+                className="text-[17px] tracking-[0.18em] xsmall:text-[22px] xsmall:tracking-[0.25em]"
                 style={{
-                  fontSize: 22,
                   fontWeight: 900,
-                  letterSpacing: "0.25em",
                   textTransform: "uppercase",
                   lineHeight: 1,
                   fontFamily: "'Arial Black', Arial, sans-serif",
@@ -52,7 +64,7 @@ export default async function Nav() {
             </LocalizedClientLink>
           </div>
 
-          <div className="flex items-center gap-x-4 h-full flex-1 basis-0 justify-end">
+          <div className="flex items-center gap-x-3 xsmall:gap-x-4 h-full flex-1 basis-auto xsmall:basis-0 min-w-0 justify-end">
             <LanguageToggle />
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <NavAccountLink />

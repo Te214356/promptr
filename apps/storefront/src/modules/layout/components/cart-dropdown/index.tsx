@@ -92,11 +92,23 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="hover:text-white text-white/60 text-sm transition-colors duration-200"
+            className="flex items-center whitespace-nowrap hover:text-white text-white/60 text-sm transition-colors duration-200"
             href="/cart"
             data-testid="nav-cart-link"
+            aria-label={t.cart(totalItems)}
           >
-            {t.cart(totalItems)}
+            {/* Text from 512px up; below that an icon with a count badge, so the label cannot wrap in the narrow header. */}
+            <span className="hidden xsmall:inline">{t.cart(totalItems)}</span>
+            <span className="relative inline-flex xsmall:hidden" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" />
+              </svg>
+              {totalItems > 0 && (
+                <span className="absolute -top-1.5 -end-2 min-w-[16px] h-4 px-1 rounded-full bg-[#6C2BFF] text-[10px] leading-4 font-semibold text-white text-center tabular-nums">
+                  {totalItems}
+                </span>
+              )}
+            </span>
           </LocalizedClientLink>
         </PopoverButton>
         <Transition
