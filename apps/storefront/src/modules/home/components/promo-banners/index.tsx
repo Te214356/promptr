@@ -33,7 +33,7 @@ const LABELS = {
 
 const Circles = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute -top-16 left-[-40px] h-[320px] w-[320px] opacity-[0.08] small:left-auto small:right-[-40px]"
+    className="pointer-events-none absolute -top-16 left-[-40px] h-[320px] w-[320px] opacity-[0.18] small:left-auto small:right-[-40px]"
     viewBox="0 0 200 200"
     fill="none"
     aria-hidden="true"
@@ -46,7 +46,7 @@ const Circles = ({ accent }: { accent: string }) => (
 
 const Dots = ({ accent, id }: { accent: string; id: string }) => (
   <svg
-    className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.10]"
+    className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.16]"
     aria-hidden="true"
   >
     <defs>
@@ -60,7 +60,7 @@ const Dots = ({ accent, id }: { accent: string; id: string }) => (
 
 const Geometric = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute -bottom-10 left-[-30px] h-[280px] w-[280px] opacity-[0.09] small:left-auto small:right-[-20px]"
+    className="pointer-events-none absolute -bottom-10 left-[-30px] h-[280px] w-[280px] opacity-[0.18] small:left-auto small:right-[-20px]"
     viewBox="0 0 200 200"
     fill="none"
     aria-hidden="true"
@@ -146,7 +146,7 @@ const Slide = ({
   instant: boolean
 }) => (
   <div
-    className={`absolute inset-0 overflow-hidden rounded-3xl ${
+    className={`absolute inset-0 overflow-hidden rounded-2xl ${
       instant ? "" : "transition-opacity duration-700 ease-out"
     } ${isActive ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0"}`}
     style={{ background: banner.gradient }}
@@ -160,7 +160,7 @@ const Slide = ({
     <div className="relative flex h-full flex-col justify-center gap-4 px-7 py-8 small:px-14">
       <span
         className="flex h-11 w-11 items-center justify-center rounded-xl"
-        style={{ background: "rgba(8,8,16,0.06)", color: banner.accent }}
+        style={{ background: `${banner.accent}22`, color: banner.accent }}
         aria-hidden="true"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -168,18 +168,18 @@ const Slide = ({
         </svg>
       </span>
 
-      <h2 className="max-w-[36rem] text-2xl font-black leading-[1.15] text-[#080810] small:text-4xl">
+      <h2 className="max-w-[36rem] text-2xl font-bold leading-[1.3] text-white small:text-4xl">
         {title}
       </h2>
 
-      <p className="max-w-[34rem] text-sm leading-relaxed text-[#080810]/70 small:text-base">
+      <p className="max-w-[34rem] text-sm leading-relaxed text-white/60 small:text-base">
         {description}
       </p>
 
       <LocalizedClientLink
         href={banner.href}
         tabIndex={isActive ? undefined : -1}
-        className="mt-1 inline-flex w-fit items-center rounded-full bg-[#080810] px-6 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#080810] focus-visible:ring-offset-2"
+        className="mt-1 inline-flex w-fit items-center rounded-full bg-[#6C2BFF] px-6 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#5a22dd] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00CFFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d1f]"
       >
         {cta}
       </LocalizedClientLink>
@@ -244,7 +244,9 @@ const PromoBanners = () => {
         {/* Fixed height: slides stack absolutely, so copy length never shifts
             the page. Fade instead of translate — a slide transition needs
             direction maths that inverts under RTL. */}
-        <div className="relative h-[320px] overflow-hidden rounded-3xl shadow-[0_20px_60px_-25px_rgba(108,43,255,0.55)] ring-1 ring-white/10 small:h-[340px]">
+        {/* Same ground as the category cards (#0d0d1f); the tinted shadow and
+            the ring are what keep the slide from dissolving into the page. */}
+        <div className="relative h-[320px] overflow-hidden rounded-2xl bg-[#0d0d1f] shadow-[0_20px_60px_-25px_rgba(108,43,255,0.55)] ring-1 ring-white/10 small:h-[340px]">
           {BANNERS.map((banner, i) => (
             <Slide
               key={banner.id}

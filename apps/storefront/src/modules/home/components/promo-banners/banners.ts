@@ -18,7 +18,12 @@ export type Banner = {
   ctaAr: string
   ctaEn: string
   href: string
-  /** Light gradient — the banners are the bright surface on a dark page. */
+  /**
+   * Dark gradient on the card ground (#0d0d1f) with a faint wash of the
+   * accent. The banners used to be the one light surface on the page; since
+   * 2026-09-15 they share the category cards' language and the purple-tinted
+   * shadow plus the hairline ring keep them from sinking into the background.
+   */
   gradient: string
   /** Drives the decorative artwork and the icon tint. */
   accent: string
@@ -42,8 +47,8 @@ export const BANNERS: Banner[] = [
     ctaAr: "اعرف التفاصيل",
     ctaEn: "See the guide",
     href: "/products/ecommerce-success-guide",
-    gradient: "linear-gradient(135deg, #DDF3FF 0%, #F1FBFF 100%)",
-    accent: "#00A6D6",
+    gradient: "linear-gradient(135deg, rgba(0,207,255,0.16) 0%, #0d0d1f 55%, rgba(108,43,255,0.10) 100%)",
+    accent: "#00CFFF",
     decoration: "geometric",
     icon: "book",
   },
@@ -56,8 +61,8 @@ export const BANNERS: Banner[] = [
     ctaAr: "اقرأ المدونة",
     ctaEn: "Read the blog",
     href: "/blog",
-    gradient: "linear-gradient(135deg, #E6E9FF 0%, #E9F8FF 100%)",
-    accent: "#5B3FD9",
+    gradient: "linear-gradient(135deg, rgba(108,43,255,0.18) 0%, #0d0d1f 55%, rgba(0,207,255,0.08) 100%)",
+    accent: "#6C2BFF",
     decoration: "dots",
     icon: "article",
   },
