@@ -33,7 +33,7 @@ const LABELS = {
 
 const Circles = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute -top-16 left-[-40px] h-[320px] w-[320px] opacity-[0.18] small:left-auto small:right-[-40px]"
+    className="pointer-events-none absolute -top-16 end-[-40px] h-[320px] w-[320px] opacity-[0.18]"
     viewBox="0 0 200 200"
     fill="none"
     aria-hidden="true"
@@ -60,7 +60,7 @@ const Dots = ({ accent, id }: { accent: string; id: string }) => (
 
 const Geometric = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute -bottom-10 left-[-30px] h-[280px] w-[280px] opacity-[0.18] small:left-auto small:right-[-20px]"
+    className="pointer-events-none absolute -bottom-10 end-[-20px] h-[280px] w-[280px] opacity-[0.18]"
     viewBox="0 0 200 200"
     fill="none"
     aria-hidden="true"
