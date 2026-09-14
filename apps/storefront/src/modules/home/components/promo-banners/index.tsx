@@ -34,64 +34,78 @@ const LABELS = {
   Both are short SVG paths in the accent colour with a single cyan point of
   emphasis, kept on the logical end side (away from the copy in both text
   directions) so they never sit behind the title or the button. Below the
-  `small` breakpoint the copy spans the whole slide, so there is no free side
-  and the drawing is hidden rather than layered under the text (measured on
-  production at 820px and 390px: it overlapped the title there).
+  `small` breakpoint (1024px) the copy spans the whole slide — 140px free at
+  820px, none at 390px — so there is no side to give the drawing and it is
+  hidden rather than layered under the text.
 */
+
+/*
+  Both drawings live on a 400×200 canvas and take 44% of the slide's width
+  from 1024px, 48% from 1280px (2:1, so 70–80% of the slide's height at
+  1440), pushed to the logical end edge. The copy is capped at 42% / 40% of
+  the width on the same breakpoints, which keeps 150–200px between the
+  drawing's ink and the nearest text on desktop widths (measured). Opacity
+  is unchanged from the small version; only the size grew.
+*/
+const DECO_CLASS =
+  "pointer-events-none absolute top-1/2 hidden h-auto w-[44%] -translate-y-1/2 end-[-10px] small:block medium:w-[48%] medium:end-[1%]"
 
 /** A rising path of connected nodes ending in one large node: from the idea to the first 100 orders. */
 const OrdersPath = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute top-1/2 hidden -translate-y-1/2 end-[-16px] small:block h-[300px] w-[300px] opacity-[0.18]"
-    viewBox="0 0 200 200"
-    fill="none"
-    stroke={accent}
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M18 168 L62 140 L98 150 L134 96 L176 44" />
-    <path d="M62 140v34M98 150v24M134 96v78" strokeDasharray="3 6" strokeWidth="1.2" />
-    <circle cx="18" cy="168" r="5" />
-    <circle cx="62" cy="140" r="5" />
-    <circle cx="98" cy="150" r="5" />
-    <circle cx="134" cy="96" r="5" />
-    <circle cx="176" cy="44" r="13" />
-    <circle cx="176" cy="44" r="4" fill="#00CFFF" stroke="none" />
-    <path d="M18 184h164" strokeWidth="1.2" />
-  </svg>
-)
-
-/** Three layers of connected nodes; the two output nodes carry the cyan point. */
-const NeuralNet = ({ accent }: { accent: string }) => (
-  <svg
-    className="pointer-events-none absolute top-1/2 hidden -translate-y-1/2 end-[-16px] small:block h-[320px] w-[320px] opacity-[0.16]"
-    viewBox="0 0 200 200"
+    className={`${DECO_CLASS} opacity-[0.18]`}
+    viewBox="0 0 400 200"
     fill="none"
     stroke={accent}
     strokeWidth="1.4"
     strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M16 170 L90 140 L160 150 L250 90 L350 40" />
+    <path d="M90 140v46M160 150v36M250 90v96" strokeDasharray="3 6" strokeWidth="1" />
+    <circle cx="16" cy="170" r="6" />
+    <circle cx="90" cy="140" r="6" />
+    <circle cx="160" cy="150" r="6" />
+    <circle cx="250" cy="90" r="6" />
+    <circle cx="350" cy="40" r="18" />
+    <circle cx="350" cy="40" r="6" fill="#00CFFF" stroke="none" />
+    <path d="M16 186h354" strokeWidth="1" />
+  </svg>
+)
+
+/** Four layers of connected nodes (3·4·2·1); the output nodes carry the cyan point. */
+const NeuralNet = ({ accent }: { accent: string }) => (
+  <svg
+    className={`${DECO_CLASS} opacity-[0.16]`}
+    viewBox="0 0 400 200"
+    fill="none"
+    stroke={accent}
+    strokeWidth="1.1"
+    strokeLinecap="round"
     aria-hidden="true"
   >
     <g strokeOpacity="0.8">
-      <path d="M40 60L100 44M40 60L100 80M40 60L100 116M40 60L100 152M40 100L100 44M40 100L100 80M40 100L100 116M40 100L100 152M40 140L100 44M40 140L100 80M40 140L100 116M40 140L100 152" />
-      <path d="M100 44L160 80M100 44L160 120M100 80L160 80M100 80L160 120M100 116L160 80M100 116L160 120M100 152L160 80M100 152L160 120" />
+      <path d="M50 34L170 26M50 34L170 75M50 34L170 125M50 34L170 174M50 100L170 26M50 100L170 75M50 100L170 125M50 100L170 174M50 166L170 26M50 166L170 75M50 166L170 125M50 166L170 174" />
+      <path d="M170 26L290 70M170 26L290 130M170 75L290 70M170 75L290 130M170 125L290 70M170 125L290 130M170 174L290 70M170 174L290 130" />
+      <path d="M290 70L370 100M290 130L370 100" />
     </g>
     {/* Node fills match the slide ground so the edges stop at the node rim. */}
     <g fill="#0d0d1f">
-      <circle cx="40" cy="60" r="7" />
-      <circle cx="40" cy="100" r="7" />
-      <circle cx="40" cy="140" r="7" />
-      <circle cx="100" cy="44" r="7" />
-      <circle cx="100" cy="80" r="7" />
-      <circle cx="100" cy="116" r="7" />
-      <circle cx="100" cy="152" r="7" />
-      <circle cx="160" cy="80" r="9" />
-      <circle cx="160" cy="120" r="9" />
+      <circle cx="50" cy="34" r="9" />
+      <circle cx="50" cy="100" r="9" />
+      <circle cx="50" cy="166" r="9" />
+      <circle cx="170" cy="26" r="9" />
+      <circle cx="170" cy="75" r="9" />
+      <circle cx="170" cy="125" r="9" />
+      <circle cx="170" cy="174" r="9" />
+      <circle cx="290" cy="70" r="11" />
+      <circle cx="290" cy="130" r="11" />
+      <circle cx="370" cy="100" r="14" />
     </g>
-    <circle cx="160" cy="80" r="3.5" fill="#00CFFF" stroke="none" />
-    <circle cx="160" cy="120" r="3.5" fill="#00CFFF" stroke="none" />
+    <circle cx="290" cy="70" r="4" fill="#00CFFF" stroke="none" />
+    <circle cx="290" cy="130" r="4" fill="#00CFFF" stroke="none" />
+    <circle cx="370" cy="100" r="5" fill="#00CFFF" stroke="none" />
   </svg>
 )
 
@@ -180,11 +194,11 @@ const Slide = ({
         </svg>
       </span>
 
-      <h2 className="max-w-[36rem] text-2xl font-bold leading-[1.3] text-white small:text-4xl">
+      <h2 className="max-w-[36rem] text-2xl font-bold leading-[1.3] text-white small:max-w-[42%] small:text-4xl medium:max-w-[40%]">
         {title}
       </h2>
 
-      <p className="max-w-[34rem] text-sm leading-relaxed text-white/60 small:text-base">
+      <p className="max-w-[34rem] text-sm leading-relaxed text-white/60 small:max-w-[42%] small:text-base medium:max-w-[40%]">
         {description}
       </p>
 
