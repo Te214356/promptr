@@ -6,7 +6,8 @@
  * stale and nobody remembers to update a banner.
  */
 
-export type BannerDecoration = "circles" | "dots" | "geometric"
+/** Subject-specific line drawings; see `Decoration` in the slider component. */
+export type BannerDecoration = "orders-path" | "neural-net"
 export type BannerIcon = "store" | "book" | "article"
 
 export type Banner = {
@@ -49,7 +50,7 @@ export const BANNERS: Banner[] = [
     href: "/products/ecommerce-success-guide",
     gradient: "linear-gradient(135deg, rgba(0,207,255,0.16) 0%, #0d0d1f 55%, rgba(108,43,255,0.10) 100%)",
     accent: "#00CFFF",
-    decoration: "geometric",
+    decoration: "orders-path",
     icon: "book",
   },
   {
@@ -63,7 +64,7 @@ export const BANNERS: Banner[] = [
     href: "/blog",
     gradient: "linear-gradient(135deg, rgba(108,43,255,0.18) 0%, #0d0d1f 55%, rgba(0,207,255,0.08) 100%)",
     accent: "#6C2BFF",
-    decoration: "dots",
+    decoration: "neural-net",
     icon: "article",
   },
 ]

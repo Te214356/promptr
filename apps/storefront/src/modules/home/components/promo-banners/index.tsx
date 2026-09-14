@@ -27,71 +27,80 @@ const LABELS = {
 
 /* ── Decorative artwork ───────────────────────────────────────────────
    Pure inline SVG: no network request, no layout cost, and it inherits the
-   banner accent. Kept in the far corner and under 10% opacity so the title
-   stays the only thing the eye lands on. Pattern ids are namespaced per
-   banner — duplicate ids across SVGs on one page resolve to the first match. */
+   banner accent. */
 
-const Circles = ({ accent }: { accent: string }) => (
+/*
+  Two subject-specific drawings, chosen on 2026-09-15 from six candidates.
+  Both are short SVG paths in the accent colour with a single cyan point of
+  emphasis, kept on the logical end side (away from the copy in both text
+  directions) so they never sit behind the title or the button.
+*/
+
+/** A rising path of connected nodes ending in one large node: from the idea to the first 100 orders. */
+const OrdersPath = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute -top-16 end-[-40px] h-[320px] w-[320px] opacity-[0.18]"
+    className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-[-16px] h-[300px] w-[300px] opacity-[0.18]"
     viewBox="0 0 200 200"
     fill="none"
+    stroke={accent}
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     aria-hidden="true"
   >
-    {[90, 70, 50, 30].map((r) => (
-      <circle key={r} cx="100" cy="100" r={r} stroke={accent} strokeWidth="2" />
-    ))}
+    <path d="M18 168 L62 140 L98 150 L134 96 L176 44" />
+    <path d="M62 140v34M98 150v24M134 96v78" strokeDasharray="3 6" strokeWidth="1.2" />
+    <circle cx="18" cy="168" r="5" />
+    <circle cx="62" cy="140" r="5" />
+    <circle cx="98" cy="150" r="5" />
+    <circle cx="134" cy="96" r="5" />
+    <circle cx="176" cy="44" r="13" />
+    <circle cx="176" cy="44" r="4" fill="#00CFFF" stroke="none" />
+    <path d="M18 184h164" strokeWidth="1.2" />
   </svg>
 )
 
-const Dots = ({ accent, id }: { accent: string; id: string }) => (
+/** Three layers of connected nodes; the two output nodes carry the cyan point. */
+const NeuralNet = ({ accent }: { accent: string }) => (
   <svg
-    className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.16]"
-    aria-hidden="true"
-  >
-    <defs>
-      <pattern id={`promo-dots-${id}`} width="22" height="22" patternUnits="userSpaceOnUse">
-        <circle cx="2" cy="2" r="2" fill={accent} />
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill={`url(#promo-dots-${id})`} />
-  </svg>
-)
-
-const Geometric = ({ accent }: { accent: string }) => (
-  <svg
-    className="pointer-events-none absolute -bottom-10 end-[-20px] h-[280px] w-[280px] opacity-[0.18]"
+    className="pointer-events-none absolute top-1/2 -translate-y-1/2 end-[-16px] h-[320px] w-[320px] opacity-[0.16]"
     viewBox="0 0 200 200"
     fill="none"
+    stroke={accent}
+    strokeWidth="1.4"
+    strokeLinecap="round"
     aria-hidden="true"
   >
-    <rect x="40" y="40" width="110" height="110" rx="16" stroke={accent} strokeWidth="2" />
-    <rect
-      x="40"
-      y="40"
-      width="110"
-      height="110"
-      rx="16"
-      stroke={accent}
-      strokeWidth="2"
-      transform="rotate(18 95 95)"
-    />
-    <path d="M20 160 L100 20 L180 160 Z" stroke={accent} strokeWidth="2" />
+    <g strokeOpacity="0.8">
+      <path d="M40 60L100 44M40 60L100 80M40 60L100 116M40 60L100 152M40 100L100 44M40 100L100 80M40 100L100 116M40 100L100 152M40 140L100 44M40 140L100 80M40 140L100 116M40 140L100 152" />
+      <path d="M100 44L160 80M100 44L160 120M100 80L160 80M100 80L160 120M100 116L160 80M100 116L160 120M100 152L160 80M100 152L160 120" />
+    </g>
+    {/* Node fills match the slide ground so the edges stop at the node rim. */}
+    <g fill="#0d0d1f">
+      <circle cx="40" cy="60" r="7" />
+      <circle cx="40" cy="100" r="7" />
+      <circle cx="40" cy="140" r="7" />
+      <circle cx="100" cy="44" r="7" />
+      <circle cx="100" cy="80" r="7" />
+      <circle cx="100" cy="116" r="7" />
+      <circle cx="100" cy="152" r="7" />
+      <circle cx="160" cy="80" r="9" />
+      <circle cx="160" cy="120" r="9" />
+    </g>
+    <circle cx="160" cy="80" r="3.5" fill="#00CFFF" stroke="none" />
+    <circle cx="160" cy="120" r="3.5" fill="#00CFFF" stroke="none" />
   </svg>
 )
 
 const Decoration = ({
   kind,
   accent,
-  id,
 }: {
   kind: BannerDecoration
   accent: string
-  id: string
 }) => {
-  if (kind === "dots") return <Dots accent={accent} id={id} />
-  if (kind === "geometric") return <Geometric accent={accent} />
-  return <Circles accent={accent} />
+  if (kind === "neural-net") return <NeuralNet accent={accent} />
+  return <OrdersPath accent={accent} />
 }
 
 const ICONS: Record<BannerIcon, JSX.Element> = {
@@ -155,7 +164,7 @@ const Slide = ({
     aria-label={label}
     aria-hidden={!isActive}
   >
-    <Decoration kind={banner.decoration} accent={banner.accent} id={banner.id} />
+    <Decoration kind={banner.decoration} accent={banner.accent} />
 
     <div className="relative flex h-full flex-col justify-center gap-4 px-7 py-8 small:px-14">
       <span
